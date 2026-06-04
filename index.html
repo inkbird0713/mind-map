@@ -119,10 +119,9 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // 발급받으신 고유 Firebase 설정 정보 매핑 완료
         const firebaseConfig = {
             apiKey: "AIzaSyBGXatMrPmYAmZUFInknHuenzW7djKTcCQ",
             authDomain: "ink-s-canvas.firebaseapp.com",
@@ -140,8 +139,9 @@
 
         window.currentUser = null;
 
+        // 팝업 차단 우회를 위해 '리디렉션 로그인' 방식으로 변경
         window.loginWithGoogle = function() {
-            signInWithPopup(auth, provider).catch(err => console.error("로그인 실패:", err));
+            signInWithRedirect(auth, provider).catch(err => console.error("로그인 실패:", err));
         }
 
         window.logout = function() {
@@ -152,8 +152,16 @@
             }
         }
 
+        // 앱이 켜질 때 리디렉션된 로그인 결과가 있는지 먼저 체크 후 처리
         onAuthStateChanged(auth, async (user) => {
             const loginScreen = document.getElementById('login-screen');
+            
+            try {
+                await getRedirectResult(auth);
+            } catch (error) {
+                console.error("로그인 리디렉션 처리 중 오류:", error);
+            }
+
             if (user) {
                 window.currentUser = user;
                 document.getElementById('user-name').innerText = user.displayName + "님";
@@ -201,7 +209,7 @@
 
     <div id="home-screen">
         <h1 style="font-weight: 800; color: #2d3436; font-size: 38px; margin-bottom: 10px;">Ink's Canvas</h1>
-        <p style="color:#888; margin-bottom:30px;">모라고 적지</p>
+        <p style="color:#888; margin-bottom:30px;">당신의 생각을 구조화하세요</p>
         <button onclick="createNewDoc()" style="padding: 15px 30px; border-radius: 35px; border: none; background: var(--primary); color: white; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);">+ 마인드맵 생성</button>
         <div class="doc-list" id="doc-list"></div>
     </div>
