@@ -44,31 +44,57 @@
         
         #editor { min-height: 350px; line-height: 1.8; font-size: 18px; color: #2d3748; }
 
-        /* --- 리스트 순환 마크다운 계층 구조 스타일 --- */
+        /* --- 리스트 마크다운 계층 구조 스타일 정의 --- */
         #editor ul, .pdf-content ul { list-style-type: disc !important; padding-left: 24px; margin: 6px 0; }
         #editor ul ul, .pdf-content ul ul { list-style-type: circle !important; }
         #editor ul ul ul, .pdf-content ul ul ul { list-style-type: square !important; }
-        #editor ul ul ul ul, .pdf-content ul ul ul ul { list-style-type: disc !important; }
-        #editor ul ul ul ul ul, .pdf-content ul ul ul ul ul { list-style-type: circle !important; }
-        #editor ul ul ul ul ul ul, .pdf-content ul ul ul ul ul ul { list-style-type: square !important; }
 
-        #editor ol, .pdf-content ol { list-style-type: decimal !important; padding-left: 24px; margin: 6px 0; }
-        #editor ol ol, .pdf-content ol ol { list-style-type: lower-alpha !important; }
-        #editor ol ol ol, .pdf-content ol ol ol { list-style-type: lower-roman !important; }
-        #editor ol ol ol ol, .pdf-content ol ol ol ol { list-style-type: decimal !important; }
-        #editor ol ol ol ol ol, .pdf-content ol ol ol ol ol { list-style-type: lower-alpha !important; }
-        #editor ol ol ol ol ol ol, .pdf-content ol ol ol ol ol ol { list-style-type: lower-roman !important; }
+        /* [핵심 변경] 순서 목록(ol)의 브라우저 기본 넘버링을 끄고 CSS 카운터로 완전히 새로 구축 */
+        #editor ol, .pdf-content ol { 
+            list-style-type: none !important; 
+            padding-left: 24px; 
+            margin: 6px 0; 
+            counter-reset: item; /* 기본 카운터 초기화 (1부터 시작) */
+        }
+        
+        /* 사용자가 커스텀 시작 번호를 지정한 경우 (예: <ol data-start="5">) 해당 번호 직전부터 세도록 설정 */
+        #editor ol[data-start], .pdf-content ol[data-start] {
+            counter-reset: item calc(var(--start-val) - 1) !important;
+        }
 
-        /* [스타일 교정] 1. 입력 시 브라우저 내장 서체 엔진으로 인해 여백/줄크기가 틀어지는 버그 원천 차단 */
+        /* 하위 단계 계층 스타일 정의 (알파벳, 로마자 등) */
+        #editor ol ol, .pdf-content ol ol { list-style-type: lower-alpha !important; padding-left: 24px; counter-reset: none; }
+        #editor ol ol ol, .pdf-content ol ol ol { list-style-type: lower-roman !important; padding-left: 24px; counter-reset: none; }
+
+        /* 모든 li 항목의 글자 크기, 줄높이, 폰트를 100% 동일하게 강제 통일 */
         #editor li, .pdf-content li { 
             margin-bottom: 4px; 
             line-height: 1.8 !important;
             font-family: 'Pretendard', -apple-system, sans-serif !important;
             font-size: 18px !important;
+            position: relative;
         }
-        #editor ol, #editor ul {
-            line-height: 1.8 !important;
+
+        /* 1단계 ol 내부의 li에만 CSS 카운터 숫자를 붙여 크기 왜곡 방지 및 엔터 시 자동 증가 구현 */
+        #editor ol > li, .pdf-content ol > li {
+            counter-increment: item;
+        }
+        #editor ol > li::before, .pdf-content ol > li::before {
+            content: counter(item) ". ";
+            position: absolute;
+            left: -24px;
+            width: 20px;
+            text-align: right;
             font-size: 18px !important;
+            font-family: 'Pretendard', sans-serif !important;
+            line-height: 1.8 !important;
+            color: inherit;
+        }
+
+        /* 2단계 이하 하위 리스트의 li는 브라우저 기본 불릿 스타일을 따르므로 의사 원소 불필요 */
+        #editor ol ol > li::before, .pdf-content ol ol > li::before,
+        #editor ol ul > li::before, .pdf-content ol ul > li::before {
+            content: none !important;
         }
 
         .floating-bar { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: #2d3436; padding: 8px 15px; border-radius: 12px; display: flex; gap: 8px; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 3100; }
@@ -190,7 +216,6 @@
         }
     });
 
-    // --- 입력 즉시 로컬 스토리지 실시간 동기화(Auto-Save) 이벤트 ---
     titleField.addEventListener('input', function() {
         document.getElementById('parent-title-display').innerText = this.innerText || '주제 없음';
         saveCurrentNodeData();
@@ -198,7 +223,6 @@
     summaryField.addEventListener('input', saveCurrentNodeData);
     editorField.addEventListener('input', saveCurrentNodeData);
 
-    // 에디터 특수 키 연동 제어 (Tab 키 동작 분리 유지)
     editorField.addEventListener('keydown', function(e) {
         if (e.key === 'Tab') {
             e.preventDefault(); 
@@ -225,7 +249,7 @@
         }
     });
 
-    // beforeinput 이벤트를 사용하여 화면에 찍히기 전에 가로채기
+    // 마크다운 자동 감지 및 변환 로직 교정
     editorField.addEventListener('beforeinput', function(e) {
         if (e.data === ' ') {
             const selection = window.getSelection();
@@ -239,7 +263,6 @@
                 const offset = range.startOffset;
                 const textBeforeCursor = text.substring(0, offset);
 
-                // 이미 리스트 내부(LI 상태)라면 중복 전환 방지
                 let nodeCheck = anchorNode;
                 let insideList = false;
                 while (nodeCheck && nodeCheck !== this) {
@@ -248,7 +271,7 @@
                 }
                 if (insideList) return;
 
-                // 1. '-' + 스페이스바 패턴 감지
+                // 1. '-' 대시 리스트 감지
                 if (textBeforeCursor.trim() === '-') {
                     e.preventDefault();
                     range.setStart(anchorNode, offset - textBeforeCursor.length);
@@ -258,32 +281,30 @@
                     document.execCommand('insertUnorderedList', false, null);
                     saveCurrentNodeData();
                 } 
-                // 2. '모든 숫자.' + 스페이스바 패턴 감지 (정규식 대응)
+                // 2. '숫자.' 리스트 감지 -> CSS 카운터 시스템 연동
                 else if (/^\d+\.$/.test(textBeforeCursor.trim())) {
                     e.preventDefault();
                     
-                    // 입력된 시작 번호 파싱 (예: "2." -> 2)
                     const startNum = parseInt(textBeforeCursor.trim(), 10);
                     
-                    // 기호 텍스트 삭제
                     range.setStart(anchorNode, offset - textBeforeCursor.length);
                     range.setEnd(anchorNode, offset);
                     range.deleteContents();
                     
-                    // 우선 순정 순서 목록 생성
+                    // 리스트를 먼저 생성
                     document.execCommand('insertOrderedList', false, null);
                     
-                    // 현재 생성된 LI를 즉시 추적하여 사용자가 입력했던 시작 번호를 부여
+                    // 생성된 상위 ol을 찾아서 CSS 변수(--start-val) 및 태그 속성을 동적으로 심음
                     const newSelection = window.getSelection();
                     if (newSelection.rangeCount > 0) {
-                        let liNode = newSelection.anchorNode;
-                        while (liNode && liNode !== this) {
-                            if (liNode.nodeName === 'LI') {
-                                // value 속성을 직접 할당하여 시작 번호를 갱신 (하위 계층 스타일에는 영향 주지 않음)
-                                liNode.setAttribute('value', startNum);
+                        let targetNode = newSelection.anchorNode;
+                        while (targetNode && targetNode !== this) {
+                            if (targetNode.nodeName === 'OL') {
+                                targetNode.setAttribute('data-start', startNum);
+                                targetNode.style.setProperty('--start-val', startNum);
                                 break;
                             }
-                            liNode = liNode.parentNode;
+                            targetNode = targetNode.parentNode;
                         }
                     }
                     saveCurrentNodeData();
@@ -292,7 +313,6 @@
         }
     });
 
-    // 실시간 현재 노드 데이터 동기화 함수
     function saveCurrentNodeData() {
         if (!currentDoc || !selectedNodeId) return;
         const node = currentDoc.nodes.find(n => n.id === selectedNodeId);
