@@ -180,7 +180,7 @@
         }
     });
 
-    // --- [핵심 추가] 입력 즉시 로컬 스토리지 실시간 동기화(Auto-Save) 이벤트 ---
+    // --- 입력 즉시 로컬 스토리지 실시간 동기화(Auto-Save) 이벤트 ---
     titleField.addEventListener('input', function() {
         document.getElementById('parent-title-display').innerText = this.innerText || '주제 없음';
         saveCurrentNodeData();
@@ -225,27 +225,27 @@
             const range = selection.getRangeAt(0);
             const anchorNode = selection.anchorNode;
             
-            // 현재 포커스된 커서 노드의 텍스트 컨텐츠 추출
             if (anchorNode && anchorNode.nodeType === Node.TEXT_NODE) {
                 const text = anchorNode.nodeValue;
                 const offset = range.startOffset;
-                
-                // 커서 바로 앞의 텍스트 확인
                 const textBeforeCursor = text.substring(0, offset);
                 
                 if (textBeforeCursor === '-') {
                     e.preventDefault();
-                    // 입력된 '-' 문자를 제거
-                    document.execCommand('delete', false, null);
-                    // 불렛 리스트로 변경
+                    // 직접 Node 범위를 지정하여 문자열 삭제 (브라우저 버그 차단)
+                    range.setStart(anchorNode, offset - 1);
+                    range.setEnd(anchorNode, offset);
+                    range.deleteContents();
+                    
                     document.execCommand('insertUnorderedList', false, null);
                     saveCurrentNodeData();
                 } else if (textBeforeCursor === '1.') {
                     e.preventDefault();
-                    // 입력된 '1.' 문자 제거 (두 번 삭제 처리)
-                    document.execCommand('delete', false, null);
-                    document.execCommand('delete', false, null);
-                    // 순서형 리스트로 변경
+                    // 직접 '1.' 문자열 삭제
+                    range.setStart(anchorNode, offset - 2);
+                    range.setEnd(anchorNode, offset);
+                    range.deleteContents();
+                    
                     document.execCommand('insertOrderedList', false, null);
                     saveCurrentNodeData();
                 }
