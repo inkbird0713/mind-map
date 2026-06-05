@@ -59,7 +59,17 @@
         #editor ol ol ol ol ol, .pdf-content ol ol ol ol ol { list-style-type: lower-alpha !important; }
         #editor ol ol ol ol ol ol, .pdf-content ol ol ol ol ol ol { list-style-type: lower-roman !important; }
 
-        #editor li, .pdf-content li { margin-bottom: 4px; }
+        /* [스타일 교정] 1. 입력 시 브라우저 내장 서체 엔진으로 인해 여백/줄크기가 틀어지는 버그 원천 차단 */
+        #editor li, .pdf-content li { 
+            margin-bottom: 4px; 
+            line-height: 1.8 !important;
+            font-family: 'Pretendard', -apple-system, sans-serif !important;
+            font-size: 18px !important;
+        }
+        #editor ol, #editor ul {
+            line-height: 1.8 !important;
+            font-size: 18px !important;
+        }
 
         .floating-bar { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: #2d3436; padding: 8px 15px; border-radius: 12px; display: flex; gap: 8px; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 3100; }
         .floating-bar button { background: transparent; color: #dfe6e9; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; }
