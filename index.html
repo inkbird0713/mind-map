@@ -225,24 +225,30 @@
             const range = selection.getRangeAt(0);
             const anchorNode = selection.anchorNode;
             
-            let currentLine = anchorNode;
-            while (currentLine && currentLine.parentNode !== this && currentLine.id !== 'editor') {
-                currentLine = currentLine.parentNode;
-            }
-            
-            const textContent = currentLine ? currentLine.textContent : anchorNode.textContent;
-            
-            if (textContent === '-') {
-                e.preventDefault(); 
-                document.execCommand('delete', false, null); 
-                document.execCommand('insertUnorderedList', false, null); 
-                saveCurrentNodeData();
-            } else if (textContent === '1.') {
-                e.preventDefault();
-                document.execCommand('delete', false, null);
-                document.execCommand('delete', false, null); 
-                document.execCommand('insertOrderedList', false, null);
-                saveCurrentNodeData();
+            // 현재 포커스된 커서 노드의 텍스트 컨텐츠 추출
+            if (anchorNode && anchorNode.nodeType === Node.TEXT_NODE) {
+                const text = anchorNode.nodeValue;
+                const offset = range.startOffset;
+                
+                // 커서 바로 앞의 텍스트 확인
+                const textBeforeCursor = text.substring(0, offset);
+                
+                if (textBeforeCursor === '-') {
+                    e.preventDefault();
+                    // 입력된 '-' 문자를 제거
+                    document.execCommand('delete', false, null);
+                    // 불렛 리스트로 변경
+                    document.execCommand('insertUnorderedList', false, null);
+                    saveCurrentNodeData();
+                } else if (textBeforeCursor === '1.') {
+                    e.preventDefault();
+                    // 입력된 '1.' 문자 제거 (두 번 삭제 처리)
+                    document.execCommand('delete', false, null);
+                    document.execCommand('delete', false, null);
+                    // 순서형 리스트로 변경
+                    document.execCommand('insertOrderedList', false, null);
+                    saveCurrentNodeData();
+                }
             }
         }
     });
