@@ -180,7 +180,6 @@ summaryField.focus();
 }
 });
 
-// --- [핵심 추가] 입력 즉시 로컬 스토리지 실시간 동기화(Auto-Save) 이벤트 ---
 titleField.addEventListener('input', function() {
 document.getElementById('parent-title-display').innerText = this.innerText || '주제 없음';
 saveCurrentNodeData();
@@ -188,7 +187,6 @@ saveCurrentNodeData();
 summaryField.addEventListener('input', saveCurrentNodeData);
 editorField.addEventListener('input', saveCurrentNodeData);
 
-// 에디터 특수 키 연동 제어
 editorField.addEventListener('keydown', function(e) {
 if (e.key === 'Tab') {
 e.preventDefault();
@@ -212,7 +210,7 @@ document.execCommand('outdent', false, null);
 } else {
 document.execCommand('indent', false, null);
 }
-saveCurrentNodeData(); // 상태 변경 후 즉시 자동 저장
+saveCurrentNodeData();
 }
 }
 return;
@@ -247,7 +245,6 @@ saveCurrentNodeData();
 }
 });
 
-// 실시간 현재 노드 데이터 동기화 함수
 function saveCurrentNodeData() {
 if (!currentDoc || !selectedNodeId) return;
 const node = currentDoc.nodes.find(n => n.id === selectedNodeId);
@@ -255,7 +252,7 @@ if (node) {
 node.title = titleField.innerText;
 node.summary = summaryField.innerText;
 node.content = editorField.innerHTML;
-save(); // localStorage 영구 업데이트
+save();
 }
 }
 
@@ -272,9 +269,13 @@ docs.push(newDoc); save(); renderDocList();
 
 function renderDocList() {
 const container = document.getElementById('doc-list');
-container.innerHTML = docs.map(doc => &lt;div class="doc-card" onclick="openDoc(${doc.id})">
-<h3 style="margin:0; font-size:18px; color:#111;">${doc.title}&lt;/h3&gt; &lt;p style="font-size:12px; color:#999; margin-top:8px;"&gt;${doc.nodes.length} Thoughts</p>
-<button class="doc-delete-btn" onclick="deleteDoc(event, ${doc.id})"&gt;삭제&lt;/button&gt; &lt;/div&gt;).join('');
+container.innerHTML = docs.map(doc => `
+<div class="doc-card" onclick="openDoc(${doc.id})">
+<h3 style="margin:0; font-size:18px; color:#111;">${doc.title}</h3>
+<p style="font-size:12px; color:#999; margin-top:8px;">${doc.nodes.length} Thoughts</p>
+<button class="doc-delete-btn" onclick="deleteDoc(event, ${doc.id})">삭제</button>
+</div>
+`).join('');
 }
 
 function deleteDoc(e, id) { e.stopPropagation(); if(confirm("정말 삭제하시겠습니까?")) { docs = docs.filter(d => d.id !== id); save(); renderDocList(); } }
@@ -292,7 +293,23 @@ const svg = document.getElementById('svg-canvas');
 layer.innerHTML = ''; svg.innerHTML = '';
 currentDoc.nodes.forEach(node => {
 const div = document.createElement('div');
-div.className = node ${node.id === 'root' ? 'root' : ''}; div.style.left = node.x + 'px'; div.style.top = node.y + 'px'; div.innerHTML =<div class="node-info"><b>${node.title || (node.id === 'root' ? '중심' : '주제 없음')}&lt;/b&gt;&lt;div class="summary"&gt;${node.summary || ''}</div></div><button class="add-btn">+</button>; div.querySelector('.node-info').onclick = (e) =&gt; { e.stopPropagation(); openDetail(node.id); }; div.querySelector('.add-btn').onclick = (e) =&gt; { e.stopPropagation(); addChildNode(node.id); }; layer.appendChild(div); if (node.parentId) { const parent = currentDoc.nodes.find(n =&gt; n.id === node.parentId); if (parent) { const path = document.createElementNS("http://www.w3.org/2000/svg", "path"); const d =M ${parent.x + 120} ${parent.y + 30} C ${parent.x + 220} ${parent.y + 30}, ${node.x - 100} ${node.y + 30}, ${node.x} ${node.y + 30}`;
+div.className = `node ${node.id === 'root' ? 'root' : ''}`; div.style.left = node.x + 'px'; div.style.top = node.y + 'px'; 
+div.innerHTML = `
+<div class="node-info">
+<b>${node.title || (node.id === 'root' ? '중심' : '주제 없음')}</b>
+<div class="summary">${node.summary || ''}</div>
+</div>
+<button class="add-btn">+</button>
+`; 
+div.querySelector('.node-info').onclick = (e) => { e.stopPropagation(); openDetail(node.id); }; 
+div.querySelector('.add-btn').onclick = (e) => { e.stopPropagation(); addChildNode(node.id); }; 
+layer.appendChild(div); 
+
+if (node.parentId) { 
+const parent = currentDoc.nodes.find(n => n.id === node.parentId); 
+if (parent) { 
+const path = document.createElementNS("http://www.w3.org/2000/svg", "path"); 
+const d = `M ${parent.x + 120} ${parent.y + 30} C ${parent.x + 220} ${parent.y + 30}, ${node.x - 100} ${node.y + 30}, ${node.x} ${node.y + 30}`;
 path.setAttribute("d", d); path.setAttribute("class", "connection"); svg.appendChild(path);
 }
 }
@@ -343,44 +360,54 @@ const printArea = document.getElementById('print-area');
 const rootNode = currentDoc.nodes.find(n => n.id === 'root');
 const now = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
 
-let html = &lt;div class="pdf-cover"&gt; &lt;div class="canvas-logo"&gt;Ink's Canvas Standard Executive Report&lt;/div&gt; &lt;div class="cover-mid"&gt; &lt;h1&gt;${rootNode.title || '무제 리포트 프로젝트'}</h1>
+let html = `
+<div class="pdf-cover"> 
+<div class="canvas-logo">Ink's Canvas Standard Executive Report</div> 
+<div class="cover-mid"> 
+<h1>${rootNode.title || '무제 리포트 프로젝트'}</h1>
 <div class="cover-decor"></div>
-<div class="date">${now}&lt;/div&gt; &lt;/div&gt; &lt;div class="cover-bottom"&gt;&lt;/div&gt; &lt;/div&gt; &lt;div class="pdf-body"&gt;;
+<div class="date">${now}</div> 
+</div> 
+<div class="cover-bottom"></div> 
+</div> 
+<div class="pdf-body">
+`;
 
 const rootSummaryClean = rootNode.summary ? rootNode.summary.trim() : "";
 const rootContentClean = rootNode.content ? rootNode.content.trim() : "";
 
-html += <div class="pdf-section"&gt; &lt;div class="pdf-h1"&gt;00. Overview&lt;/div&gt; &lt;div style="font-size: 20px; font-weight: 700; color: var(--primary); margin-bottom: 15px;"&gt; 중심 주제:${rootNode.title || '제목 없음'}
+html += `
+<div class="pdf-section"> 
+<div class="pdf-h1">00. Overview</div> 
+<div style="font-size: 20px; font-weight: 700; color: var(--primary); margin-bottom: 15px;">중심 주제: ${rootNode.title || '제목 없음'}</div>
+${rootSummaryClean !== "" ? `<div class="pdf-summary-box">${rootNode.summary}</div>` : ''} 
+${rootContentClean !== "" ? `<div class="pdf-content">${rootNode.content}</div>` : `<p style="color: #888; font-style: italic;">(중심 노드의 '요약'이나 '상세 내용'을 입력하시면 이 Overview 섹션에 보고서 총평으로 자동 기록됩니다.)</p>`} 
 </div>
-latex
-{rootSummaryClean !== "" ? `<div class="pdf-summary-box"&gt;
-
-{rootNode.summary}</div>: ''} ${rootContentClean !== "" ? <div class="pdf-content"&gt;${rootNode.content}</div>:<p style="color: #888; font-style: italic;">(중심 노드의 '요약'이나 '상세 내용'을 입력하시면 이 Overview 섹션에 보고서 총평으로 자동 기록됩니다.)</p>} &lt;/div>;
+`;
 
 function processNodes(parentId, depth) {
 const children = currentDoc.nodes.filter(n => n.parentId === parentId);
 children.forEach((child, index) => {
-let classTag = "";
-if(depth === 1) classTag = "pdf-h2";
-else classTag = "pdf-h3";
+let classTag = depth === 1 ? "pdf-h2" : "pdf-h3";
 
-html += <div class="pdf-section ${depth > 1 ? 'level-indent' : ''}">; const listPrefix = depth === 1 ?Section 0${index + 1}. : '';
-html += <div class="${classTag}">${listPrefix}${child.title || '제목 없음'}</div>`;
+html += `<div class="pdf-section ${depth > 1 ? 'level-indent' : ''}">`; 
+const listPrefix = depth === 1 ? `Section 0${index + 1}. ` : '';
+html += `<div class="${classTag}">${listPrefix}${child.title || '제목 없음'}</div>`;
 
 const childSummaryClean = child.summary ? child.summary.trim() : "";
 if(childSummaryClean !== "") {
-html += <div class="pdf-summary-box"&gt;${child.summary}</div>`;
+html += `<div class="pdf-summary-box">${child.summary}</div>`;
 }
 
-if(child.content) html += <div class="pdf-content"&gt;${child.content}</div>`;
+if(child.content) html += `<div class="pdf-content">${child.content}</div>`;
 
 processNodes(child.id, depth + 1);
-html += </div>;
+html += `</div>`;
 });
 }
 
 processNodes('root', 1);
-html += </div>;
+html += `</div>`;
 
 printArea.innerHTML = html;
 setTimeout(() => { window.print(); }, 500);
@@ -397,7 +424,7 @@ document.getElementById('detail-view').style.display = 'flex';
 }
 
 function closeDetail() {
-saveCurrentNodeData(); // 나가기 전 마지막 확인 저장
+saveCurrentNodeData();
 selectedNodeId = null;
 document.getElementById('detail-view').style.display = 'none';
 renderMindmap();
@@ -414,7 +441,7 @@ renderMindmap();
 
 function execCmd(cmd) {
 document.execCommand(cmd, false, null);
-saveCurrentNodeData(); // 툴바 스타일 명령 실행 후 즉시 저장 유도
+saveCurrentNodeData();
 }
 
 function fitView() {
@@ -465,7 +492,7 @@ updateTransform();
 };
 
 function updateTransform() {
-content.style.transform = translate(${transform.x}px,  {transform.scale})`;
+content.style.transform = `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`;
 }
 
 function resetZoom() {
