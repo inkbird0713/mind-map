@@ -200,7 +200,7 @@
     summaryField.addEventListener('input', saveCurrentNodeData);
     editorField.addEventListener('input', saveCurrentNodeData);
 
-    // 엔터 및 백스페이스 핸들러 정밀 제어 (격리벽 바인딩 기술)
+    // 엔터 및 백스페이스 핸들러 정밀 제어 (격리벽 바인딩 기술 통합)
     editorField.addEventListener('keydown', function(e) {
         if (e.key === 'Tab') {
             e.preventDefault(); 
@@ -226,7 +226,7 @@
             }
         }
         
-        // 엔터 키를 쳤을 때 빈 리스트 탈출 격리벽 로직 구현
+        // 엔터 키를 쳤을 때 빈 리스트(ol, ul 전체 적용) 탈출 격리벽 로직
         if (e.key === 'Enter') {
             const selection = window.getSelection();
             if (selection.rangeCount > 0) {
@@ -239,7 +239,7 @@
                     node = node.parentNode;
                 }
                 
-                // 현재 줄이 리스트 항목인데 알맹이가 비어있는 상태에서 엔터를 쳤다면 (탈출 시도)
+                // 현재 줄이 리스트(불렛/숫자 목록) 항목인데 알맹이가 비어있는 상태에서 엔터를 쳤다면 (탈출 시도)
                 if (liNode && (liNode.innerText.trim() === "" || liNode.innerHTML === "<br>")) {
                     e.preventDefault();
                     
@@ -255,9 +255,14 @@
                         if (parentList.children.length === 0) {
                             parentList.remove();
                         }
-                        editorField.appendChild(div);
+                        // 에디터 컨텐트 내부 또는 리스트 바로 뒤에 삽입
+                        if (parentList.parentNode && parentList.parentNode !== editorField) {
+                            parentList.parentNode.insertBefore(div, parentList.nextSibling);
+                        } else {
+                            editorField.appendChild(div);
+                        }
                     } else {
-                        // 중간에서 끊는 경우 리스트 분할 파쇄
+                        // 중간에서 끊는 경우 리스트 분할 파쇄 후 사이에 div 주입
                         const nextRange = document.createRange();
                         nextRange.setStartAfter(liNode);
                         nextRange.setEndAfter(parentList);
@@ -284,7 +289,7 @@
         }
     });
 
-    // 버그가 완전히 제거된 마크다운 감지 및 커스텀 생성 엔진
+    // 마크다운 감지 및 커스텀 생성 엔진
     editorField.addEventListener('beforeinput', function(e) {
         if (e.data === ' ') {
             const selection = window.getSelection();
@@ -306,17 +311,32 @@
                 }
                 if (insideList) return;
 
-                // 1. 대시(-) 리스트 감지
+                // 1. 대시(-) 불렛 리스트 감지 및 구조 격리 생성
                 if (textBeforeCursor.trim() === '-') {
-                    e.preventDefault();
-                    range.setStart(anchorNode, offset - textBeforeCursor.length);
-                    range.setEnd(anchorNode, offset);
-                    range.deleteContents();
-                    
-                    document.execCommand('insertUnorderedList', false, null);
-                    saveCurrentNodeData();
+                    if (textBeforeCursor.indexOf(textBeforeCursor.trim()) === 0) {
+                        e.preventDefault();
+                        range.setStart(anchorNode, offset - textBeforeCursor.length);
+                        range.setEnd(anchorNode, offset);
+                        range.deleteContents();
+                        
+                        // 브라우저의 이전 간섭을 차단하는 독립형 ul 객체 직접 매핑
+                        const ul = document.createElement('ul');
+                        const li = document.createElement('li');
+                        li.innerHTML = '<br>';
+                        ul.appendChild(li);
+                        
+                        range.insertNode(ul);
+                        
+                        const newRange = document.createRange();
+                        newRange.setStart(li, 0);
+                        newRange.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(newRange);
+                        
+                        saveCurrentNodeData();
+                    }
                 } 
-                // 2. 숫자 매칭 규칙 강화: 정확히 줄의 맨 앞에서 '숫자.' 형태로만 입력되었을 때만 트리거
+                // 2. 숫자 목록 감지 및 구조 격리 생성
                 else if (/^\d+\.$/.test(textBeforeCursor.trim())) {
                     if (textBeforeCursor.indexOf(textBeforeCursor.trim()) === 0) {
                         e.preventDefault();
@@ -327,8 +347,6 @@
                         range.setEnd(anchorNode, offset);
                         range.deleteContents();
                         
-                        // 브라우저가 이전 ol 객체와 이으려는 착각을 원천 차단하기 위해,
-                        // 임시 컴포넌트 덩어리를 직접 DOM에 바인딩하여 생성 구조를 완전 격리시킵니다.
                         const ol = document.createElement('ol');
                         ol.setAttribute('start', startNum);
                         const li = document.createElement('li');
@@ -337,7 +355,6 @@
                         
                         range.insertNode(ol);
                         
-                        // 새로 만든 리스트의 내부 li로 커서 포커스를 정교하게 이동시킵니다.
                         const newRange = document.createRange();
                         newRange.setStart(li, 0);
                         newRange.collapse(true);
