@@ -212,43 +212,61 @@
                     } else {
                         document.execCommand('indent', false, null);
                     }
-                    saveCurrentNodeData(); // 상태 변경 후 즉시 자동 저장
+                    saveCurrentNodeData(); 
                 }
             }
             return;
         }
+    });
 
-        if (e.key === ' ') {
+    // keyup 단계에서 마크다운 리스트 변환 추적 로직 처리 (최고의 호환성 보장)
+    editorField.addEventListener('keyup', function(e) {
+        if (e.key === ' ' || e.keyCode === 32) {
             const selection = window.getSelection();
             if (!selection.rangeCount) return;
-            
+
             const range = selection.getRangeAt(0);
             const anchorNode = selection.anchorNode;
             
-            if (anchorNode && anchorNode.nodeType === Node.TEXT_NODE) {
-                const text = anchorNode.nodeValue;
+            // 현재 활성화된 행 엘리먼트 찾기
+            let currentLine = anchorNode;
+            while (currentLine && currentLine.parentNode !== this && currentLine.id !== 'editor') {
+                currentLine = currentLine.parentNode;
+            }
+
+            if (!currentLine) return;
+
+            // 이미 리스트 상태 내부에 있는 경우는 제외
+            if (currentLine.nodeName === 'LI' || currentLine.closest('ul') || currentLine.closest('ol')) return;
+
+            const lineText = currentLine.textContent || "";
+
+            // '-' + 스페이스바 감지
+            if (lineText.trim() === '-' || lineText.startsWith('- ')) {
+                // 커서 위치 임시 백업
                 const offset = range.startOffset;
-                const textBeforeCursor = text.substring(0, offset);
                 
-                if (textBeforeCursor === '-') {
-                    e.preventDefault();
-                    // 직접 Node 범위를 지정하여 문자열 삭제 (브라우저 버그 차단)
-                    range.setStart(anchorNode, offset - 1);
-                    range.setEnd(anchorNode, offset);
-                    range.deleteContents();
-                    
-                    document.execCommand('insertUnorderedList', false, null);
-                    saveCurrentNodeData();
-                } else if (textBeforeCursor === '1.') {
-                    e.preventDefault();
-                    // 직접 '1.' 문자열 삭제
-                    range.setStart(anchorNode, offset - 2);
-                    range.setEnd(anchorNode, offset);
-                    range.deleteContents();
-                    
-                    document.execCommand('insertOrderedList', false, null);
-                    saveCurrentNodeData();
+                // 기호 지우기
+                if (anchorNode.nodeType === Node.TEXT_NODE) {
+                    anchorNode.nodeValue = anchorNode.nodeValue.replace(/^-\s*/, '');
+                } else {
+                    currentLine.innerText = currentLine.innerText.replace(/^-\s*/, '');
                 }
+
+                // 표준 UI 명령어 실행
+                document.execCommand('insertUnorderedList', false, null);
+                saveCurrentNodeData();
+            } 
+            // '1.' + 스페이스바 감지
+            else if (lineText.trim() === '1.' || lineText.startsWith('1. ')) {
+                if (anchorNode.nodeType === Node.TEXT_NODE) {
+                    anchorNode.nodeValue = anchorNode.nodeValue.replace(/^1\.\s*/, '');
+                } else {
+                    currentLine.innerText = currentLine.innerText.replace(/^1\.\s*/, '');
+                }
+
+                document.execCommand('insertOrderedList', false, null);
+                saveCurrentNodeData();
             }
         }
     });
@@ -429,7 +447,7 @@
     }
 
     function closeDetail() {
-        saveCurrentNodeData(); // 나가기 전 마지막 확인 저장
+        saveCurrentNodeData(); 
         selectedNodeId = null;
         document.getElementById('detail-view').style.display = 'none'; 
         renderMindmap();
@@ -446,7 +464,7 @@
 
     function execCmd(cmd) { 
         document.execCommand(cmd, false, null); 
-        saveCurrentNodeData(); // 툴바 스타일 명령 실행 후 즉시 저장 유도
+        saveCurrentNodeData(); 
     }
 
     function fitView() {
