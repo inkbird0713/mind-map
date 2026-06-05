@@ -60,7 +60,7 @@
         #editor ol ol, .pdf-content ol ol { list-style-type: lower-alpha !important; }
         #editor ol ol ol, .pdf-content ol ol ol { list-style-type: lower-roman !important; }
 
-        /* 모든 li 항목 및 리스트 서체 완전 동기화 (글자 크기 뒤틀림 방지) */
+        /* 모든 li 항목 및 리스트 서체 완전 동기화 */
         #editor li, .pdf-content li { 
             margin-bottom: 4px; 
             line-height: 1.8 !important;
@@ -200,6 +200,7 @@
     summaryField.addEventListener('input', saveCurrentNodeData);
     editorField.addEventListener('input', saveCurrentNodeData);
 
+    // 엔터 및 백스페이스 핸들러 정밀 제어 (격리벽 바인딩 기술)
     editorField.addEventListener('keydown', function(e) {
         if (e.key === 'Tab') {
             e.preventDefault(); 
@@ -224,6 +225,63 @@
                 }
             }
         }
+        
+        // 엔터 키를 쳤을 때 빈 리스트 탈출 격리벽 로직 구현
+        if (e.key === 'Enter') {
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                let node = selection.anchorNode;
+                let liNode = null;
+                
+                while (node && node !== this) {
+                    if (node.nodeName === 'LI') { liNode = node; break; }
+                    node = node.parentNode;
+                }
+                
+                // 현재 줄이 리스트 항목인데 알맹이가 비어있는 상태에서 엔터를 쳤다면 (탈출 시도)
+                if (liNode && (liNode.innerText.trim() === "" || liNode.innerHTML === "<br>")) {
+                    e.preventDefault();
+                    
+                    const parentList = liNode.parentNode;
+                    
+                    // 브라우저 기본 내장 명령을 무시하고 강제로 독립 격리 div 생성
+                    const div = document.createElement('div');
+                    div.innerHTML = "<br>";
+                    
+                    // 만약 이 항목이 리스트의 마지막 항목이라면 깔끔하게 빼내기
+                    if (liNode === parentList.lastElementChild) {
+                        liNode.remove();
+                        if (parentList.children.length === 0) {
+                            parentList.remove();
+                        }
+                        editorField.appendChild(div);
+                    } else {
+                        // 중간에서 끊는 경우 리스트 분할 파쇄
+                        const nextRange = document.createRange();
+                        nextRange.setStartAfter(liNode);
+                        nextRange.setEndAfter(parentList);
+                        const fragment = nextRange.extractContents();
+                        
+                        parentList.parentNode.insertBefore(div, parentList.nextSibling);
+                        if (fragment.textContent.trim() !== "" || fragment.querySelector('li')) {
+                            div.parentNode.insertBefore(fragment, div.nextSibling);
+                        }
+                        liNode.remove();
+                        if (parentList.children.length === 0) parentList.remove();
+                    }
+                    
+                    // 커서를 완전 격리된 새 div 줄로 안전하게 이동시킵니다.
+                    const newRange = document.createRange();
+                    newRange.setStart(div, 0);
+                    newRange.collapse(true);
+                    selection.removeAllRanges();
+                    selection.addRange(newRange);
+                    
+                    saveCurrentNodeData();
+                }
+            }
+        }
     });
 
     // 버그가 완전히 제거된 마크다운 감지 및 커스텀 생성 엔진
@@ -240,7 +298,6 @@
                 const offset = range.startOffset;
                 const textBeforeCursor = text.substring(0, offset);
 
-                // 이미 리스트 안쪽이라면 매핑하지 않음
                 let nodeCheck = anchorNode;
                 let insideList = false;
                 while (nodeCheck && nodeCheck !== this) {
@@ -261,7 +318,6 @@
                 } 
                 // 2. 숫자 매칭 규칙 강화: 정확히 줄의 맨 앞에서 '숫자.' 형태로만 입력되었을 때만 트리거
                 else if (/^\d+\.$/.test(textBeforeCursor.trim())) {
-                    // 커서 이전 텍스트가 줄 전체의 첫 텍스트인지 확실히 확인 (글자 섞임 방지)
                     if (textBeforeCursor.indexOf(textBeforeCursor.trim()) === 0) {
                         e.preventDefault();
                         
@@ -272,11 +328,11 @@
                         range.deleteContents();
                         
                         // 브라우저가 이전 ol 객체와 이으려는 착각을 원천 차단하기 위해,
-                        // 임시 컴포넌트 덩어리를 직접 DOM에 바인딩하여 생성 구조를 격리시킵니다.
+                        // 임시 컴포넌트 덩어리를 직접 DOM에 바인딩하여 생성 구조를 완전 격리시킵니다.
                         const ol = document.createElement('ol');
                         ol.setAttribute('start', startNum);
                         const li = document.createElement('li');
-                        li.innerHTML = '<br>'; // 빈 자리 포커스 바인딩용
+                        li.innerHTML = '<br>'; 
                         ol.appendChild(li);
                         
                         range.insertNode(ol);
