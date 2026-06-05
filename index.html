@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Thought Canvas - Ultimate Executive Report</title>
+    <title>Canvas</title>
     <style>
         :root {
             --primary: #4a90e2;
@@ -72,7 +72,7 @@
         #menu-toggle-btn { z-index: 2501; }
         .side-controls.open #menu-toggle-btn { transform: rotate(45deg); background: #e2e8f0; }
 
-        /* --- 프리미엄 보고서 인쇄 스타일 --- */
+        /* --- 보고서 인쇄 스타일 --- */
         #print-area { display: none; background: white; color: #2d3748; font-family: 'Pretendard', sans-serif; line-height: 1.8; }
         
         .pdf-cover { height: 100vh; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; padding: 80px; box-sizing: border-box; page-break-after: always; position: relative; background: #ffffff; }
@@ -113,8 +113,8 @@
 </head>
 <body>
     <div id="home-screen">
-        <h1 style="font-weight: 800; color: #2d3436; font-size: 38px; margin-bottom: 10px;">Thought Canvas</h1>
-        <p style="color:#888; margin-bottom:30px;">당신의 생각을 구조화된 리포트로 변환하세요</p>
+        <h1 style="font-weight: 800; color: #2d3436; font-size: 38px; margin-bottom: 10px;">Canvas</h1>
+        <p style="color:#888; margin-bottom:30px;">파이팅</p>
         <button onclick="createNewDoc()" style="padding: 15px 30px; border-radius: 35px; border: none; background: var(--primary); color: white; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);">+ 마인드맵 생성</button>
         <div class="doc-list" id="doc-list"></div>
     </div>
