@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ink's Canvas</title>
+    <title>Thought Canvas - Ultimate Executive Report</title>
     <style>
         :root {
             --primary: #4a90e2;
@@ -14,14 +14,6 @@
 
         body, html { margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, sans-serif; background: var(--bg); height: 100%; overflow: hidden; touch-action: none; }
         
-        #login-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg); z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; max-width: 400px; width: 90%; box-sizing: border-box; }
-        .google-login-btn { width: 100%; padding: 14px; border: 1px solid #ddd; background: white; border-radius: 30px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .google-login-btn:hover { background: #f8fafb; transform: translateY(-2px); }
-
-        #user-profile-bar { position: fixed; top: 15px; right: 20px; z-index: 2100; display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); backdrop-filter: blur(5px); font-size: 13px; }
-        .logout-btn { background: none; border: none; color: #ff7675; cursor: pointer; font-size: 12px; text-decoration: underline; padding: 0; }
-
         #home-screen { padding: 50px 20px; display: flex; flex-direction: column; align-items: center; height: 100vh; overflow-y: auto; box-sizing: border-box; position: relative; z-index: 2000; background: var(--bg); }
         .doc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; width: 100%; max-width: 1000px; margin-top: 40px; }
         .doc-card { background: var(--panel); padding: 35px 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); cursor: pointer; position: relative; border: 1.5px solid transparent; transition: 0.3s; text-align: center; }
@@ -52,6 +44,7 @@
         
         #editor { min-height: 350px; line-height: 1.8; font-size: 18px; color: #2d3748; }
 
+        /* --- 리스트 순환 마크다운 계층 구조 스타일 --- */
         #editor ul, .pdf-content ul { list-style-type: disc !important; padding-left: 24px; margin: 6px 0; }
         #editor ul ul, .pdf-content ul ul { list-style-type: circle !important; }
         #editor ul ul ul, .pdf-content ul ul ul { list-style-type: square !important; }
@@ -79,6 +72,7 @@
         #menu-toggle-btn { z-index: 2501; }
         .side-controls.open #menu-toggle-btn { transform: rotate(45deg); background: #e2e8f0; }
 
+        /* --- 프리미엄 보고서 인쇄 스타일 --- */
         #print-area { display: none; background: white; color: #2d3748; font-family: 'Pretendard', sans-serif; line-height: 1.8; }
         
         .pdf-cover { height: 100vh; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; padding: 80px; box-sizing: border-box; page-break-after: always; position: relative; background: #ffffff; }
@@ -116,100 +110,11 @@
             .pdf-h2 { -webkit-print-color-adjust: exact; border-bottom-color: #e2e8f0 !important; }
         }
     </style>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBGXatMrPmYAmZUFInknHuenzW7djKTcCQ",
-            authDomain: "ink-s-canvas.firebaseapp.com",
-            projectId: "ink-s-canvas",
-            storageBucket: "ink-s-canvas.firebasestorage.app",
-            messagingSenderId: "608404681418",
-            appId: "1:608404681418:web:e7635d9d90b41de079fa33",
-            measurementId: "G-KRRY0QR2FF"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const provider = new GoogleAuthProvider();
-
-        window.currentUser = null;
-
-        // 팝업 차단 우회를 위해 '리디렉션 로그인' 방식으로 변경
-        window.loginWithGoogle = function() {
-            signInWithRedirect(auth, provider).catch(err => console.error("로그인 실패:", err));
-        }
-
-        window.logout = function() {
-            if(confirm("로그아웃 하시겠습니까?")) {
-                signOut(auth).then(() => {
-                    location.reload();
-                });
-            }
-        }
-
-        // 앱이 켜질 때 리디렉션된 로그인 결과가 있는지 먼저 체크 후 처리
-        onAuthStateChanged(auth, async (user) => {
-            const loginScreen = document.getElementById('login-screen');
-            
-            try {
-                await getRedirectResult(auth);
-            } catch (error) {
-                console.error("로그인 리디렉션 처리 중 오류:", error);
-            }
-
-            if (user) {
-                window.currentUser = user;
-                document.getElementById('user-name').innerText = user.displayName + "님";
-                loginScreen.style.display = 'none';
-
-                const userDocRef = doc(db, "users", user.uid);
-                const docSnap = await getDoc(userDocRef);
-
-                if (docSnap.exists()) {
-                    window.docs = docSnap.data().docs || [];
-                } else {
-                    window.docs = JSON.parse(localStorage.getItem('thought_canvas_premium_v5') || '[]');
-                    await setDoc(userDocRef, { docs: window.docs });
-                }
-                window.renderDocList();
-            } else {
-                loginScreen.style.display = 'flex';
-            }
-        });
-
-        window.saveToCloud = async function() {
-            if (!window.currentUser) return;
-            const userDocRef = doc(db, "users", window.currentUser.uid);
-            await setDoc(userDocRef, { docs: window.docs }, { merge: true });
-            localStorage.setItem('thought_canvas_premium_v5', JSON.stringify(window.docs)); 
-        }
-    </script>
 </head>
 <body>
-
-    <div id="login-screen">
-        <div class="login-box">
-            <h2 style="margin: 0 0 10px 0; font-weight: 800; color:#2d3436;">Ink's Canvas</h2>
-            <p style="color:#888; font-size:14px; margin-bottom:30px;">기기간 실시간 연동을 위해<br>구글 계정으로 시작하세요.</p>
-            <button class="google-login-btn" onclick="loginWithGoogle()">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_G_Logo.svg" width="18" alt="G"> Google 계정으로 로그인
-            </button>
-        </div>
-    </div>
-
-    <div id="user-profile-bar">
-        <span id="user-name" style="font-weight: 600; color: #333;">로드 중...</span>
-        <button class="logout-btn" onclick="logout()">로그아웃</button>
-    </div>
-
     <div id="home-screen">
-        <h1 style="font-weight: 800; color: #2d3436; font-size: 38px; margin-bottom: 10px;">Ink's Canvas</h1>
-        <p style="color:#888; margin-bottom:30px;">당신의 생각을 구조화하세요</p>
+        <h1 style="font-weight: 800; color: #2d3436; font-size: 38px; margin-bottom: 10px;">Thought Canvas</h1>
+        <p style="color:#888; margin-bottom:30px;">당신의 생각을 구조화된 리포트로 변환하세요</p>
         <button onclick="createNewDoc()" style="padding: 15px 30px; border-radius: 35px; border: none; background: var(--primary); color: white; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);">+ 마인드맵 생성</button>
         <div class="doc-list" id="doc-list"></div>
     </div>
@@ -246,8 +151,8 @@
             <button onclick="execCmd('italic')"><i>I</i></button>
             <button onclick="execCmd('underline')"><u>U</u></button>
             <div style="width:1px; height:18px; background:#636e72; margin:0 4px;"></div>
-            <button onclick="execCmd('insertUnorderedList')">•</button>
-            <button onclick="execCmd('insertOrderedList')">1.</button>
+            <button onclick="execCmd('insertUnorderedList')">• 목록</button>
+            <button onclick="execCmd('insertOrderedList')">1. 숫자</button>
             <div style="width:1px; height:18px; background:#636e72; margin:0 4px;"></div>
             <button onclick="execCmd('outdent')">◀</button>
             <button onclick="execCmd('indent')">▶</button>
@@ -258,11 +163,11 @@
 <script>
     let currentDoc = null;
     let selectedNodeId = null;
-    
-    window.docs = []; 
-    
+    let docs = JSON.parse(localStorage.getItem('thought_canvas_premium_v5') || '[]');
     let transform = { x: 0, y: 0, scale: 1 };
     let isPanning = false, startPoint = { x: 0, y: 0 };
+
+    renderDocList();
 
     const titleField = document.getElementById('detail-title');
     const summaryField = document.getElementById('detail-summary');
@@ -275,6 +180,7 @@
         }
     });
 
+    // --- [핵심 추가] 입력 즉시 로컬 스토리지 실시간 동기화(Auto-Save) 이벤트 ---
     titleField.addEventListener('input', function() {
         document.getElementById('parent-title-display').innerText = this.innerText || '주제 없음';
         saveCurrentNodeData();
@@ -282,13 +188,16 @@
     summaryField.addEventListener('input', saveCurrentNodeData);
     editorField.addEventListener('input', saveCurrentNodeData);
 
+    // 에디터 특수 키 연동 제어
     editorField.addEventListener('keydown', function(e) {
         if (e.key === 'Tab') {
             e.preventDefault(); 
+            
             const selection = window.getSelection();
             if (selection.rangeCount > 0) {
                 let node = selection.anchorNode;
                 let insideList = false;
+                
                 while (node && node !== this) {
                     if (node.nodeName === 'LI' || node.nodeName === 'UL' || node.nodeName === 'OL') {
                         insideList = true;
@@ -296,10 +205,14 @@
                     }
                     node = node.parentNode;
                 }
+                
                 if (insideList) {
-                    if (e.shiftKey) document.execCommand('outdent', false, null);
-                    else document.execCommand('indent', false, null);
-                    saveCurrentNodeData();
+                    if (e.shiftKey) {
+                        document.execCommand('outdent', false, null);
+                    } else {
+                        document.execCommand('indent', false, null);
+                    }
+                    saveCurrentNodeData(); // 상태 변경 후 즉시 자동 저장
                 }
             }
             return;
@@ -308,13 +221,17 @@
         if (e.key === ' ') {
             const selection = window.getSelection();
             if (!selection.rangeCount) return;
+            
             const range = selection.getRangeAt(0);
             const anchorNode = selection.anchorNode;
+            
             let currentLine = anchorNode;
             while (currentLine && currentLine.parentNode !== this && currentLine.id !== 'editor') {
                 currentLine = currentLine.parentNode;
             }
+            
             const textContent = currentLine ? currentLine.textContent : anchorNode.textContent;
+            
             if (textContent === '-') {
                 e.preventDefault(); 
                 document.execCommand('delete', false, null); 
@@ -330,6 +247,7 @@
         }
     });
 
+    // 실시간 현재 노드 데이터 동기화 함수
     function saveCurrentNodeData() {
         if (!currentDoc || !selectedNodeId) return;
         const node = currentDoc.nodes.find(n => n.id === selectedNodeId);
@@ -337,7 +255,7 @@
             node.title = titleField.innerText;
             node.summary = summaryField.innerText;
             node.content = editorField.innerHTML;
-            save(); 
+            save(); // localStorage 영구 업데이트
         }
     }
 
@@ -349,16 +267,12 @@
         const title = prompt("프로젝트 이름:");
         if (!title) return;
         const newDoc = { id: Date.now(), title: title, nodes: [{ id: 'root', title: title, summary: '', content: '', x: 5000, y: 5000, parentId: null, level: 0 }] };
-        window.docs.push(newDoc); save(); renderDocList();
+        docs.push(newDoc); save(); renderDocList();
     }
 
-    window.renderDocList = function() {
+    function renderDocList() {
         const container = document.getElementById('doc-list');
-        if(!window.docs || window.docs.length === 0) {
-            container.innerHTML = `<p style="text-align:center; color:#bbb; width:100%; grid-column: 1/-1; margin-top:30px;">생성된 마인드맵이 없습니다. 첫 생각을 시작해 보세요!</p>`;
-            return;
-        }
-        container.innerHTML = window.docs.map(doc => `
+        container.innerHTML = docs.map(doc => `
             <div class="doc-card" onclick="openDoc(${doc.id})">
                 <h3 style="margin:0; font-size:18px; color:#111;">${doc.title}</h3>
                 <p style="font-size:12px; color:#999; margin-top:8px;">${doc.nodes.length} Thoughts</p>
@@ -367,10 +281,10 @@
         `).join('');
     }
 
-    function deleteDoc(e, id) { e.stopPropagation(); if(confirm("정말 삭제하시겠습니까?")) { window.docs = window.docs.filter(d => d.id !== id); save(); renderDocList(); } }
+    function deleteDoc(e, id) { e.stopPropagation(); if(confirm("정말 삭제하시겠습니까?")) { docs = docs.filter(d => d.id !== id); save(); renderDocList(); } }
 
     function openDoc(id) {
-        currentDoc = window.docs.find(d => d.id === id);
+        currentDoc = docs.find(d => d.id === id);
         document.getElementById('home-screen').style.display = 'none';
         document.getElementById('mindmap-container').style.display = 'block';
         resetZoom(); renderMindmap();
@@ -445,11 +359,11 @@
         
         let html = `
             <div class="pdf-cover">
-                <div class="canvas-logo">ink's Canvas Standard Executive Report</div>
+                <div class="canvas-logo">Thought Canvas Standard Executive Report</div>
                 <div class="cover-mid">
                     <h1>${rootNode.title || '무제 리포트 프로젝트'}</h1>
                     <div class="cover-decor"></div>
-                    <div class="date">${now}</div>
+                    <div class="date">발행일자 : ${now}</div>
                 </div>
                 <div class="cover-bottom"></div>
             </div>
@@ -509,7 +423,7 @@
     }
 
     function closeDetail() {
-        saveCurrentNodeData(); 
+        saveCurrentNodeData(); // 나가기 전 마지막 확인 저장
         selectedNodeId = null;
         document.getElementById('detail-view').style.display = 'none'; 
         renderMindmap();
@@ -526,7 +440,7 @@
 
     function execCmd(cmd) { 
         document.execCommand(cmd, false, null); 
-        saveCurrentNodeData(); 
+        saveCurrentNodeData(); // 툴바 스타일 명령 실행 후 즉시 저장 유도
     }
 
     function fitView() {
@@ -594,11 +508,7 @@
     }
     
     function save() { 
-        if (window.saveToCloud) {
-            window.saveToCloud();
-        } else {
-            localStorage.setItem('thought_canvas_premium_v5', JSON.stringify(window.docs)); 
-        }
+        localStorage.setItem('thought_canvas_premium_v5', JSON.stringify(docs)); 
     }
 </script>
 </body>
