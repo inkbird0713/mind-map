@@ -50,12 +50,12 @@
         #editor h4, .pdf-content h4 { font-size: 18px; margin: 14px 0 4px; font-weight: 700; color: #444; }
         #editor hr, .pdf-content hr { border: 0; border-top: 1px solid #cbd5e0; margin: 16px 0; display: block; height: 1px; }
 
-        /* 표 내부 글자 크기 문제 해결을 위한 오버라이딩 */
         #editor table, .pdf-content table { border-collapse: collapse; width: 100%; margin: 15px 0; table-layout: fixed; position: relative; font-size: 15px !important; }
         #editor th, #editor td, .pdf-content th, .pdf-content td { border: 1px solid #cbd5e0; padding: 10px 12px; min-height: 40px; text-align: left; word-break: break-all; font-weight: normal; background-color: transparent; font-size: 15px !important; line-height: 1.5 !important; }
         
+        /* [스타일 통일] 맨 윗줄 강조와 맨 왼쪽 강조의 배경색과 글자 굵기를 완전 매칭 */
         #editor table.has-th-row tr:first-child td, #editor table.has-th-row tr:first-child th { background-color: #f7fafc !important; font-weight: 700 !important; }
-        #editor table.has-th-col tr td:first-child, #editor table.has-th-col tr th:first-child { background-color: #fcfcfc !important; font-weight: 700 !important; border-right: 2px solid #a0aec0; }
+        #editor table.has-th-col tr td:first-child, #editor table.has-th-col tr th:first-child { background-color: #f7fafc !important; font-weight: 700 !important; }
 
         #editor ul, .pdf-content ul { padding-left: 24px; margin: 6px 0; }
         #editor ol, .pdf-content ol { padding-left: 24px; margin: 6px 0; }
@@ -174,9 +174,9 @@
             <div id="editor" contenteditable="true" placeholder="상세 내용을 자유롭게 작성하세요... (- 나 1. 입력 후 스페이스바를 누르면 목록 생성!)"></div>
             
             <div id="table-bubble-menu">
-                <label><input type="checkbox" id="toggle-th-row" onchange="toggleTableHeader('row')"> ⬆️ 맨 윗줄 강조</label>
-                <label><input type="checkbox" id="toggle-th-col" onchange="toggleTableHeader('col')"> ⬅️ 맨 왼쪽 강조</label>
-                <button class="table-del-btn" onclick="deleteActiveTable()">🗑️ 표 전체 삭제</button>
+                <label><input type="checkbox" id="toggle-th-row" onchange="toggleTableHeader('row')">제목 행 강조</label>
+                <label><input type="checkbox" id="toggle-th-col" onchange="toggleTableHeader('col')">제목 열 강조</label>
+                <button class="table-del-btn" onclick="deleteActiveTable()">표 전체 삭제</button>
             </div>
 
             <div id="slash-menu">
@@ -366,7 +366,6 @@
         selection.addRange(savedSlashRange);
         
         if (action === 'table') {
-            // 표 모달을 열기 전에 슬래시 메뉴를 먼저 숨겨 타겟 포커스 유지
             document.getElementById('slash-menu').style.display = 'none';
             openTableModal();
         } else {
@@ -707,7 +706,6 @@
         }
     });
 
-    /* ➔ [오류 해결] 슬래시 친 정확한 커서 위치 복원 및 표 삽입 메커니즘 고도화 */
     function generateDynamicTable(rows, cols) {
         const table = document.createElement('table');
         const tbody = document.createElement('tbody');
@@ -730,11 +728,10 @@
         editorField.focus();
         const selection = window.getSelection();
 
-        // 임시 저장된 슬래시 좌표(Range)가 있다면 복원하여 정확한 자리에 매핑
         if (savedSlashRange) {
             selection.removeAllRanges();
             selection.addRange(savedSlashRange);
-            document.execCommand('delete', false, null); // 기존에 잔포된 슬래시 문자(/) 파괴
+            document.execCommand('delete', false, null); 
             
             const currentRange = selection.getRangeAt(0);
             currentRange.insertNode(nextDiv);
@@ -742,7 +739,6 @@
             
             savedSlashRange = null;
         } else {
-            // 예외 방어 로직
             if (selection.rangeCount > 0) {
                 const range = selection.getRangeAt(0);
                 range.deleteContents();
@@ -754,7 +750,6 @@
             }
         }
 
-        // 표 삽입 후 첫 번째 칸으로 커서 토글 이동
         const firstCell = table.querySelector('td');
         if (firstCell) {
             const newRange = document.createRange();
