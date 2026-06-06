@@ -44,38 +44,72 @@
         
         #editor { min-height: 350px; line-height: 1.8; font-size: 18px; color: #2d3748; }
 
-        /* --- 리스트 마크다운 계층 구조 스타일 정의 --- */
+        /* --- 에디터 내부 서식 가이드 구성 --- */
+        #editor h1, .pdf-content h1 { font-size: 30px; margin: 20px 0 10px; font-weight: 800; color: #111; }
+        #editor h2, .pdf-content h2 { font-size: 24px; margin: 18px 0 8px; font-weight: 700; color: #222; }
+        #editor h3, .pdf-content h3 { font-size: 20px; margin: 16px 0 6px; font-weight: 700; color: #333; }
+        #editor h4, .pdf-content h4 { font-size: 18px; margin: 14px 0 4px; font-weight: 700; color: #444; }
+        #editor hr, .pdf-content hr { border: 0; border-top: 1px solid #cbd5e0; margin: 16px 0; display: block; height: 1px; }
+
+        #editor table, .pdf-content table { border-collapse: collapse; width: 100%; margin: 15px 0; table-layout: fixed; }
+        #editor th, #editor td, .pdf-content th, .pdf-content td { border: 1px solid #cbd5e0; padding: 10px 12px; min-height: 40px; text-align: left; word-break: break-all; }
+        #editor th, .pdf-content th { background-color: #f7fafc; font-weight: 700; }
+
         #editor ul, .pdf-content ul { list-style-type: disc !important; padding-left: 24px; margin: 6px 0; }
-        #editor ul ul, .pdf-content ul ul { list-style-type: circle !important; }
-        #editor ul ul ul, .pdf-content ul ul ul { list-style-type: square !important; }
+        #editor ol, .pdf-content ol { list-style-type: decimal !important; padding-left: 24px; margin: 6px 0; }
+        #editor li, .pdf-content li { margin-bottom: 4px; line-height: 1.8 !important; font-family: 'Pretendard', -apple-system, sans-serif !important; font-size: 18px !important; }
 
-        /* ol 기본 숫자 스타일 통일 */
-        #editor ol, .pdf-content ol { 
-            list-style-type: decimal !important; 
-            padding-left: 24px; 
-            margin: 6px 0; 
+        /* --- 나무위키 스타일 인라인 주석 핵심 CSS --- */
+        .footnote-ref {
+            color: #3498db;
+            font-size: 13px;
+            font-weight: 700;
+            vertical-align: super;
+            cursor: pointer;
+            margin-left: 2px;
+            margin-right: 2px;
+            user-select: none;
+            display: inline-block;
+            position: relative;
+        }
+        
+        /* 주석 호버/터치 팝업 말풍선 디자인 */
+        .footnote-ref::after {
+            content: attr(data-note);
+            position: absolute;
+            bottom: 130%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2d3436;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: normal;
+            line-height: 1.5;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            font-family: 'Pretendard', sans-serif;
+            vertical-align: normal;
         }
 
-        /* 하위 단계 계층 스타일 정의 */
-        #editor ol ol, .pdf-content ol ol { list-style-type: lower-alpha !important; }
-        #editor ol ol ol, .pdf-content ol ol ol { list-style-type: lower-roman !important; }
-
-        /* 모든 li 항목 및 리스트 서체 완전 동기화 */
-        #editor li, .pdf-content li { 
-            margin-bottom: 4px; 
-            line-height: 1.8 !important;
-            font-family: 'Pretendard', -apple-system, sans-serif !important;
-            font-size: 18px !important;
+        .footnote-ref:hover::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-4px);
         }
 
-        #editor ol, #editor ul {
-            line-height: 1.8 !important;
-            font-size: 18px !important;
-            font-family: 'Pretendard', -apple-system, sans-serif !important;
-        }
-
-        .floating-bar { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: #2d3436; padding: 8px 15px; border-radius: 12px; display: flex; gap: 8px; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 3100; }
-        .floating-bar button { background: transparent; color: #dfe6e9; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; }
+        /* 플로팅 바 */
+        .floating-bar { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: #2d3436; padding: 8px 15px; border-radius: 12px; display: flex; gap: 8px; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 3100; flex-wrap: wrap; max-width: 90vw; justify-content: center; }
+        .floating-bar button { background: transparent; color: #dfe6e9; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; position: relative; display: flex; align-items: center; justify-content: center; }
+        .floating-bar button:hover { background: #636e72; color: #fff; }
+        
+        .color-menu { display: none; position: absolute; bottom: 45px; left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid #ccc; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 8px; padding: 6px; gap: 6px; grid-template-columns: repeat(3, 1fr); z-index: 3200; }
+        .color-dot { width: 24px; height: 24px; border-radius: 50%; border: 1px solid #dddddd; cursor: pointer; }
+        .color-dot:hover { transform: scale(1.15); }
 
         .side-controls { position: fixed; bottom: 35px; right: 35px; display: flex; flex-direction: column-reverse; gap: 12px; z-index: 2500; align-items: center; }
         .circle-btn { width: 50px; height: 50px; border-radius: 50%; border: none; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.12); cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
@@ -159,16 +193,43 @@
             <div id="detail-summary" contenteditable="true" placeholder="간단한 요약이나 키워드를 입력하세요..."></div>
             <div id="editor" contenteditable="true" placeholder="상세 내용을 자유롭게 작성하세요..."></div>
         </div>
-        <div class="floating-bar">
+        
+        <div class="floating-bar" id="floating-bar">
             <button onclick="execCmd('bold')"><b>B</b></button>
             <button onclick="execCmd('italic')"><i>I</i></button>
             <button onclick="execCmd('underline')"><u>U</u></button>
             <div style="width:1px; height:18px; background:#636e72; margin:0 4px;"></div>
+            
+            <button onclick="toggleColorMenu('text-color-menu')" id="text-color-btn">🎨 글자색
+                <div class="color-menu" id="text-color-menu">
+                    <div class="color-dot" style="background:#000000;" onclick="execColor('foreColor', '#000000')"></div>
+                    <div class="color-dot" style="background:#e74c3c;" onclick="execColor('foreColor', '#e74c3c')"></div>
+                    <div class="color-dot" style="background:#3498db;" onclick="execColor('foreColor', '#3498db')"></div>
+                    <div class="color-dot" style="background:#2ecc71;" onclick="execColor('foreColor', '#2ecc71')"></div>
+                    <div class="color-dot" style="background:#f1c40f;" onclick="execColor('foreColor', '#f1c40f')"></div>
+                    <div class="color-dot" style="background:#9b59b6;" onclick="execColor('foreColor', '#9b59b6')"></div>
+                </div>
+            </button>
+
+            <button onclick="toggleColorMenu('bg-color-menu')" id="bg-color-btn">✏️ 형광펜
+                <div class="color-menu" id="bg-color-menu">
+                    <div class="color-dot" style="background:#ffffff; border:1px dashed #aaa;" onclick="execColor('hiliteColor', '#ffffff')"></div>
+                    <div class="color-dot" style="background:#ffca28;" onclick="execColor('hiliteColor', '#ffca28')"></div>
+                    <div class="color-dot" style="background:#81c784;" onclick="execColor('hiliteColor', '#81c784')"></div>
+                    <div class="color-dot" style="background:#64b5f6;" onclick="execColor('hiliteColor', '#64b5f6')"></div>
+                    <div class="color-dot" style="background:#ff8a80;" onclick="execColor('hiliteColor', '#ff8a80')"></div>
+                    <div class="color-dot" style="background:#ba68c8;" onclick="execColor('hiliteColor', '#ba68c8')"></div>
+                </div>
+            </button>
+            
+            <div style="width:1px; height:18px; background:#636e72; margin:0 4px;"></div>
             <button onclick="execCmd('insertUnorderedList')">•</button>
             <button onclick="execCmd('insertOrderedList')">1.</button>
-            <div style="width:1px; height:18px; background:#636e72; margin:0 4px;"></div>
             <button onclick="execCmd('outdent')">◀</button>
             <button onclick="execCmd('indent')">▶</button>
+            <div style="width:1px; height:18px; background:#636e72; margin:0 4px;"></div>
+            
+            <button onclick="insertCustomTable()">📅 표 생성</button>
         </div>
     </div>
     <div id="print-area"></div>
@@ -187,10 +248,7 @@
     const editorField = document.getElementById('editor');
     
     titleField.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault(); 
-            summaryField.focus(); 
-        }
+        if (e.key === 'Enter') { e.preventDefault(); summaryField.focus(); }
     });
 
     titleField.addEventListener('input', function() {
@@ -200,7 +258,40 @@
     summaryField.addEventListener('input', saveCurrentNodeData);
     editorField.addEventListener('input', saveCurrentNodeData);
 
-    // 엔터 및 백스페이스 핸들러 정밀 제어 (격리벽 바인딩 기술 통합)
+    function toggleColorMenu(menuId) {
+        event.stopPropagation();
+        const menus = ['text-color-menu', 'bg-color-menu'];
+        menus.forEach(id => {
+            const m = document.getElementById(id);
+            if(id === menuId) {
+                m.style.display = (m.style.display === 'grid') ? 'none' : 'grid';
+            } else {
+                m.style.display = 'none';
+            }
+        });
+    }
+
+    document.addEventListener('click', () => {
+        document.getElementById('text-color-menu').style.display = 'none';
+        document.getElementById('bg-color-menu').style.display = 'none';
+    });
+
+    function execColor(cmd, color) {
+        event.stopPropagation();
+        document.execCommand(cmd, false, color);
+        document.getElementById('text-color-menu').style.display = 'none';
+        document.getElementById('bg-color-menu').style.display = 'none';
+        saveCurrentNodeData();
+    }
+
+    // 전역 주석 번호 리인덱싱(새로고침)기
+    function refreshFootnoteNumbers() {
+        const refs = editorField.querySelectorAll('.footnote-ref');
+        refs.forEach((ref, index) => {
+            ref.innerText = `[${index + 1}]`;
+        });
+    }
+
     editorField.addEventListener('keydown', function(e) {
         if (e.key === 'Tab') {
             e.preventDefault(); 
@@ -216,53 +307,59 @@
                     node = node.parentNode;
                 }
                 if (insideList) {
-                    if (e.shiftKey) {
-                        document.execCommand('outdent', false, null);
-                    } else {
-                        document.execCommand('indent', false, null);
-                    }
+                    if (e.shiftKey) document.execCommand('outdent', false, null);
+                    else document.execCommand('indent', false, null);
                     saveCurrentNodeData(); 
                 }
             }
         }
         
-        // 엔터 키를 쳤을 때 빈 리스트(ol, ul 전체 적용) 탈출 격리벽 로직
         if (e.key === 'Enter') {
             const selection = window.getSelection();
             if (selection.rangeCount > 0) {
                 const range = selection.getRangeAt(0);
                 let node = selection.anchorNode;
+                
                 let liNode = null;
+                let headingNode = null;
                 
                 while (node && node !== this) {
-                    if (node.nodeName === 'LI') { liNode = node; break; }
+                    if (node.nodeName === 'LI') liNode = node;
+                    if (['H1','H2','H3','H4'].includes(node.nodeName)) headingNode = node;
                     node = node.parentNode;
                 }
                 
-                // 현재 줄이 리스트(불렛/숫자 목록) 항목인데 알맹이가 비어있는 상태에서 엔터를 쳤다면 (탈출 시도)
+                if (headingNode) {
+                    e.preventDefault();
+                    const div = document.createElement('div');
+                    div.innerHTML = "<br>";
+                    headingNode.parentNode.insertBefore(div, headingNode.nextSibling);
+                    
+                    const newRange = document.createRange();
+                    newRange.setStart(div, 0);
+                    newRange.collapse(true);
+                    selection.removeAllRanges();
+                    selection.addRange(newRange);
+                    
+                    saveCurrentNodeData();
+                    return;
+                }
+                
                 if (liNode && (liNode.innerText.trim() === "" || liNode.innerHTML === "<br>")) {
                     e.preventDefault();
-                    
                     const parentList = liNode.parentNode;
-                    
-                    // 브라우저 기본 내장 명령을 무시하고 강제로 독립 격리 div 생성
                     const div = document.createElement('div');
                     div.innerHTML = "<br>";
                     
-                    // 만약 이 항목이 리스트의 마지막 항목이라면 깔끔하게 빼내기
                     if (liNode === parentList.lastElementChild) {
                         liNode.remove();
-                        if (parentList.children.length === 0) {
-                            parentList.remove();
-                        }
-                        // 에디터 컨텐트 내부 또는 리스트 바로 뒤에 삽입
+                        if (parentList.children.length === 0) parentList.remove();
                         if (parentList.parentNode && parentList.parentNode !== editorField) {
                             parentList.parentNode.insertBefore(div, parentList.nextSibling);
                         } else {
                             editorField.appendChild(div);
                         }
                     } else {
-                        // 중간에서 끊는 경우 리스트 분할 파쇄 후 사이에 div 주입
                         const nextRange = document.createRange();
                         nextRange.setStartAfter(liNode);
                         nextRange.setEndAfter(parentList);
@@ -276,7 +373,6 @@
                         if (parentList.children.length === 0) parentList.remove();
                     }
                     
-                    // 커서를 완전 격리된 새 div 줄로 안전하게 이동시킵니다.
                     const newRange = document.createRange();
                     newRange.setStart(div, 0);
                     newRange.collapse(true);
@@ -289,7 +385,7 @@
         }
     });
 
-    // 마크다운 감지 및 커스텀 생성 엔진
+    // 다이내믹 마크다운 확장 엔진 + 나무위키 주석 엔진 결합
     editorField.addEventListener('beforeinput', function(e) {
         if (e.data === ' ') {
             const selection = window.getSelection();
@@ -304,27 +400,119 @@
                 const textBeforeCursor = text.substring(0, offset);
 
                 let nodeCheck = anchorNode;
-                let insideList = false;
+                let insideRestrict = false;
                 while (nodeCheck && nodeCheck !== this) {
-                    if (nodeCheck.nodeName === 'LI') { insideList = true; break; }
+                    if (['TABLE', 'H1', 'H2', 'H3', 'H4'].includes(nodeCheck.nodeName)) { 
+                        insideRestrict = true; 
+                        break; 
+                    }
                     nodeCheck = nodeCheck.parentNode;
                 }
-                if (insideList) return;
+                if (insideRestrict) return;
 
-                // 1. 대시(-) 불렛 리스트 감지 및 구조 격리 생성
-                if (textBeforeCursor.trim() === '-') {
-                    if (textBeforeCursor.indexOf(textBeforeCursor.trim()) === 0) {
+                const trimmed = textBeforeCursor.trim();
+
+                // [* 주석 내용] 형태의 나무위키 마크다운 정규식 매칭 감지
+                if (trimmed.startsWith('[*') && trimmed.endsWith(']')) {
+                    e.preventDefault();
+                    
+                    // 내부 주석 내용 텍스트 파싱 추출
+                    const noteContent = trimmed.substring(2, trimmed.length - 1).trim();
+                    
+                    if (noteContent.length > 0) {
+                        // 입력했던 마크다운 텍스트 원본 노드 영역 삭제 파쇄
+                        range.setStart(anchorNode, offset - textBeforeCursor.length);
+                        range.setEnd(anchorNode, offset);
+                        range.deleteContents();
+                        
+                        // 주석을 담을 고성능 앵커 스팬 뼈대 생성
+                        const span = document.createElement('span');
+                        span.className = 'footnote-ref';
+                        span.setAttribute('contenteditable', 'false'); // 본문 글자와 꼬이지 않도록 락 처리
+                        span.setAttribute('data-note', noteContent);
+                        span.innerText = '[?]'; // 임시 텍스트 배치
+                        
+                        range.insertNode(span);
+                        
+                        // 실시간 카운팅 번호 배정 부여
+                        refreshFootnoteNumbers();
+                        
+                        // 주석 바로 뒤에 공백 텍스트 노드를 만들어 커서를 안전하게 탈출 배정
+                        const spaceNode = document.createTextNode('\u00A0');
+                        span.parentNode.insertBefore(spaceNode, span.nextSibling);
+                        
+                        const newRange = document.createRange();
+                        newRange.setStart(spaceNode, 1);
+                        newRange.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(newRange);
+                        
+                        saveCurrentNodeData();
+                        return;
+                    }
+                }
+
+                if (trimmed === '---') {
+                    if (textBeforeCursor.indexOf(trimmed) === 0) {
                         e.preventDefault();
                         range.setStart(anchorNode, offset - textBeforeCursor.length);
                         range.setEnd(anchorNode, offset);
                         range.deleteContents();
                         
-                        // 브라우저의 이전 간섭을 차단하는 독립형 ul 객체 직접 매핑
+                        const hr = document.createElement('hr');
+                        const nextDiv = document.createElement('div');
+                        nextDiv.innerHTML = "<br>";
+                        
+                        range.insertNode(nextDiv);
+                        range.insertNode(hr);
+                        
+                        const newRange = document.createRange();
+                        newRange.setStart(nextDiv, 0);
+                        newRange.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(newRange);
+                        
+                        saveCurrentNodeData();
+                        return;
+                    }
+                }
+
+                if (/^#{1,4}$/.test(trimmed)) {
+                    if (textBeforeCursor.indexOf(trimmed) === 0) {
+                        e.preventDefault();
+                        const level = trimmed.length; 
+                        
+                        range.setStart(anchorNode, offset - textBeforeCursor.length);
+                        range.setEnd(anchorNode, offset);
+                        range.deleteContents();
+                        
+                        const heading = document.createElement('h' + level);
+                        heading.innerHTML = "<br>";
+                        
+                        range.insertNode(heading);
+                        
+                        const newRange = document.createRange();
+                        newRange.setStart(heading, 0);
+                        newRange.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(newRange);
+                        
+                        saveCurrentNodeData();
+                        return;
+                    }
+                }
+
+                if (trimmed === '-') {
+                    if (textBeforeCursor.indexOf(trimmed) === 0) {
+                        e.preventDefault();
+                        range.setStart(anchorNode, offset - textBeforeCursor.length);
+                        range.setEnd(anchorNode, offset);
+                        range.deleteContents();
+                        
                         const ul = document.createElement('ul');
                         const li = document.createElement('li');
                         li.innerHTML = '<br>';
                         ul.appendChild(li);
-                        
                         range.insertNode(ul);
                         
                         const newRange = document.createRange();
@@ -332,16 +520,13 @@
                         newRange.collapse(true);
                         selection.removeAllRanges();
                         selection.addRange(newRange);
-                        
                         saveCurrentNodeData();
                     }
                 } 
-                // 2. 숫자 목록 감지 및 구조 격리 생성
-                else if (/^\d+\.$/.test(textBeforeCursor.trim())) {
-                    if (textBeforeCursor.indexOf(textBeforeCursor.trim()) === 0) {
+                else if (/^\d+\.$/.test(trimmed)) {
+                    if (textBeforeCursor.indexOf(trimmed) === 0) {
                         e.preventDefault();
-                        
-                        const startNum = parseInt(textBeforeCursor.trim(), 10);
+                        const startNum = parseInt(trimmed, 10);
                         
                         range.setStart(anchorNode, offset - textBeforeCursor.length);
                         range.setEnd(anchorNode, offset);
@@ -352,7 +537,6 @@
                         const li = document.createElement('li');
                         li.innerHTML = '<br>'; 
                         ol.appendChild(li);
-                        
                         range.insertNode(ol);
                         
                         const newRange = document.createRange();
@@ -360,13 +544,64 @@
                         newRange.collapse(true);
                         selection.removeAllRanges();
                         selection.addRange(newRange);
-                        
                         saveCurrentNodeData();
                     }
                 }
             }
         }
     });
+
+    function insertCustomTable() {
+        const rowsInput = prompt("생성할 표의 행(세로 줄) 개수를 입력하세요:", "3");
+        if (!rowsInput) return;
+        const colsInput = prompt("생성할 표의 열(가로 칸) 개수를 입력하세요:", "3");
+        if (!colsInput) return;
+
+        const rows = parseInt(rowsInput, 10);
+        const cols = parseInt(colsInput, 10);
+
+        if (isNaN(rows) || isNaN(cols) || rows <= 0 || cols <= 0) {
+            alert("올바른 숫자를 입력해주세요.");
+            return;
+        }
+
+        const table = document.createElement('table');
+        const tbody = document.createElement('tbody');
+
+        for (let r = 0; r < rows; r++) {
+            const tr = document.createElement('tr');
+            for (let c = 0; c < cols; c++) {
+                const cell = document.createElement(r === 0 ? 'th' : 'td');
+                cell.innerHTML = "<br>";
+                tr.appendChild(cell);
+            }
+            tbody.appendChild(tr);
+        }
+        table.appendChild(tbody);
+
+        const nextDiv = document.createElement('div');
+        nextDiv.innerHTML = "<br>";
+
+        editorField.focus();
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            range.deleteContents();
+            range.insertNode(nextDiv);
+            range.insertNode(table);
+
+            const firstCell = table.querySelector('th, td');
+            const newRange = document.createRange();
+            newRange.setStart(firstCell, 0);
+            newRange.collapse(true);
+            selection.removeAllRanges();
+            selection.addRange(newRange);
+        } else {
+            editorField.appendChild(table);
+            editorField.appendChild(nextDiv);
+        }
+        saveCurrentNodeData();
+    }
 
     function saveCurrentNodeData() {
         if (!currentDoc || !selectedNodeId) return;
@@ -454,10 +689,7 @@
 
                 let isOverlap = currentDoc.nodes.some(n => Math.hypot(n.x - targetX, n.y - targetY) < 230);
                 if (!isOverlap) {
-                    finalX = targetX;
-                    finalY = targetY;
-                    foundPlace = true;
-                    break;
+                    finalX = targetX; finalY = targetY; foundPlace = true; break;
                 }
             }
             if (foundPlace) break;
@@ -540,6 +772,8 @@
         summaryField.innerText = node.summary || '';
         editorField.innerHTML = node.content || '';
         document.getElementById('detail-view').style.display = 'flex';
+        // 로드될 때 주석 번호들 한 번 정렬
+        refreshFootnoteNumbers();
     }
 
     function closeDetail() {
