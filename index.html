@@ -78,8 +78,9 @@
         .floating-bar button { background: transparent; color: #dfe6e9; border: none; height: 20px; padding: 0 8px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; position: relative; transition: 0.15s; }
         .floating-bar button:hover { background: #4a5568; color: #fff; }
         
-        .color-menu { display: none; position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid #cbd5e0; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-radius: 12px; padding: 10px; gap: 8px; grid-template-columns: repeat(3, 1fr); z-index: 3200; width: 110px; }
-        .color-menu-title { grid-column: span 3; font-size: 11px; font-weight: bold; color: #718096; margin-bottom: 2px; text-align: center; }
+        /* [색상 메뉴 확장] 4열 그리드로 변경 및 크기 최적화 */
+        .color-menu { display: none; position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid #cbd5e0; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-radius: 12px; padding: 10px; gap: 8px; grid-template-columns: repeat(4, 1fr); z-index: 3200; width: 140px; }
+        .color-menu-title { grid-column: span 4; font-size: 11px; font-weight: bold; color: #718096; margin-bottom: 2px; text-align: center; }
         .color-dot { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.15s; }
         .color-dot:hover { transform: scale(1.15); }
 
@@ -195,13 +196,20 @@
             <button onclick="toggleColorMenu('text-color-menu')" id="text-color-btn">🎨
                 <div class="color-menu" id="text-color-menu">
                     <div class="color-menu-title">글자 색상</div>
-                    <div class="color-dot" style="background:#000000;" onclick="execColor('foreColor', '#000000')"></div>
-                    <div class="color-dot" style="background:#e74c3c;" onclick="execColor('foreColor', '#e74c3c')"></div>
-                    <div class="color-dot" style="background:#3498db;" onclick="execColor('foreColor', '#3498db')"></div>
+                    <div class="color-dot" style="background:#000000;" onclick="execColor('foreColor', '#000000')" title="검은색"></div>
+                    <div class="color-dot" style="background:#e74c3c;" onclick="execColor('foreColor', '#e74c3c')" title="빨간색"></div>
+                    <div class="color-dot" style="background:#3498db;" onclick="execColor('foreColor', '#3498db')" title="파란색"></div>
+                    <div class="color-dot" style="background:#2ecc71;" onclick="execColor('foreColor', '#2ecc71')" title="초록색"></div>
+                    <div class="color-dot" style="background:#9b59b6;" onclick="execColor('foreColor', '#9b59b6')" title="보라색"></div>
+                    <div class="color-dot" style="background:#e67e22;" onclick="execColor('foreColor', '#e67e22')" title="주황색"></div>
+
                     <div class="color-menu-title" style="margin-top:4px;">형광펜</div>
-                    <div class="color-dot" style="background:#ffffff; border:1.5px dashed #bbb;" onclick="execColor('hiliteColor', '#ffffff')"></div>
-                    <div class="color-dot" style="background:#ffca28;" onclick="execColor('hiliteColor', '#ffca28')"></div>
-                    <div class="color-dot" style="background:#64b5f6;" onclick="execColor('hiliteColor', '#64b5f6')"></div>
+                    <div class="color-dot" style="background:#ffffff; border:1.5px dashed #bbb;" onclick="execColor('hiliteColor', '#ffffff')" title="지우기"></div>
+                    <div class="color-dot" style="background:#ffca28;" onclick="execColor('hiliteColor', '#ffca28')" title="노란 형광펜"></div>
+                    <div class="color-dot" style="background:#64b5f6;" onclick="execColor('hiliteColor', '#64b5f6')" title="파란 형광펜"></div>
+                    <div class="color-dot" style="background:#a3e4d7;" onclick="execColor('hiliteColor', '#a3e4d7')" title="연초록 형광펜"></div>
+                    <div class="color-dot" style="background:#f1948a;" onclick="execColor('hiliteColor', '#f1948a')" title="연빨강 형광펜"></div>
+                    <div class="color-dot" style="background:#bb8fce;" onclick="execColor('hiliteColor', '#bb8fce')" title="연보라 형광펜"></div>
                 </div>
             </button>
         </div>
@@ -610,6 +618,7 @@
         }
     });
 
+    /* [정밀 고도화] 문장 중간 주석 생성 기능 버그 완벽 패치 */
     editorField.addEventListener('beforeinput', function(e) {
         if (e.data === ' ') {
             const selection = window.getSelection();
@@ -621,72 +630,96 @@
             if (anchorNode && anchorNode.nodeType === Node.TEXT_NODE) {
                 const text = anchorNode.nodeValue;
                 const offset = range.startOffset;
+                
+                // 현재 커서가 있는 지점까지의 텍스트 추출
                 const textBeforeCursor = text.substring(0, offset);
 
                 let nodeCheck = anchorNode;
                 let insideRestrict = false;
                 while (nodeCheck && nodeCheck !== this) {
-                    if (['TABLE', 'H1', 'H2', 'H3', 'H4', 'LI'].includes(nodeCheck.nodeName)) { insideRestrict = true; break; }
+                    if (['TABLE', 'H1', 'H2', 'H3', 'H4'].includes(nodeCheck.nodeName)) { insideRestrict = true; break; }
                     nodeCheck = nodeCheck.parentNode;
                 }
                 if (insideRestrict) return;
 
-                const trimmed = textBeforeCursor.trim();
+                // 문장 중간 주석 처리를 위한 정규식 확인 (단어 중간이나 문장 어디든 포함 가능)
+                const match = textBeforeCursor.match(/\[\*([^\]]+)\]$/);
 
-                if (trimmed === '-') {
+                if (match) {
                     e.preventDefault();
-                    range.setStart(anchorNode, offset - textBeforeCursor.length);
-                    range.setEnd(anchorNode, offset);
-                    range.deleteContents();
-                    document.execCommand('insertUnorderedList', false, null);
-                    saveCurrentNodeData();
-                    return;
-                }
-
-                if (/^\d+\.$/.test(trimmed)) {
-                    e.preventDefault();
-                    range.setStart(anchorNode, offset - textBeforeCursor.length);
-                    range.setEnd(anchorNode, offset);
-                    range.deleteContents();
-                    document.execCommand('insertOrderedList', false, null);
-                    saveCurrentNodeData();
-                    return;
-                }
-
-                if (trimmed.startsWith('[*') && trimmed.endsWith(']')) {
-                    e.preventDefault();
-                    const noteContent = trimmed.substring(2, trimmed.length - 1).trim();
+                    const noteContent = match[1].trim();
+                    
                     if (noteContent.length > 0) {
-                        range.setStart(anchorNode, offset - textBeforeCursor.length);
-                        range.setEnd(anchorNode, offset);
-                        range.deleteContents();
+                        const patternLength = match[0].length; // '[*내용]' 의 전체 길이
+                        const startIdx = offset - patternLength;
                         
+                        // 1. 기존 텍스트 노드를 주석 패턴 시작 전과 후로 쪼개기
+                        const textBeforePattern = text.substring(0, startIdx);
+                        const textAfterPattern = text.substring(offset);
+                        
+                        anchorNode.nodeValue = textBeforePattern;
+                        
+                        // 2. 주석 엘리먼트 생성
                         const span = document.createElement('span');
                         span.className = 'footnote-ref';
                         span.setAttribute('contenteditable', 'false');
                         span.setAttribute('data-note', noteContent);
                         span.innerText = '[?]';
-                        range.insertNode(span);
                         
+                        // 3. 주석 뒤에 올 텍스트 노드(공백 포함) 생성
+                        const nextTextNode = document.createTextNode('\u00A0' + textAfterPattern);
+                        
+                        // 4. 안전하게 DOM에 차례대로 배치
+                        if (anchorNode.nextSibling) {
+                            anchorNode.parentNode.insertBefore(span, anchorNode.nextSibling);
+                            anchorNode.parentNode.insertBefore(nextTextNode, span.nextSibling);
+                        } else {
+                            anchorNode.parentNode.appendChild(span);
+                            anchorNode.parentNode.appendChild(nextTextNode);
+                        }
+                        
+                        // 주석 번호들 일괄 정렬
                         refreshFootnoteNumbers();
-                        const spaceNode = document.createTextNode('\u00A0');
-                        span.parentNode.insertBefore(spaceNode, span.nextSibling);
                         
+                        // 5. 커서를 주석 바로 뒷공백의 다음 칸으로 이동시켜 즉시 타이핑이 가능하게 설정
                         const newRange = document.createRange();
-                        newRange.setStart(spaceNode, 1);
+                        newRange.setStart(nextTextNode, 1);
                         newRange.collapse(true);
                         selection.removeAllRanges();
                         selection.addRange(newRange);
+                        
                         saveCurrentNodeData();
                         return;
                     }
                 }
 
-                if (/^#{1,4}$/.test(trimmed)) {
-                    if (textBeforeCursor.indexOf(trimmed) === 0) {
+                // 줄 맨 앞에서만 발동하는 리스트/헤더 단축키는 이전처럼 단독 유지
+                const trimmed = textBeforeCursor.trim();
+                if (textBeforeCursor === trimmed) {
+                    if (trimmed === '-') {
+                        e.preventDefault();
+                        range.setStart(anchorNode, 0);
+                        range.setEnd(anchorNode, offset);
+                        range.deleteContents();
+                        document.execCommand('insertUnorderedList', false, null);
+                        saveCurrentNodeData();
+                        return;
+                    }
+
+                    if (/^\d+\.$/.test(trimmed)) {
+                        e.preventDefault();
+                        range.setStart(anchorNode, 0);
+                        range.setEnd(anchorNode, offset);
+                        range.deleteContents();
+                        document.execCommand('insertOrderedList', false, null);
+                        saveCurrentNodeData();
+                        return;
+                    }
+
+                    if (/^#{1,4}$/.test(trimmed)) {
                         e.preventDefault();
                         const level = trimmed.length; 
-                        range.setStart(anchorNode, offset - textBeforeCursor.length);
+                        range.setStart(anchorNode, 0);
                         range.setEnd(anchorNode, offset);
                         range.deleteContents();
                         
