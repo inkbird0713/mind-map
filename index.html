@@ -50,35 +50,47 @@
         #editor h4, .pdf-content h4 { font-size: 18px; margin: 14px 0 4px; font-weight: 700; color: #444; }
         #editor hr, .pdf-content hr { border: 0; border-top: 1px solid #cbd5e0; margin: 16px 0; display: block; height: 1px; }
 
-        /* 표 초기 스타일 수정: 파란색/강제 배경 제거, 깔끔한 격자선만 남김 */
         #editor table, .pdf-content table { border-collapse: collapse; width: 100%; margin: 15px 0; table-layout: fixed; position: relative; }
         #editor th, #editor td, .pdf-content th, .pdf-content td { border: 1px solid #cbd5e0; padding: 10px 12px; min-height: 40px; text-align: left; word-break: break-all; font-weight: normal; background-color: transparent; }
         
         #editor table.has-th-row tr:first-child td, #editor table.has-th-row tr:first-child th { background-color: #f7fafc !important; font-weight: 700 !important; }
         #editor table.has-th-col tr td:first-child, #editor table.has-th-col tr th:first-child { background-color: #fcfcfc !important; font-weight: 700 !important; border-right: 2px solid #a0aec0; }
 
-        #editor ul, .pdf-content ul { list-style-type: disc !important; padding-left: 24px; margin: 6px 0; }
-        #editor ol, .pdf-content ol { list-style-type: decimal !important; padding-left: 24px; margin: 6px 0; }
+        #editor ul, .pdf-content ul { padding-left: 24px; margin: 6px 0; }
+        #editor ol, .pdf-content ol { padding-left: 24px; margin: 6px 0; }
         #editor li, .pdf-content li { margin-bottom: 4px; line-height: 1.8 !important; font-family: 'Pretendard', -apple-system, sans-serif !important; font-size: 18px !important; }
+
+        /* 계층별 목록 디자인 시스템 고도화 */
+        #editor ul, .pdf-content ul { list-style-type: disc !important; }
+        #editor ul ul, .pdf-content ul ul { list-style-type: circle !important; }
+        #editor ul ul ul, .pdf-content ul ul ul { list-style-type: square !important; }
+        #editor ul ul ul ul, .pdf-content ul ul ul ul { list-style-type: disc !important; }
+        #editor ul ul ul ul ul, .pdf-content ul ul ul ul ul { list-style-type: circle !important; }
+        #editor ul ul ul ul ul ul, .pdf-content ul ul ul ul ul ul { list-style-type: square !important; }
+
+        #editor ol, .pdf-content ol { list-style-type: decimal !important; }
+        #editor ol ol, .pdf-content ol ol { list-style-type: lower-alpha !important; }
+        #editor ol ol ol, .pdf-content ol ol ol { list-style-type: lower-roman !important; }
+        #editor ol ol ol ol, .pdf-content ol ol ol ol { list-style-type: decimal !important; }
+        #editor ol ol ol ol ol, .pdf-content ol ol ol ol ol { list-style-type: lower-alpha !important; }
+        #editor ol ol ol ol ol ol, .pdf-content ol ol ol ol ol ol { list-style-type: lower-roman !important; }
 
         .footnote-ref { color: #3498db; font-size: 13px; font-weight: 700; vertical-align: super; cursor: pointer; margin-left: 2px; margin-right: 2px; user-select: none; display: inline-block; position: relative; }
         .footnote-ref::after { content: attr(data-note); position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); background: #2d3436; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 14px; font-weight: normal; line-height: 1.5; white-space: nowrap; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; font-family: 'Pretendard', sans-serif; vertical-align: normal; }
         .footnote-ref:hover::after { opacity: 1; transform: translateX(-50%) translateY(-4px); }
 
-        /* ➔ [개선] 획기적으로 다이어트된 슬림 선형 플로팅 바 (두께 최소화) */
         .floating-bar { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: #2d3436; padding: 4px 10px; border-radius: 6px; display: flex; gap: 2px; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 3100; height: 24px; }
         .floating-bar button { background: transparent; color: #dfe6e9; border: none; height: 20px; padding: 0 8px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; position: relative; transition: 0.15s; }
         .floating-bar button:hover { background: #4a5568; color: #fff; }
         
-        /* 선형 바에 맞춰 드롭다운 위치 미세 조정 */
         .color-menu { display: none; position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid #cbd5e0; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-radius: 12px; padding: 10px; gap: 8px; grid-template-columns: repeat(3, 1fr); z-index: 3200; width: 110px; }
         .color-menu-title { grid-column: span 3; font-size: 11px; font-weight: bold; color: #718096; margin-bottom: 2px; text-align: center; }
         .color-dot { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.15s; }
         .color-dot:hover { transform: scale(1.15); }
 
         #slash-menu { display: none; position: absolute; background: white; border: 1px solid #cbd5e0; border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.12); width: 180px; z-index: 4000; overflow: hidden; padding: 4px 0; }
-        .slash-item { padding: 10px 14px; font-size: 14px; color: #2d3748; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
-        .slash-item:hover { background: #f7fafc; color: var(--primary); }
+        .slash-item { padding: 10px 14px; font-size: 14px; color: #2d3748; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.15s; }
+        .slash-item:hover, .slash-item.active { background: #e2e8f0; color: var(--primary); font-weight: bold; }
 
         .side-controls { position: fixed; bottom: 35px; right: 35px; display: flex; flex-direction: column-reverse; gap: 12px; z-index: 2500; align-items: center; }
         .circle-btn { width: 50px; height: 50px; border-radius: 50%; border: none; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.12); cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
@@ -98,10 +110,10 @@
         .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
         .modal-btns button { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
         
-        /* ➔ [개선] 표 전용 버블 메뉴에 삭제 기능 버튼 추가 */
-        #table-bubble-menu { display: none; position: absolute; background: #2d3436; color: white; padding: 6px 12px; border-radius: 8px; font-size: 13px; z-index: 3500; gap: 12px; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        #table-bubble-menu label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
-        .table-del-btn { background: #ff7675; border: none; color: white; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        #table-bubble-menu { display: none; position: absolute; background: #2d3436; color: white; padding: 6px 12px; border-radius: 8px; font-size: 13px; z-index: 4500; gap: 12px; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); pointer-events: auto; user-select: none; }
+        #table-bubble-menu label { display: flex; align-items: center; gap: 4px; cursor: pointer; pointer-events: auto; }
+        #table-bubble-menu input[type="checkbox"] { cursor: pointer; pointer-events: auto; }
+        .table-del-btn { background: #ff7675; border: none; color: white; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; pointer-events: auto; }
         .table-del-btn:hover { background: #e66767; }
 
         #print-area { display: none; background: white; color: #2d3748; font-family: 'Pretendard', sans-serif; line-height: 1.8; }
@@ -164,7 +176,7 @@
         <div class="detail-body">
             <div id="detail-title" contenteditable="true" placeholder="주제 입력..."></div>
             <div id="detail-summary" contenteditable="true" placeholder="간단한 요약이나 키워드를 입력하세요..."></div>
-            <div id="editor" contenteditable="true" placeholder="상세 내용을 자유롭게 작성하세요... (표/리스트는 '/' 입력)"></div>
+            <div id="editor" contenteditable="true" placeholder="상세 내용을 자유롭게 작성하세요... (- 나 1. 입력 후 스페이스바를 누르면 목록 생성!)"></div>
             
             <div id="table-bubble-menu">
                 <label><input type="checkbox" id="toggle-th-row" onchange="toggleTableHeader('row')"> ⬆️ 맨 윗줄 강조</label>
@@ -173,10 +185,10 @@
             </div>
 
             <div id="slash-menu">
-                <div class="slash-item" onclick="triggerSlashAction('table')">📅 표 삽입하기</div>
-                <div class="slash-item" onclick="triggerSlashAction('ul')">• 글머리 기호 목록</div>
-                <div class="slash-item" onclick="triggerSlashAction('ol')">1. 번호 매기기 목록</div>
-                <div class="slash-item" onclick="triggerSlashAction('hr')">➖ 구분선 넣기</div>
+                <div class="slash-item" data-action="table" onclick="triggerSlashAction('table')">📅 표 삽입하기</div>
+                <div class="slash-item" data-action="ul" onclick="triggerSlashAction('ul')">• 글머리 기호 목록</div>
+                <div class="slash-item" data-action="ol" onclick="triggerSlashAction('ol')">1. 번호 매기기 목록</div>
+                <div class="slash-item" data-action="hr" onclick="triggerSlashAction('hr')">➖ 구분선 넣기</div>
             </div>
         </div>
         
@@ -231,6 +243,7 @@
     let isPanning = false, startPoint = { x: 0, y: 0 };
     let activeTable = null; 
     let savedSlashRange = null;
+    let slashIdx = -1;
 
     renderDocList();
 
@@ -258,9 +271,13 @@
     document.addEventListener('click', (e) => {
         document.getElementById('text-color-menu').style.display = 'none';
         if (!e.target.closest('#slash-menu')) {
-            document.getElementById('slash-menu').style.display = 'none';
+            hideSlashMenu();
         }
         
+        if (e.target.closest('#table-bubble-menu')) {
+            return;
+        }
+
         let node = e.target;
         let foundTable = false;
         while(node && node !== editorField) {
@@ -301,7 +318,6 @@
         saveCurrentNodeData();
     }
 
-    /* ➔ [개선] 표 전체 소거 버블 연동 액션 */
     function deleteActiveTable() {
         if (!activeTable) return;
         if (confirm("이 표를 전체 삭제하시겠습니까?")) {
@@ -340,8 +356,15 @@
         saveCurrentNodeData();
     }
 
-    function triggerSlashAction(action) {
+    function hideSlashMenu() {
         document.getElementById('slash-menu').style.display = 'none';
+        slashIdx = -1;
+        const items = document.querySelectorAll('.slash-item');
+        items.forEach(item => item.classList.remove('active'));
+    }
+
+    function triggerSlashAction(action) {
+        hideSlashMenu();
         if (!savedSlashRange) return;
 
         const selection = window.getSelection();
@@ -373,13 +396,31 @@
         savedSlashRange = null;
     }
 
-    /* ➔ [개선] Tab 이동 및 Backspace/Delete 주석 스마트 킬러 감지 내장 리스너 */
     editorField.addEventListener('keydown', function(e) {
         const selection = window.getSelection();
         if (!selection.rangeCount) return;
 
-        // 1. 표 내부 정밀 탭 키 핸들러 보정
-        if (e.key === 'Tab') {
+        const slashMenu = document.getElementById('slash-menu');
+        const isSlashMenuOpen = (slashMenu.style.display === 'block');
+
+        if (isSlashMenuOpen && e.key === 'Tab') {
+            e.preventDefault();
+            const items = document.querySelectorAll('.slash-item');
+            if (items.length === 0) return;
+
+            items.forEach(item => item.classList.remove('active'));
+            
+            if (e.shiftKey) {
+                slashIdx = (slashIdx <= 0) ? items.length - 1 : slashIdx - 1;
+            } else {
+                slashIdx = (slashIdx >= items.length - 1) ? 0 : slashIdx + 1;
+            }
+            
+            items[slashIdx].classList.add('active');
+            return;
+        }
+
+        if (!isSlashMenuOpen && e.key === 'Tab') {
             let anchor = selection.anchorNode;
             let cell = null;
             let temp = anchor;
@@ -401,13 +442,12 @@
                 const nextCell = allCells[nextIndex];
                 const newRange = document.createRange();
                 newRange.selectNodeContents(nextCell);
-                newRange.collapse(false); // 칸의 가장 뒤쪽 커서 대기 구조
+                newRange.collapse(false);
                 selection.removeAllRanges();
                 selection.addRange(newRange);
                 return;
             }
 
-            // 리스트 들여쓰기 탭 로직 유지
             let node = anchor;
             let insideList = false;
             while (node && node !== this) {
@@ -422,10 +462,8 @@
             }
         }
 
-        // 2. 주석 앞/뒤 정밀 삭제 스나이퍼 추가
         if (e.key === 'Backspace') {
             const range = selection.getRangeAt(0);
-            // 커서 바로 왼쪽에 주석 엘리먼트가 있는지 검사
             if (range.startOffset === 0) {
                 let prevSibling = range.startContainer.previousSibling;
                 if (prevSibling && prevSibling.classList && prevSibling.classList.contains('footnote-ref')) {
@@ -436,9 +474,7 @@
                     return;
                 }
             } else if (range.startContainer.nodeType === Node.TEXT_NODE) {
-                // 노출 텍스트 끝단 보정용
                 let text = range.startContainer.nodeValue;
-                // 공백 문자 유니코드 우회 체킹 대응
                 if (range.startOffset === 1 && (text.charCodeAt(0) === 160 || text === ' ')) {
                     let prevSibling = range.startContainer.previousSibling;
                     if (prevSibling && prevSibling.classList && prevSibling.classList.contains('footnote-ref')) {
@@ -455,7 +491,6 @@
 
         if (e.key === 'Delete') {
             const range = selection.getRangeAt(0);
-            // 커서 바로 오른쪽에 주석 엘리먼트가 있는지 검사
             if (range.startContainer.nodeType === Node.TEXT_NODE) {
                 let text = range.startContainer.nodeValue;
                 if (range.startOffset === text.length) {
@@ -481,7 +516,15 @@
         }
         
         if (e.key === 'Enter') {
-            document.getElementById('slash-menu').style.display = 'none';
+            if (isSlashMenuOpen && slashIdx !== -1) {
+                e.preventDefault();
+                const items = document.querySelectorAll('.slash-item');
+                const action = items[slashIdx].getAttribute('data-action');
+                triggerSlashAction(action);
+                return;
+            }
+
+            hideSlashMenu();
             if (selection.rangeCount > 0) {
                 let node = selection.anchorNode;
                 let liNode = null;
@@ -507,6 +550,7 @@
                     return;
                 }
                 
+                /* ➔ [복원/개선] 엔터 엔터 칠 때 빈 리스트 아이템 완전 삭제 및 깔끔한 줄바꿈 탈출 */
                 if (liNode && (liNode.innerText.trim() === "" || liNode.innerHTML === "<br>")) {
                     e.preventDefault();
                     const parentList = liNode.parentNode;
@@ -546,6 +590,8 @@
     });
 
     editorField.addEventListener('keyup', function(e) {
+        if (['Tab', 'Enter', 'Shift'].includes(e.key)) return;
+
         if (e.key === '/') {
             const selection = window.getSelection();
             if (selection.rangeCount > 0) {
@@ -559,14 +605,16 @@
                 slashMenu.style.display = 'block';
                 slashMenu.style.top = (rect.top - bodyRect.top + document.querySelector('.detail-body').scrollTop + 25) + 'px';
                 slashMenu.style.left = (rect.left - bodyRect.left) + 'px';
+                slashIdx = -1;
             }
         } else if (e.key === 'Escape' || e.key === 'Backspace') {
             if (editorField.innerText.indexOf('/') === -1 || e.key === 'Escape') {
-                document.getElementById('slash-menu').style.display = 'none';
+                hideSlashMenu();
             }
         }
     });
 
+    /* ➔ [복원/개선] 스페이스바 감지 - 마크다운 스타일 리스트 컴파일 메커니즘 */
     editorField.addEventListener('beforeinput', function(e) {
         if (e.data === ' ') {
             const selection = window.getSelection();
@@ -583,13 +631,36 @@
                 let nodeCheck = anchorNode;
                 let insideRestrict = false;
                 while (nodeCheck && nodeCheck !== this) {
-                    if (['TABLE', 'H1', 'H2', 'H3', 'H4'].includes(nodeCheck.nodeName)) { insideRestrict = true; break; }
+                    if (['TABLE', 'H1', 'H2', 'H3', 'H4', 'LI'].includes(nodeCheck.nodeName)) { insideRestrict = true; break; }
                     nodeCheck = nodeCheck.parentNode;
                 }
                 if (insideRestrict) return;
 
                 const trimmed = textBeforeCursor.trim();
 
+                // 1. 글머리 기호 단축키 (- + Space)
+                if (trimmed === '-') {
+                    e.preventDefault();
+                    range.setStart(anchorNode, offset - textBeforeCursor.length);
+                    range.setEnd(anchorNode, offset);
+                    range.deleteContents();
+                    document.execCommand('insertUnorderedList', false, null);
+                    saveCurrentNodeData();
+                    return;
+                }
+
+                // 2. 번호 매기기 목록 단축키 (숫자. + Space 예: 1. 또는 2.)
+                if (/^\d+\.$/.test(trimmed)) {
+                    e.preventDefault();
+                    range.setStart(anchorNode, offset - textBeforeCursor.length);
+                    range.setEnd(anchorNode, offset);
+                    range.deleteContents();
+                    document.execCommand('insertOrderedList', false, null);
+                    saveCurrentNodeData();
+                    return;
+                }
+
+                // 3. 미주/각주 컴파일러 ([*설명] + Space)
                 if (trimmed.startsWith('[*') && trimmed.endsWith(']')) {
                     e.preventDefault();
                     const noteContent = trimmed.substring(2, trimmed.length - 1).trim();
@@ -619,6 +690,7 @@
                     }
                 }
 
+                // 4. 제목 스타일 단축키 (# ~ #### + Space)
                 if (/^#{1,4}$/.test(trimmed)) {
                     if (textBeforeCursor.indexOf(trimmed) === 0) {
                         e.preventDefault();
@@ -643,7 +715,6 @@
         }
     });
 
-    /* ➔ [개선] 강제 첫 줄 파란색 스타일 초기값에서 완전 제외한 베이직 빌더 고도화 */
     function generateDynamicTable(rows, cols) {
         const table = document.createElement('table');
         const tbody = document.createElement('tbody');
