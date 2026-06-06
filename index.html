@@ -50,8 +50,9 @@
         #editor h4, .pdf-content h4 { font-size: 18px; margin: 14px 0 4px; font-weight: 700; color: #444; }
         #editor hr, .pdf-content hr { border: 0; border-top: 1px solid #cbd5e0; margin: 16px 0; display: block; height: 1px; }
 
-        #editor table, .pdf-content table { border-collapse: collapse; width: 100%; margin: 15px 0; table-layout: fixed; position: relative; }
-        #editor th, #editor td, .pdf-content th, .pdf-content td { border: 1px solid #cbd5e0; padding: 10px 12px; min-height: 40px; text-align: left; word-break: break-all; font-weight: normal; background-color: transparent; }
+        /* 표 내부 글자 크기 문제 해결을 위한 오버라이딩 */
+        #editor table, .pdf-content table { border-collapse: collapse; width: 100%; margin: 15px 0; table-layout: fixed; position: relative; font-size: 15px !important; }
+        #editor th, #editor td, .pdf-content th, .pdf-content td { border: 1px solid #cbd5e0; padding: 10px 12px; min-height: 40px; text-align: left; word-break: break-all; font-weight: normal; background-color: transparent; font-size: 15px !important; line-height: 1.5 !important; }
         
         #editor table.has-th-row tr:first-child td, #editor table.has-th-row tr:first-child th { background-color: #f7fafc !important; font-weight: 700 !important; }
         #editor table.has-th-col tr td:first-child, #editor table.has-th-col tr th:first-child { background-color: #fcfcfc !important; font-weight: 700 !important; border-right: 2px solid #a0aec0; }
@@ -60,23 +61,17 @@
         #editor ol, .pdf-content ol { padding-left: 24px; margin: 6px 0; }
         #editor li, .pdf-content li { margin-bottom: 4px; line-height: 1.8 !important; font-family: 'Pretendard', -apple-system, sans-serif !important; font-size: 18px !important; }
 
-        /* 계층별 목록 디자인 시스템 고도화 */
         #editor ul, .pdf-content ul { list-style-type: disc !important; }
         #editor ul ul, .pdf-content ul ul { list-style-type: circle !important; }
         #editor ul ul ul, .pdf-content ul ul ul { list-style-type: square !important; }
         #editor ul ul ul ul, .pdf-content ul ul ul ul { list-style-type: disc !important; }
-        #editor ul ul ul ul ul, .pdf-content ul ul ul ul ul { list-style-type: circle !important; }
-        #editor ul ul ul ul ul ul, .pdf-content ul ul ul ul ul ul { list-style-type: square !important; }
 
         #editor ol, .pdf-content ol { list-style-type: decimal !important; }
         #editor ol ol, .pdf-content ol ol { list-style-type: lower-alpha !important; }
         #editor ol ol ol, .pdf-content ol ol ol { list-style-type: lower-roman !important; }
-        #editor ol ol ol ol, .pdf-content ol ol ol ol { list-style-type: decimal !important; }
-        #editor ol ol ol ol ol, .pdf-content ol ol ol ol ol { list-style-type: lower-alpha !important; }
-        #editor ol ol ol ol ol ol, .pdf-content ol ol ol ol ol ol { list-style-type: lower-roman !important; }
 
         .footnote-ref { color: #3498db; font-size: 13px; font-weight: 700; vertical-align: super; cursor: pointer; margin-left: 2px; margin-right: 2px; user-select: none; display: inline-block; position: relative; }
-        .footnote-ref::after { content: attr(data-note); position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); background: #2d3436; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 14px; font-weight: normal; line-height: 1.5; white-space: nowrap; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; font-family: 'Pretendard', sans-serif; vertical-align: normal; }
+        .footnote-ref::after { content: attr(data-note); position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); background: #2d3436; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 14px; font-weight: normal; line-height: 1.5; white-space: nowrap; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; font-family: 'Pretendard', sans-serif; }
         .footnote-ref:hover::after { opacity: 1; transform: translateX(-50%) translateY(-4px); }
 
         .floating-bar { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: #2d3436; padding: 4px 10px; border-radius: 6px; display: flex; gap: 2px; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 3100; height: 24px; }
@@ -364,36 +359,39 @@
     }
 
     function triggerSlashAction(action) {
-        hideSlashMenu();
         if (!savedSlashRange) return;
 
         const selection = window.getSelection();
         selection.removeAllRanges();
         selection.addRange(savedSlashRange);
         
-        document.execCommand('delete', false, null);
-
         if (action === 'table') {
+            // 표 모달을 열기 전에 슬래시 메뉴를 먼저 숨겨 타겟 포커스 유지
+            document.getElementById('slash-menu').style.display = 'none';
             openTableModal();
-        } else if (action === 'ul') {
-            execCmd('insertUnorderedList');
-        } else if (action === 'ol') {
-            execCmd('insertOrderedList');
-        } else if (action === 'hr') {
-            const hr = document.createElement('hr');
-            const nextDiv = document.createElement('div');
-            nextDiv.innerHTML = "<br>";
-            savedSlashRange.insertNode(nextDiv);
-            savedSlashRange.insertNode(hr);
-            
-            const newRange = document.createRange();
-            newRange.setStart(nextDiv, 0);
-            newRange.collapse(true);
-            selection.removeAllRanges();
-            selection.addRange(newRange);
-            saveCurrentNodeData();
+        } else {
+            hideSlashMenu();
+            document.execCommand('delete', false, null);
+            if (action === 'ul') {
+                execCmd('insertUnorderedList');
+            } else if (action === 'ol') {
+                execCmd('insertOrderedList');
+            } else if (action === 'hr') {
+                const hr = document.createElement('hr');
+                const nextDiv = document.createElement('div');
+                nextDiv.innerHTML = "<br>";
+                savedSlashRange.insertNode(nextDiv);
+                savedSlashRange.insertNode(hr);
+                
+                const newRange = document.createRange();
+                newRange.setStart(nextDiv, 0);
+                newRange.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(newRange);
+                saveCurrentNodeData();
+            }
+            savedSlashRange = null;
         }
-        savedSlashRange = null;
     }
 
     editorField.addEventListener('keydown', function(e) {
@@ -550,7 +548,6 @@
                     return;
                 }
                 
-                /* ➔ [복원/개선] 엔터 엔터 칠 때 빈 리스트 아이템 완전 삭제 및 깔끔한 줄바꿈 탈출 */
                 if (liNode && (liNode.innerText.trim() === "" || liNode.innerHTML === "<br>")) {
                     e.preventDefault();
                     const parentList = liNode.parentNode;
@@ -614,7 +611,6 @@
         }
     });
 
-    /* ➔ [복원/개선] 스페이스바 감지 - 마크다운 스타일 리스트 컴파일 메커니즘 */
     editorField.addEventListener('beforeinput', function(e) {
         if (e.data === ' ') {
             const selection = window.getSelection();
@@ -638,7 +634,6 @@
 
                 const trimmed = textBeforeCursor.trim();
 
-                // 1. 글머리 기호 단축키 (- + Space)
                 if (trimmed === '-') {
                     e.preventDefault();
                     range.setStart(anchorNode, offset - textBeforeCursor.length);
@@ -649,7 +644,6 @@
                     return;
                 }
 
-                // 2. 번호 매기기 목록 단축키 (숫자. + Space 예: 1. 또는 2.)
                 if (/^\d+\.$/.test(trimmed)) {
                     e.preventDefault();
                     range.setStart(anchorNode, offset - textBeforeCursor.length);
@@ -660,7 +654,6 @@
                     return;
                 }
 
-                // 3. 미주/각주 컴파일러 ([*설명] + Space)
                 if (trimmed.startsWith('[*') && trimmed.endsWith(']')) {
                     e.preventDefault();
                     const noteContent = trimmed.substring(2, trimmed.length - 1).trim();
@@ -690,7 +683,6 @@
                     }
                 }
 
-                // 4. 제목 스타일 단축키 (# ~ #### + Space)
                 if (/^#{1,4}$/.test(trimmed)) {
                     if (textBeforeCursor.indexOf(trimmed) === 0) {
                         e.preventDefault();
@@ -715,6 +707,7 @@
         }
     });
 
+    /* ➔ [오류 해결] 슬래시 친 정확한 커서 위치 복원 및 표 삽입 메커니즘 고도화 */
     function generateDynamicTable(rows, cols) {
         const table = document.createElement('table');
         const tbody = document.createElement('tbody');
@@ -733,24 +726,44 @@
         const nextDiv = document.createElement('div');
         nextDiv.innerHTML = "<br>";
 
+        hideSlashMenu();
         editorField.focus();
         const selection = window.getSelection();
-        if (selection.rangeCount > 0) {
-            const range = selection.getRangeAt(0);
-            range.deleteContents();
-            range.insertNode(nextDiv);
-            range.insertNode(table);
 
-            const firstCell = table.querySelector('td');
+        // 임시 저장된 슬래시 좌표(Range)가 있다면 복원하여 정확한 자리에 매핑
+        if (savedSlashRange) {
+            selection.removeAllRanges();
+            selection.addRange(savedSlashRange);
+            document.execCommand('delete', false, null); // 기존에 잔포된 슬래시 문자(/) 파괴
+            
+            const currentRange = selection.getRangeAt(0);
+            currentRange.insertNode(nextDiv);
+            currentRange.insertNode(table);
+            
+            savedSlashRange = null;
+        } else {
+            // 예외 방어 로직
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                range.deleteContents();
+                range.insertNode(nextDiv);
+                range.insertNode(table);
+            } else {
+                editorField.appendChild(table);
+                editorField.appendChild(nextDiv);
+            }
+        }
+
+        // 표 삽입 후 첫 번째 칸으로 커서 토글 이동
+        const firstCell = table.querySelector('td');
+        if (firstCell) {
             const newRange = document.createRange();
             newRange.setStart(firstCell, 0);
             newRange.collapse(true);
             selection.removeAllRanges();
             selection.addRange(newRange);
-        } else {
-            editorField.appendChild(table);
-            editorField.appendChild(nextDiv);
         }
+        
         saveCurrentNodeData();
     }
 
