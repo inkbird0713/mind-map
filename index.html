@@ -36,7 +36,7 @@
 
         #detail-view { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: white; z-index: 3000; flex-direction: column; }
         .detail-header { padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f0f0; }
-        .detail-body { flex: 1; overflow-y: auto; padding: 40px 10% 180px; }
+        .detail-body { flex: 1; overflow-y: auto; padding: 40px 10% 180px; position: relative; }
         
         #detail-title, #detail-summary, #editor { outline: none; width: 100%; }
         #detail-title { font-size: 32px; font-weight: 800; color: #2d3436; margin-bottom: 10px; }
@@ -44,72 +44,41 @@
         
         #editor { min-height: 350px; line-height: 1.8; font-size: 18px; color: #2d3748; }
 
-        /* --- 에디터 내부 서식 가이드 구성 --- */
         #editor h1, .pdf-content h1 { font-size: 30px; margin: 20px 0 10px; font-weight: 800; color: #111; }
         #editor h2, .pdf-content h2 { font-size: 24px; margin: 18px 0 8px; font-weight: 700; color: #222; }
         #editor h3, .pdf-content h3 { font-size: 20px; margin: 16px 0 6px; font-weight: 700; color: #333; }
         #editor h4, .pdf-content h4 { font-size: 18px; margin: 14px 0 4px; font-weight: 700; color: #444; }
         #editor hr, .pdf-content hr { border: 0; border-top: 1px solid #cbd5e0; margin: 16px 0; display: block; height: 1px; }
 
-        #editor table, .pdf-content table { border-collapse: collapse; width: 100%; margin: 15px 0; table-layout: fixed; }
-        #editor th, #editor td, .pdf-content th, .pdf-content td { border: 1px solid #cbd5e0; padding: 10px 12px; min-height: 40px; text-align: left; word-break: break-all; }
-        #editor th, .pdf-content th { background-color: #f7fafc; font-weight: 700; }
+        #editor table, .pdf-content table { border-collapse: collapse; width: 100%; margin: 15px 0; table-layout: fixed; position: relative; }
+        #editor th, #editor td, .pdf-content th, .pdf-content td { border: 1px solid #cbd5e0; padding: 10px 12px; min-height: 40px; text-align: left; word-break: break-all; font-weight: normal; background-color: transparent; }
+        
+        #editor table.has-th-row tr:first-child td, #editor table.has-th-row tr:first-child th { background-color: #f7fafc !important; font-weight: 700 !important; }
+        #editor table.has-th-col tr td:first-child, #editor table.has-th-col tr th:first-child { background-color: #fcfcfc !important; font-weight: 700 !important; border-right: 2px solid #a0aec0; }
 
         #editor ul, .pdf-content ul { list-style-type: disc !important; padding-left: 24px; margin: 6px 0; }
         #editor ol, .pdf-content ol { list-style-type: decimal !important; padding-left: 24px; margin: 6px 0; }
         #editor li, .pdf-content li { margin-bottom: 4px; line-height: 1.8 !important; font-family: 'Pretendard', -apple-system, sans-serif !important; font-size: 18px !important; }
 
-        /* --- 나무위키 스타일 인라인 주석 핵심 CSS --- */
-        .footnote-ref {
-            color: #3498db;
-            font-size: 13px;
-            font-weight: 700;
-            vertical-align: super;
-            cursor: pointer;
-            margin-left: 2px;
-            margin-right: 2px;
-            user-select: none;
-            display: inline-block;
-            position: relative;
-        }
-        
-        /* 주석 호버/터치 팝업 말풍선 디자인 */
-        .footnote-ref::after {
-            content: attr(data-note);
-            position: absolute;
-            bottom: 130%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #2d3436;
-            color: #fff;
-            padding: 8px 14px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: normal;
-            line-height: 1.5;
-            white-space: nowrap;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            z-index: 9999;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-            font-family: 'Pretendard', sans-serif;
-            vertical-align: normal;
-        }
+        .footnote-ref { color: #3498db; font-size: 13px; font-weight: 700; vertical-align: super; cursor: pointer; margin-left: 2px; margin-right: 2px; user-select: none; display: inline-block; position: relative; }
+        .footnote-ref::after { content: attr(data-note); position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); background: #2d3436; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 14px; font-weight: normal; line-height: 1.5; white-space: nowrap; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; font-family: 'Pretendard', sans-serif; vertical-align: normal; }
+        .footnote-ref:hover::after { opacity: 1; transform: translateX(-50%) translateY(-4px); }
 
-        .footnote-ref:hover::after {
-            opacity: 1;
-            transform: translateX(-50%) translateY(-4px);
-        }
-
-        /* 플로팅 바 */
-        .floating-bar { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: #2d3436; padding: 8px 15px; border-radius: 12px; display: flex; gap: 8px; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 3100; flex-wrap: wrap; max-width: 90vw; justify-content: center; }
-        .floating-bar button { background: transparent; color: #dfe6e9; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; position: relative; display: flex; align-items: center; justify-content: center; }
-        .floating-bar button:hover { background: #636e72; color: #fff; }
+        /* --- 획기적으로 다이어트된 컴팩트 슬림 플로팅 바 --- */
+        .floating-bar { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: #2d3436; padding: 6px 12px; border-radius: 30px; display: flex; gap: 4px; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.25); z-index: 3100; }
+        .floating-bar button { background: transparent; color: #dfe6e9; border: none; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; position: relative; transition: 0.2s; }
+        .floating-bar button:hover { background: #4a5568; color: #fff; }
         
-        .color-menu { display: none; position: absolute; bottom: 45px; left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid #ccc; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 8px; padding: 6px; gap: 6px; grid-template-columns: repeat(3, 1fr); z-index: 3200; }
-        .color-dot { width: 24px; height: 24px; border-radius: 50%; border: 1px solid #dddddd; cursor: pointer; }
+        /* 콤보형 통합 컬러 가변 서브메뉴 */
+        .color-menu { display: none; position: absolute; bottom: 48px; left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid #cbd5e0; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-radius: 12px; padding: 10px; gap: 8px; grid-template-columns: repeat(3, 1fr); z-index: 3200; width: 110px; }
+        .color-menu-title { grid-column: span 3; font-size: 11px; font-weight: bold; color: #718096; margin-bottom: 2px; text-align: center; }
+        .color-dot { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.15s; }
         .color-dot:hover { transform: scale(1.15); }
+
+        /* --- Notion 스타일 슬래시(/) 커맨드 드롭다운 팝업 메뉴 --- */
+        #slash-menu { display: none; position: absolute; background: white; border: 1px solid #cbd5e0; border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.12); width: 180px; z-index: 4000; overflow: hidden; padding: 4px 0; }
+        .slash-item { padding: 10px 14px; font-size: 14px; color: #2d3748; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .slash-item:hover { background: #f7fafc; color: var(--primary); }
 
         .side-controls { position: fixed; bottom: 35px; right: 35px; display: flex; flex-direction: column-reverse; gap: 12px; z-index: 2500; align-items: center; }
         .circle-btn { width: 50px; height: 50px; border-radius: 50%; border: none; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.12); cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
@@ -119,31 +88,36 @@
         #menu-toggle-btn { z-index: 2501; }
         .side-controls.open #menu-toggle-btn { transform: rotate(45deg); background: #e2e8f0; }
 
-        /* --- 프리미엄 보고서 인쇄 스타일 --- */
-        #print-area { display: none; background: white; color: #2d3748; font-family: 'Pretendard', sans-serif; line-height: 1.8; }
+        .custom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 5000; justify-content: center; align-items: center; }
+        .modal-box { background: white; padding: 30px; border-radius: 16px; width: 340px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .modal-title { font-size: 20px; font-weight: 800; margin-bottom: 15px; color: #2d3436; }
+        .modal-guide { font-size: 13px; color: #7f8c8d; background: #f8fafb; padding: 10px; border-radius: 8px; margin-bottom: 15px; line-height: 1.4; }
+        .input-group { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .input-group label { font-size: 15px; font-weight: 600; color: #4a5568; }
+        .input-group input { width: 80px; padding: 8px; border: 1px solid #cbd5e0; border-radius: 6px; text-align: center; font-size: 16px; }
+        .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-btns button { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
         
+        #table-bubble-menu { display: none; position: absolute; background: #2d3436; color: white; padding: 6px 12px; border-radius: 8px; font-size: 13px; z-index: 3500; gap: 10px; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        #table-bubble-menu label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+
+        #print-area { display: none; background: white; color: #2d3748; font-family: 'Pretendard', sans-serif; line-height: 1.8; }
         .pdf-cover { height: 100vh; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; padding: 80px; box-sizing: border-box; page-break-after: always; position: relative; background: #ffffff; }
         .pdf-cover::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 15px; background: linear-gradient(90deg, var(--primary), #3182ce); }
         .pdf-cover .canvas-logo { font-size: 14px; color: var(--primary); font-weight: 800; letter-spacing: 6px; text-transform: uppercase; border-bottom: 2px solid var(--primary); padding-bottom: 5px; }
-        
         .cover-mid { margin-top: auto; margin-bottom: auto; width: 100%; display: flex; flex-direction: column; gap: 25px; }
         .pdf-cover h1 { font-size: 52px; font-weight: 800; margin: 0; color: #1a202c; line-height: 1.25; word-break: keep-all; letter-spacing: -1px; }
         .pdf-cover .cover-decor { width: 120px; height: 6px; background: var(--primary); border-radius: 3px; }
         .pdf-cover .date { font-size: 16px; color: #4a5568; font-weight: 600; letter-spacing: 0.5px; border-left: 3px solid var(--primary); padding-left: 12px; }
-
         .cover-bottom { font-size: 12px; color: #a0aec0; letter-spacing: 1px; width: 100%; margin-top: auto; }
-
         .pdf-body { padding: 40px 80px; box-sizing: border-box; }
         .pdf-section { margin-bottom: 35px; page-break-inside: auto; }
-        
         .pdf-h1 { font-size: 28px; font-weight: 800; color: #1a202c; border-bottom: 3px solid #1a202c; padding-bottom: 12px; margin-top: 10px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: -0.5px; page-break-after: avoid; }
         .pdf-h2 { font-size: 21px; font-weight: 700; color: #2b6cb0; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin: 35px 0 20px; page-break-after: avoid; }
         .pdf-h3 { font-size: 17px; font-weight: 700; color: #2d3748; margin: 25px 0 12px; display: flex; align-items: center; page-break-after: avoid; }
         .pdf-h3::before { content: ""; width: 6px; height: 6px; background: #4a5568; border-radius: 50%; margin-right: 12px; display: inline-block; }
-        
         .level-indent { border-left: 2px solid #edf2f7; padding-left: 24px; margin-left: 8px; margin-top: 15px; margin-bottom: 15px; }
         .pdf-summary-box { background: #f7fafc; border-left: 4px solid var(--primary); padding: 18px 24px; margin: 18px 0; border-radius: 4px; font-style: normal; color: #4a5568; font-size: 14.5px; page-break-inside: avoid; }
-        
         .pdf-content { font-size: 15px; color: #2d3748; text-align: justify; }
 
         @media print {
@@ -151,10 +125,6 @@
             #print-area, #print-area * { visibility: visible; }
             #print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
             .pdf-cover { height: 100vh !important; max-height: 100vh !important; page-break-after: always !important; box-sizing: border-box !important; overflow: hidden !important; }
-            .pdf-cover::before { -webkit-print-color-adjust: exact; background: linear-gradient(90deg, var(--primary), #3182ce) !important; }
-            .pdf-cover .cover-decor { -webkit-print-color-adjust: exact; background-color: var(--primary) !important; }
-            .pdf-summary-box { -webkit-print-color-adjust: exact; background-color: #f7fafc !important; border-left-color: var(--primary) !important; }
-            .pdf-h2 { -webkit-print-color-adjust: exact; border-bottom-color: #e2e8f0 !important; }
         }
     </style>
 </head>
@@ -191,47 +161,67 @@
         <div class="detail-body">
             <div id="detail-title" contenteditable="true" placeholder="주제 입력..."></div>
             <div id="detail-summary" contenteditable="true" placeholder="간단한 요약이나 키워드를 입력하세요..."></div>
-            <div id="editor" contenteditable="true" placeholder="상세 내용을 자유롭게 작성하세요..."></div>
+            <div id="editor" contenteditable="true" placeholder="상세 내용을 자유롭게 작성하세요... (표/리스트는 '/' 입력)"></div>
+            
+            <div id="table-bubble-menu">
+                <label><input type="checkbox" id="toggle-th-row" onchange="toggleTableHeader('row')"> ⬆️ 맨 윗줄(행) 강조</label>
+                <label><input type="checkbox" id="toggle-th-col" onchange="toggleTableHeader('col')"> ⬅️ 맨 왼쪽(열) 강조</label>
+            </div>
+
+            <!-- Notion 스타일 슬래시 커맨드 UI 메뉴 -->
+            <div id="slash-menu">
+                <div class="slash-item" onclick="triggerSlashAction('table')">📅 표 삽입하기</div>
+                <div class="slash-item" onclick="triggerSlashAction('ul')">• 글머리 기호 목록</div>
+                <div class="slash-item" onclick="triggerSlashAction('ol')">1. 번호 매기기 목록</div>
+                <div class="slash-item" onclick="triggerSlashAction('hr')">➖ 구분선 넣기</div>
+            </div>
         </div>
         
+        <!-- 극도로 슬림해진 컴팩트 플로팅 툴바 -->
         <div class="floating-bar" id="floating-bar">
             <button onclick="execCmd('bold')"><b>B</b></button>
             <button onclick="execCmd('italic')"><i>I</i></button>
             <button onclick="execCmd('underline')"><u>U</u></button>
-            <div style="width:1px; height:18px; background:#636e72; margin:0 4px;"></div>
+            <div style="width:1px; height:16px; background:#4a5568; margin:0 4px;"></div>
             
-            <button onclick="toggleColorMenu('text-color-menu')" id="text-color-btn">🎨 글자색
+            <!-- 통합형 컬러 드롭다운 기둥 -->
+            <button onclick="toggleColorMenu('text-color-menu')" id="text-color-btn">🎨
                 <div class="color-menu" id="text-color-menu">
+                    <div class="color-menu-title">글자 색상</div>
                     <div class="color-dot" style="background:#000000;" onclick="execColor('foreColor', '#000000')"></div>
                     <div class="color-dot" style="background:#e74c3c;" onclick="execColor('foreColor', '#e74c3c')"></div>
                     <div class="color-dot" style="background:#3498db;" onclick="execColor('foreColor', '#3498db')"></div>
-                    <div class="color-dot" style="background:#2ecc71;" onclick="execColor('foreColor', '#2ecc71')"></div>
-                    <div class="color-dot" style="background:#f1c40f;" onclick="execColor('foreColor', '#f1c40f')"></div>
-                    <div class="color-dot" style="background:#9b59b6;" onclick="execColor('foreColor', '#9b59b6')"></div>
-                </div>
-            </button>
-
-            <button onclick="toggleColorMenu('bg-color-menu')" id="bg-color-btn">✏️ 형광펜
-                <div class="color-menu" id="bg-color-menu">
-                    <div class="color-dot" style="background:#ffffff; border:1px dashed #aaa;" onclick="execColor('hiliteColor', '#ffffff')"></div>
+                    <div class="color-menu-title" style="margin-top:4px;">형광펜</div>
+                    <div class="color-dot" style="background:#ffffff; border:1.5px dashed #bbb;" onclick="execColor('hiliteColor', '#ffffff')"></div>
                     <div class="color-dot" style="background:#ffca28;" onclick="execColor('hiliteColor', '#ffca28')"></div>
-                    <div class="color-dot" style="background:#81c784;" onclick="execColor('hiliteColor', '#81c784')"></div>
                     <div class="color-dot" style="background:#64b5f6;" onclick="execColor('hiliteColor', '#64b5f6')"></div>
-                    <div class="color-dot" style="background:#ff8a80;" onclick="execColor('hiliteColor', '#ff8a80')"></div>
-                    <div class="color-dot" style="background:#ba68c8;" onclick="execColor('hiliteColor', '#ba68c8')"></div>
                 </div>
             </button>
-            
-            <div style="width:1px; height:18px; background:#636e72; margin:0 4px;"></div>
-            <button onclick="execCmd('insertUnorderedList')">•</button>
-            <button onclick="execCmd('insertOrderedList')">1.</button>
-            <button onclick="execCmd('outdent')">◀</button>
-            <button onclick="execCmd('indent')">▶</button>
-            <div style="width:1px; height:18px; background:#636e72; margin:0 4px;"></div>
-            
-            <button onclick="insertCustomTable()">📅 표 생성</button>
         </div>
     </div>
+
+    <div class="custom-modal" id="table-modal">
+        <div class="modal-box">
+            <div class="modal-title">새 표 만들기</div>
+            <div class="modal-guide">
+                💡 <b>행(가로줄):</b> 위아래로 쌓이는 줄 개수<br>
+                💡 <b>열(세로칸):</b> 좌우로 나뉘는 칸 개수
+            </div>
+            <div class="input-group">
+                <label>행 개수 (가로줄)</label>
+                <input type="number" id="modal-rows" value="3" min="1" max="20">
+            </div>
+            <div class="input-group">
+                <label>열 개수 (세로칸)</label>
+                <input type="number" id="modal-cols" value="3" min="1" max="20">
+            </div>
+            <div class="modal-btns">
+                <button onclick="closeTableModal()" style="background:#e2e8f0; color:#4a5568;">취소</button>
+                <button onclick="submitTableModal()" style="background:var(--primary); color:white;">표 삽입</button>
+            </div>
+        </div>
+    </div>
+
     <div id="print-area"></div>
 
 <script>
@@ -240,6 +230,8 @@
     let docs = JSON.parse(localStorage.getItem('thought_canvas_premium_v5') || '[]');
     let transform = { x: 0, y: 0, scale: 1 };
     let isPanning = false, startPoint = { x: 0, y: 0 };
+    let activeTable = null; 
+    let savedSlashRange = null; // 슬래시 위치 추적 범위 임시저장용
 
     renderDocList();
 
@@ -260,53 +252,158 @@
 
     function toggleColorMenu(menuId) {
         event.stopPropagation();
-        const menus = ['text-color-menu', 'bg-color-menu'];
-        menus.forEach(id => {
-            const m = document.getElementById(id);
-            if(id === menuId) {
-                m.style.display = (m.style.display === 'grid') ? 'none' : 'grid';
-            } else {
-                m.style.display = 'none';
-            }
-        });
+        const m = document.getElementById(menuId);
+        m.style.display = (m.style.display === 'grid') ? 'none' : 'grid';
     }
 
-    document.addEventListener('click', () => {
+    document.addEventListener('click', (e) => {
         document.getElementById('text-color-menu').style.display = 'none';
-        document.getElementById('bg-color-menu').style.display = 'none';
+        if (!e.target.closest('#slash-menu')) {
+            document.getElementById('slash-menu').style.display = 'none';
+        }
+        
+        let node = e.target;
+        let foundTable = false;
+        while(node && node !== editorField) {
+            if(node.tagName === 'TABLE') {
+                foundTable = true;
+                activeTable = node;
+                positionTableMenu(node);
+                break;
+            }
+            node = node.parentNode;
+        }
+        
+        if(!foundTable) {
+            document.getElementById('table-bubble-menu').style.display = 'none';
+            activeTable = null;
+        }
     });
+
+    function positionTableMenu(tableEl) {
+        const menu = document.getElementById('table-bubble-menu');
+        menu.style.display = 'flex';
+        document.getElementById('toggle-th-row').checked = tableEl.classList.contains('has-th-row');
+        document.getElementById('toggle-th-col').checked = tableEl.classList.contains('has-th-col');
+        
+        const rect = tableEl.getBoundingClientRect();
+        const bodyRect = document.querySelector('.detail-body').getBoundingClientRect();
+        const topPos = rect.top - bodyRect.top + document.querySelector('.detail-body').scrollTop - 40;
+        const leftPos = rect.left - bodyRect.left;
+        
+        menu.style.top = topPos + 'px';
+        menu.style.left = Math.max(10, leftPos) + 'px';
+    }
+
+    function toggleTableHeader(type) {
+        if(!activeTable) return;
+        if(type === 'row') activeTable.classList.toggle('has-th-row');
+        else if(type === 'col') activeTable.classList.toggle('has-th-col');
+        saveCurrentNodeData();
+    }
+
+    function openTableModal() {
+        document.getElementById('table-modal').style.display = 'flex';
+        document.getElementById('modal-rows').focus();
+    }
+    function closeTableModal() {
+        document.getElementById('table-modal').style.display = 'none';
+    }
+    function submitTableModal() {
+        const r = parseInt(document.getElementById('modal-rows').value, 10);
+        const c = parseInt(document.getElementById('modal-cols').value, 10);
+        if(isNaN(r) || isNaN(c) || r <= 0 || c <= 0) return alert("1 이상의 정수를 입력해 주세요.");
+        
+        generateDynamicTable(r, c);
+        closeTableModal();
+    }
+
+    function refreshFootnoteNumbers() {
+        const refs = editorField.querySelectorAll('.footnote-ref');
+        refs.forEach((ref, index) => { ref.innerText = `[${index + 1}]`; });
+    }
 
     function execColor(cmd, color) {
         event.stopPropagation();
         document.execCommand(cmd, false, color);
         document.getElementById('text-color-menu').style.display = 'none';
-        document.getElementById('bg-color-menu').style.display = 'none';
         saveCurrentNodeData();
     }
 
-    // 전역 주석 번호 리인덱싱(새로고침)기
-    function refreshFootnoteNumbers() {
-        const refs = editorField.querySelectorAll('.footnote-ref');
-        refs.forEach((ref, index) => {
-            ref.innerText = `[${index + 1}]`;
-        });
+    // 슬래시 메뉴 동작 실행 매핑 브릿지
+    function triggerSlashAction(action) {
+        document.getElementById('slash-menu').style.display = 'none';
+        if (!savedSlashRange) return;
+
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(savedSlashRange);
+        
+        // 입력되어 있던 '/' 한 글자 완벽하게 소거 유도
+        document.execCommand('delete', false, null);
+
+        if (action === 'table') {
+            openTableModal();
+        } else if (action === 'ul') {
+            execCmd('insertUnorderedList');
+        } else if (action === 'ol') {
+            execCmd('insertOrderedList');
+        } else if (action === 'hr') {
+            const hr = document.createElement('hr');
+            const nextDiv = document.createElement('div');
+            nextDiv.innerHTML = "<br>";
+            savedSlashRange.insertNode(nextDiv);
+            savedSlashRange.insertNode(hr);
+            
+            const newRange = document.createRange();
+            newRange.setStart(nextDiv, 0);
+            newRange.collapse(true);
+            selection.removeAllRanges();
+            selection.addRange(newRange);
+            saveCurrentNodeData();
+        }
+        savedSlashRange = null;
     }
 
     editorField.addEventListener('keydown', function(e) {
         if (e.key === 'Tab') {
-            e.preventDefault(); 
             const selection = window.getSelection();
             if (selection.rangeCount > 0) {
-                let node = selection.anchorNode;
+                let anchor = selection.anchorNode;
+                let cell = null;
+                let temp = anchor;
+                while(temp && temp !== this) {
+                    if(temp.tagName === 'TD' || temp.tagName === 'TH') { cell = temp; break; }
+                    temp = temp.parentNode;
+                }
+                
+                if(cell) {
+                    e.preventDefault();
+                    const table = cell.closest('table');
+                    const allCells = Array.from(table.querySelectorAll('td, th'));
+                    const currentIndex = allCells.indexOf(cell);
+                    let nextIndex = e.shiftKey ? currentIndex - 1 : currentIndex + 1;
+                    
+                    if(nextIndex < 0) nextIndex = allCells.length - 1;
+                    if(nextIndex >= allCells.length) nextIndex = 0;
+                    
+                    const nextCell = allCells[nextIndex];
+                    const newRange = document.createRange();
+                    newRange.selectNodeContents(nextCell);
+                    newRange.collapse(true);
+                    selection.removeAllRanges();
+                    selection.addRange(newRange);
+                    return;
+                }
+                
+                let node = anchor;
                 let insideList = false;
                 while (node && node !== this) {
-                    if (node.nodeName === 'LI' || node.nodeName === 'UL' || node.nodeName === 'OL') {
-                        insideList = true;
-                        break;
-                    }
+                    if (['LI', 'UL', 'OL'].includes(node.nodeName)) { insideList = true; break; }
                     node = node.parentNode;
                 }
                 if (insideList) {
+                    e.preventDefault();
                     if (e.shiftKey) document.execCommand('outdent', false, null);
                     else document.execCommand('indent', false, null);
                     saveCurrentNodeData(); 
@@ -315,11 +412,10 @@
         }
         
         if (e.key === 'Enter') {
+            document.getElementById('slash-menu').style.display = 'none';
             const selection = window.getSelection();
             if (selection.rangeCount > 0) {
-                const range = selection.getRangeAt(0);
                 let node = selection.anchorNode;
-                
                 let liNode = null;
                 let headingNode = null;
                 
@@ -334,13 +430,11 @@
                     const div = document.createElement('div');
                     div.innerHTML = "<br>";
                     headingNode.parentNode.insertBefore(div, headingNode.nextSibling);
-                    
                     const newRange = document.createRange();
                     newRange.setStart(div, 0);
                     newRange.collapse(true);
                     selection.removeAllRanges();
                     selection.addRange(newRange);
-                    
                     saveCurrentNodeData();
                     return;
                 }
@@ -364,7 +458,6 @@
                         nextRange.setStartAfter(liNode);
                         nextRange.setEndAfter(parentList);
                         const fragment = nextRange.extractContents();
-                        
                         parentList.parentNode.insertBefore(div, parentList.nextSibling);
                         if (fragment.textContent.trim() !== "" || fragment.querySelector('li')) {
                             div.parentNode.insertBefore(fragment, div.nextSibling);
@@ -378,14 +471,37 @@
                     newRange.collapse(true);
                     selection.removeAllRanges();
                     selection.addRange(newRange);
-                    
                     saveCurrentNodeData();
                 }
             }
         }
     });
 
-    // 다이내믹 마크다운 확장 엔진 + 나무위키 주석 엔진 결합
+    // 슬래시(/) 감지기 커스텀 리스너 통합 연동
+    editorField.addEventListener('keyup', function(e) {
+        if (e.key === '/') {
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                savedSlashRange = range.cloneRange(); // 현재 커서 위치 정밀 기억
+                
+                // 마우스나 가상 커서 기반의 현재 클라이언트 좌표 기반 팝업 메뉴 매핑 구현
+                const rect = range.getBoundingClientRect();
+                const bodyRect = document.querySelector('.detail-body').getBoundingClientRect();
+                const slashMenu = document.getElementById('slash-menu');
+                
+                slashMenu.style.display = 'block';
+                slashMenu.style.top = (rect.top - bodyRect.top + document.querySelector('.detail-body').scrollTop + 25) + 'px';
+                slashMenu.style.left = (rect.left - bodyRect.left) + 'px';
+            }
+        } else if (e.key === 'Escape' || e.key === 'Backspace') {
+            // 특수키 이탈 시 메뉴 즉시 소거 보정
+            if (editorField.innerText.indexOf('/') === -1 || e.key === 'Escape') {
+                document.getElementById('slash-menu').style.display = 'none';
+            }
+        }
+    });
+
     editorField.addEventListener('beforeinput', function(e) {
         if (e.data === ' ') {
             const selection = window.getSelection();
@@ -402,42 +518,29 @@
                 let nodeCheck = anchorNode;
                 let insideRestrict = false;
                 while (nodeCheck && nodeCheck !== this) {
-                    if (['TABLE', 'H1', 'H2', 'H3', 'H4'].includes(nodeCheck.nodeName)) { 
-                        insideRestrict = true; 
-                        break; 
-                    }
+                    if (['TABLE', 'H1', 'H2', 'H3', 'H4'].includes(nodeCheck.nodeName)) { insideRestrict = true; break; }
                     nodeCheck = nodeCheck.parentNode;
                 }
                 if (insideRestrict) return;
 
                 const trimmed = textBeforeCursor.trim();
 
-                // [* 주석 내용] 형태의 나무위키 마크다운 정규식 매칭 감지
                 if (trimmed.startsWith('[*') && trimmed.endsWith(']')) {
                     e.preventDefault();
-                    
-                    // 내부 주석 내용 텍스트 파싱 추출
                     const noteContent = trimmed.substring(2, trimmed.length - 1).trim();
-                    
                     if (noteContent.length > 0) {
-                        // 입력했던 마크다운 텍스트 원본 노드 영역 삭제 파쇄
                         range.setStart(anchorNode, offset - textBeforeCursor.length);
                         range.setEnd(anchorNode, offset);
                         range.deleteContents();
                         
-                        // 주석을 담을 고성능 앵커 스팬 뼈대 생성
                         const span = document.createElement('span');
                         span.className = 'footnote-ref';
-                        span.setAttribute('contenteditable', 'false'); // 본문 글자와 꼬이지 않도록 락 처리
+                        span.setAttribute('contenteditable', 'false');
                         span.setAttribute('data-note', noteContent);
-                        span.innerText = '[?]'; // 임시 텍스트 배치
-                        
+                        span.innerText = '[?]';
                         range.insertNode(span);
                         
-                        // 실시간 카운팅 번호 배정 부여
                         refreshFootnoteNumbers();
-                        
-                        // 주석 바로 뒤에 공백 텍스트 노드를 만들어 커서를 안전하게 탈출 배정
                         const spaceNode = document.createTextNode('\u00A0');
                         span.parentNode.insertBefore(spaceNode, span.nextSibling);
                         
@@ -446,32 +549,6 @@
                         newRange.collapse(true);
                         selection.removeAllRanges();
                         selection.addRange(newRange);
-                        
-                        saveCurrentNodeData();
-                        return;
-                    }
-                }
-
-                if (trimmed === '---') {
-                    if (textBeforeCursor.indexOf(trimmed) === 0) {
-                        e.preventDefault();
-                        range.setStart(anchorNode, offset - textBeforeCursor.length);
-                        range.setEnd(anchorNode, offset);
-                        range.deleteContents();
-                        
-                        const hr = document.createElement('hr');
-                        const nextDiv = document.createElement('div');
-                        nextDiv.innerHTML = "<br>";
-                        
-                        range.insertNode(nextDiv);
-                        range.insertNode(hr);
-                        
-                        const newRange = document.createRange();
-                        newRange.setStart(nextDiv, 0);
-                        newRange.collapse(true);
-                        selection.removeAllRanges();
-                        selection.addRange(newRange);
-                        
                         saveCurrentNodeData();
                         return;
                     }
@@ -481,66 +558,16 @@
                     if (textBeforeCursor.indexOf(trimmed) === 0) {
                         e.preventDefault();
                         const level = trimmed.length; 
-                        
                         range.setStart(anchorNode, offset - textBeforeCursor.length);
                         range.setEnd(anchorNode, offset);
                         range.deleteContents();
                         
                         const heading = document.createElement('h' + level);
                         heading.innerHTML = "<br>";
-                        
                         range.insertNode(heading);
                         
                         const newRange = document.createRange();
                         newRange.setStart(heading, 0);
-                        newRange.collapse(true);
-                        selection.removeAllRanges();
-                        selection.addRange(newRange);
-                        
-                        saveCurrentNodeData();
-                        return;
-                    }
-                }
-
-                if (trimmed === '-') {
-                    if (textBeforeCursor.indexOf(trimmed) === 0) {
-                        e.preventDefault();
-                        range.setStart(anchorNode, offset - textBeforeCursor.length);
-                        range.setEnd(anchorNode, offset);
-                        range.deleteContents();
-                        
-                        const ul = document.createElement('ul');
-                        const li = document.createElement('li');
-                        li.innerHTML = '<br>';
-                        ul.appendChild(li);
-                        range.insertNode(ul);
-                        
-                        const newRange = document.createRange();
-                        newRange.setStart(li, 0);
-                        newRange.collapse(true);
-                        selection.removeAllRanges();
-                        selection.addRange(newRange);
-                        saveCurrentNodeData();
-                    }
-                } 
-                else if (/^\d+\.$/.test(trimmed)) {
-                    if (textBeforeCursor.indexOf(trimmed) === 0) {
-                        e.preventDefault();
-                        const startNum = parseInt(trimmed, 10);
-                        
-                        range.setStart(anchorNode, offset - textBeforeCursor.length);
-                        range.setEnd(anchorNode, offset);
-                        range.deleteContents();
-                        
-                        const ol = document.createElement('ol');
-                        ol.setAttribute('start', startNum);
-                        const li = document.createElement('li');
-                        li.innerHTML = '<br>'; 
-                        ol.appendChild(li);
-                        range.insertNode(ol);
-                        
-                        const newRange = document.createRange();
-                        newRange.setStart(li, 0);
                         newRange.collapse(true);
                         selection.removeAllRanges();
                         selection.addRange(newRange);
@@ -551,27 +578,15 @@
         }
     });
 
-    function insertCustomTable() {
-        const rowsInput = prompt("생성할 표의 행(세로 줄) 개수를 입력하세요:", "3");
-        if (!rowsInput) return;
-        const colsInput = prompt("생성할 표의 열(가로 칸) 개수를 입력하세요:", "3");
-        if (!colsInput) return;
-
-        const rows = parseInt(rowsInput, 10);
-        const cols = parseInt(colsInput, 10);
-
-        if (isNaN(rows) || isNaN(cols) || rows <= 0 || cols <= 0) {
-            alert("올바른 숫자를 입력해주세요.");
-            return;
-        }
-
+    function generateDynamicTable(rows, cols) {
         const table = document.createElement('table');
+        table.className = "has-th-row";
         const tbody = document.createElement('tbody');
 
         for (let r = 0; r < rows; r++) {
             const tr = document.createElement('tr');
             for (let c = 0; c < cols; c++) {
-                const cell = document.createElement(r === 0 ? 'th' : 'td');
+                const cell = document.createElement('td');
                 cell.innerHTML = "<br>";
                 tr.appendChild(cell);
             }
@@ -590,7 +605,7 @@
             range.insertNode(nextDiv);
             range.insertNode(table);
 
-            const firstCell = table.querySelector('th, td');
+            const firstCell = table.querySelector('td');
             const newRange = document.createRange();
             newRange.setStart(firstCell, 0);
             newRange.collapse(true);
@@ -671,7 +686,6 @@
     function addChildNode(parentId) {
         const parent = currentDoc.nodes.find(n => n.id === parentId);
         const nextLevel = (parent.level !== undefined) ? parent.level + 1 : 1;
-        
         let distance = 300; 
         let finalX = parent.x + distance; 
         let finalY = parent.y;
@@ -686,11 +700,8 @@
                 let testAngle = baseAngle + (angleStep * (Math.PI * 2 / 32));
                 let targetX = parent.x + Math.cos(testAngle) * currentDist;
                 let targetY = parent.y + Math.sin(testAngle) * currentDist;
-
                 let isOverlap = currentDoc.nodes.some(n => Math.hypot(n.x - targetX, n.y - targetY) < 230);
-                if (!isOverlap) {
-                    finalX = targetX; finalY = targetY; foundPlace = true; break;
-                }
+                if (!isOverlap) { finalX = targetX; finalY = targetY; foundPlace = true; break; }
             }
             if (foundPlace) break;
         }
@@ -737,19 +748,14 @@
         function processNodes(parentId, depth) {
             const children = currentDoc.nodes.filter(n => n.parentId === parentId);
             children.forEach((child, index) => {
-                let classTag = "";
-                if(depth === 1) classTag = "pdf-h2";
-                else classTag = "pdf-h3";
+                let classTag = (depth === 1) ? "pdf-h2" : "pdf-h3";
 
                 html += `<div class="pdf-section ${depth > 1 ? 'level-indent' : ''}">`;
                 const listPrefix = depth === 1 ? `Section 0${index + 1}. ` : '';
                 html += `<div class="${classTag}">${listPrefix}${child.title || '제목 없음'}</div>`;
                 
                 const childSummaryClean = child.summary ? child.summary.trim() : "";
-                if(childSummaryClean !== "") {
-                    html += `<div class="pdf-summary-box">${child.summary}</div>`;
-                }
-                
+                if(childSummaryClean !== "") html += `<div class="pdf-summary-box">${child.summary}</div>`;
                 if(child.content) html += `<div class="pdf-content">${child.content}</div>`;
                 
                 processNodes(child.id, depth + 1);
@@ -772,7 +778,6 @@
         summaryField.innerText = node.summary || '';
         editorField.innerHTML = node.content || '';
         document.getElementById('detail-view').style.display = 'flex';
-        // 로드될 때 주석 번호들 한 번 정렬
         refreshFootnoteNumbers();
     }
 
@@ -792,10 +797,7 @@
         renderMindmap();
     }
 
-    function execCmd(cmd) { 
-        document.execCommand(cmd, false, null); 
-        saveCurrentNodeData(); 
-    }
+    function execCmd(cmd) { document.execCommand(cmd, false, null); saveCurrentNodeData(); }
 
     function fitView() {
         if (!currentDoc.nodes.length) return;
@@ -819,51 +821,26 @@
             document.getElementById('side-controls').classList.remove('open');
         }
     };
-    
-    container.onpointermove = (e) => {
-        if (isPanning) {
-            transform.x = e.clientX - startPoint.x;
-            transform.y = e.clientY - startPoint.y;
-            updateTransform();
-        }
-    };
-    
-    container.onpointerup = (e) => {
-        isPanning = false;
-        container.releasePointerCapture(e.pointerId);
-    };
-    
+    container.onpointermove = (e) => { if (isPanning) { transform.x = e.clientX - startPoint.x; transform.y = e.clientY - startPoint.y; updateTransform(); } };
+    container.onpointerup = (e) => { isPanning = false; container.releasePointerCapture(e.pointerId); };
     container.onwheel = (e) => {
         e.preventDefault();
         const f = e.deltaY > 0 ? 0.9 : 1.1;
         const ns = Math.min(Math.max(0.1, transform.scale * f), 3);
         const r = ns / transform.scale;
-        transform.x = e.clientX - (e.clientX - transform.x) * r;
-        transform.y = e.clientY - (e.clientY - transform.y) * r;
-        transform.scale = ns;
-        updateTransform();
+        transform.x = e.clientX - (e.clientX - transform.x) * r; transform.y = e.clientY - (e.clientY - transform.y) * r;
+        transform.scale = ns; updateTransform();
     };
     
-    function updateTransform() { 
-        content.style.transform = `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`; 
-    }
-    
+    function updateTransform() { content.style.transform = `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`; }
     function resetZoom() { 
         const root = currentDoc.nodes.find(n => n.id === 'root'); 
         transform.scale = 0.8; 
-        transform.x = window.innerWidth / 2 - root.x * transform.scale - 80; 
-        transform.y = window.innerHeight / 2 - root.y * transform.scale - 35; 
+        transform.x = window.innerWidth / 2 - root.x * transform.scale - 80; transform.y = window.innerHeight / 2 - root.y * transform.scale - 35; 
         updateTransform(); 
     }
-    
-    function goHome() { 
-        document.getElementById('home-screen').style.display = 'flex'; 
-        document.getElementById('mindmap-container').style.display = 'none'; 
-    }
-    
-    function save() { 
-        localStorage.setItem('thought_canvas_premium_v5', JSON.stringify(docs)); 
-    }
+    function goHome() { document.getElementById('home-screen').style.display = 'flex'; document.getElementById('mindmap-container').style.display = 'none'; }
+    function save() { localStorage.setItem('thought_canvas_premium_v5', JSON.stringify(docs)); }
 </script>
 </body>
 </html>
