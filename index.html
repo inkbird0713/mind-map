@@ -50,6 +50,7 @@
         #editor h4, .pdf-content h4 { font-size: 18px; margin: 14px 0 4px; font-weight: 700; color: #444; }
         #editor hr, .pdf-content hr { border: 0; border-top: 1px solid #cbd5e0; margin: 16px 0; display: block; height: 1px; }
 
+        /* 표 초기 스타일 수정: 파란색/강제 배경 제거, 깔끔한 격자선만 남김 */
         #editor table, .pdf-content table { border-collapse: collapse; width: 100%; margin: 15px 0; table-layout: fixed; position: relative; }
         #editor th, #editor td, .pdf-content th, .pdf-content td { border: 1px solid #cbd5e0; padding: 10px 12px; min-height: 40px; text-align: left; word-break: break-all; font-weight: normal; background-color: transparent; }
         
@@ -64,18 +65,17 @@
         .footnote-ref::after { content: attr(data-note); position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); background: #2d3436; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 14px; font-weight: normal; line-height: 1.5; white-space: nowrap; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; font-family: 'Pretendard', sans-serif; vertical-align: normal; }
         .footnote-ref:hover::after { opacity: 1; transform: translateX(-50%) translateY(-4px); }
 
-        /* --- 획기적으로 다이어트된 컴팩트 슬림 플로팅 바 --- */
-        .floating-bar { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: #2d3436; padding: 6px 12px; border-radius: 30px; display: flex; gap: 4px; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.25); z-index: 3100; }
-        .floating-bar button { background: transparent; color: #dfe6e9; border: none; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; position: relative; transition: 0.2s; }
+        /* ➔ [개선] 획기적으로 다이어트된 슬림 선형 플로팅 바 (두께 최소화) */
+        .floating-bar { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: #2d3436; padding: 4px 10px; border-radius: 6px; display: flex; gap: 2px; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 3100; height: 24px; }
+        .floating-bar button { background: transparent; color: #dfe6e9; border: none; height: 20px; padding: 0 8px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; position: relative; transition: 0.15s; }
         .floating-bar button:hover { background: #4a5568; color: #fff; }
         
-        /* 콤보형 통합 컬러 가변 서브메뉴 */
-        .color-menu { display: none; position: absolute; bottom: 48px; left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid #cbd5e0; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-radius: 12px; padding: 10px; gap: 8px; grid-template-columns: repeat(3, 1fr); z-index: 3200; width: 110px; }
+        /* 선형 바에 맞춰 드롭다운 위치 미세 조정 */
+        .color-menu { display: none; position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid #cbd5e0; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-radius: 12px; padding: 10px; gap: 8px; grid-template-columns: repeat(3, 1fr); z-index: 3200; width: 110px; }
         .color-menu-title { grid-column: span 3; font-size: 11px; font-weight: bold; color: #718096; margin-bottom: 2px; text-align: center; }
         .color-dot { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.15s; }
         .color-dot:hover { transform: scale(1.15); }
 
-        /* --- Notion 스타일 슬래시(/) 커맨드 드롭다운 팝업 메뉴 --- */
         #slash-menu { display: none; position: absolute; background: white; border: 1px solid #cbd5e0; border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.12); width: 180px; z-index: 4000; overflow: hidden; padding: 4px 0; }
         .slash-item { padding: 10px 14px; font-size: 14px; color: #2d3748; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
         .slash-item:hover { background: #f7fafc; color: var(--primary); }
@@ -98,8 +98,11 @@
         .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
         .modal-btns button { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
         
-        #table-bubble-menu { display: none; position: absolute; background: #2d3436; color: white; padding: 6px 12px; border-radius: 8px; font-size: 13px; z-index: 3500; gap: 10px; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        /* ➔ [개선] 표 전용 버블 메뉴에 삭제 기능 버튼 추가 */
+        #table-bubble-menu { display: none; position: absolute; background: #2d3436; color: white; padding: 6px 12px; border-radius: 8px; font-size: 13px; z-index: 3500; gap: 12px; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         #table-bubble-menu label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+        .table-del-btn { background: #ff7675; border: none; color: white; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .table-del-btn:hover { background: #e66767; }
 
         #print-area { display: none; background: white; color: #2d3748; font-family: 'Pretendard', sans-serif; line-height: 1.8; }
         .pdf-cover { height: 100vh; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; padding: 80px; box-sizing: border-box; page-break-after: always; position: relative; background: #ffffff; }
@@ -164,11 +167,11 @@
             <div id="editor" contenteditable="true" placeholder="상세 내용을 자유롭게 작성하세요... (표/리스트는 '/' 입력)"></div>
             
             <div id="table-bubble-menu">
-                <label><input type="checkbox" id="toggle-th-row" onchange="toggleTableHeader('row')"> ⬆️ 맨 윗줄(행) 강조</label>
-                <label><input type="checkbox" id="toggle-th-col" onchange="toggleTableHeader('col')"> ⬅️ 맨 왼쪽(열) 강조</label>
+                <label><input type="checkbox" id="toggle-th-row" onchange="toggleTableHeader('row')"> ⬆️ 맨 윗줄 강조</label>
+                <label><input type="checkbox" id="toggle-th-col" onchange="toggleTableHeader('col')"> ⬅️ 맨 왼쪽 강조</label>
+                <button class="table-del-btn" onclick="deleteActiveTable()">🗑️ 표 전체 삭제</button>
             </div>
 
-            <!-- Notion 스타일 슬래시 커맨드 UI 메뉴 -->
             <div id="slash-menu">
                 <div class="slash-item" onclick="triggerSlashAction('table')">📅 표 삽입하기</div>
                 <div class="slash-item" onclick="triggerSlashAction('ul')">• 글머리 기호 목록</div>
@@ -177,14 +180,11 @@
             </div>
         </div>
         
-        <!-- 극도로 슬림해진 컴팩트 플로팅 툴바 -->
         <div class="floating-bar" id="floating-bar">
-            <button onclick="execCmd('bold')"><b>B</b></button>
-            <button onclick="execCmd('italic')"><i>I</i></button>
-            <button onclick="execCmd('underline')"><u>U</u></button>
-            <div style="width:1px; height:16px; background:#4a5568; margin:0 4px;"></div>
-            
-            <!-- 통합형 컬러 드롭다운 기둥 -->
+            <button onclick="execCmd('bold')">B</button>
+            <button onclick="execCmd('italic')">I</button>
+            <button onclick="execCmd('underline')">U</button>
+            <div style="width:1px; height:12px; background:#4a5568; margin:0 2px;"></div>
             <button onclick="toggleColorMenu('text-color-menu')" id="text-color-btn">🎨
                 <div class="color-menu" id="text-color-menu">
                     <div class="color-menu-title">글자 색상</div>
@@ -204,8 +204,7 @@
         <div class="modal-box">
             <div class="modal-title">새 표 만들기</div>
             <div class="modal-guide">
-                💡 <b>행(가로줄):</b> 위아래로 쌓이는 줄 개수<br>
-                💡 <b>열(세로칸):</b> 좌우로 나뉘는 칸 개수
+                💡 행/열 개수를 입력하면 깔끔한 기본 표가 생성됩니다.
             </div>
             <div class="input-group">
                 <label>행 개수 (가로줄)</label>
@@ -231,7 +230,7 @@
     let transform = { x: 0, y: 0, scale: 1 };
     let isPanning = false, startPoint = { x: 0, y: 0 };
     let activeTable = null; 
-    let savedSlashRange = null; // 슬래시 위치 추적 범위 임시저장용
+    let savedSlashRange = null;
 
     renderDocList();
 
@@ -302,6 +301,17 @@
         saveCurrentNodeData();
     }
 
+    /* ➔ [개선] 표 전체 소거 버블 연동 액션 */
+    function deleteActiveTable() {
+        if (!activeTable) return;
+        if (confirm("이 표를 전체 삭제하시겠습니까?")) {
+            activeTable.remove();
+            document.getElementById('table-bubble-menu').style.display = 'none';
+            activeTable = null;
+            saveCurrentNodeData();
+        }
+    }
+
     function openTableModal() {
         document.getElementById('table-modal').style.display = 'flex';
         document.getElementById('modal-rows').focus();
@@ -330,7 +340,6 @@
         saveCurrentNodeData();
     }
 
-    // 슬래시 메뉴 동작 실행 매핑 브릿지
     function triggerSlashAction(action) {
         document.getElementById('slash-menu').style.display = 'none';
         if (!savedSlashRange) return;
@@ -339,7 +348,6 @@
         selection.removeAllRanges();
         selection.addRange(savedSlashRange);
         
-        // 입력되어 있던 '/' 한 글자 완벽하게 소거 유도
         document.execCommand('delete', false, null);
 
         if (action === 'table') {
@@ -365,55 +373,115 @@
         savedSlashRange = null;
     }
 
+    /* ➔ [개선] Tab 이동 및 Backspace/Delete 주석 스마트 킬러 감지 내장 리스너 */
     editorField.addEventListener('keydown', function(e) {
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+
+        // 1. 표 내부 정밀 탭 키 핸들러 보정
         if (e.key === 'Tab') {
-            const selection = window.getSelection();
-            if (selection.rangeCount > 0) {
-                let anchor = selection.anchorNode;
-                let cell = null;
-                let temp = anchor;
-                while(temp && temp !== this) {
-                    if(temp.tagName === 'TD' || temp.tagName === 'TH') { cell = temp; break; }
-                    temp = temp.parentNode;
-                }
+            let anchor = selection.anchorNode;
+            let cell = null;
+            let temp = anchor;
+            while(temp && temp !== this) {
+                if(temp.tagName === 'TD' || temp.tagName === 'TH') { cell = temp; break; }
+                temp = temp.parentNode;
+            }
+            
+            if(cell) {
+                e.preventDefault();
+                const table = cell.closest('table');
+                const allCells = Array.from(table.querySelectorAll('td, th'));
+                const currentIndex = allCells.indexOf(cell);
+                let nextIndex = e.shiftKey ? currentIndex - 1 : currentIndex + 1;
                 
-                if(cell) {
+                if(nextIndex < 0) nextIndex = allCells.length - 1;
+                if(nextIndex >= allCells.length) nextIndex = 0;
+                
+                const nextCell = allCells[nextIndex];
+                const newRange = document.createRange();
+                newRange.selectNodeContents(nextCell);
+                newRange.collapse(false); // 칸의 가장 뒤쪽 커서 대기 구조
+                selection.removeAllRanges();
+                selection.addRange(newRange);
+                return;
+            }
+
+            // 리스트 들여쓰기 탭 로직 유지
+            let node = anchor;
+            let insideList = false;
+            while (node && node !== this) {
+                if (['LI', 'UL', 'OL'].includes(node.nodeName)) { insideList = true; break; }
+                node = node.parentNode;
+            }
+            if (insideList) {
+                e.preventDefault();
+                if (e.shiftKey) document.execCommand('outdent', false, null);
+                else document.execCommand('indent', false, null);
+                saveCurrentNodeData(); 
+            }
+        }
+
+        // 2. 주석 앞/뒤 정밀 삭제 스나이퍼 추가
+        if (e.key === 'Backspace') {
+            const range = selection.getRangeAt(0);
+            // 커서 바로 왼쪽에 주석 엘리먼트가 있는지 검사
+            if (range.startOffset === 0) {
+                let prevSibling = range.startContainer.previousSibling;
+                if (prevSibling && prevSibling.classList && prevSibling.classList.contains('footnote-ref')) {
                     e.preventDefault();
-                    const table = cell.closest('table');
-                    const allCells = Array.from(table.querySelectorAll('td, th'));
-                    const currentIndex = allCells.indexOf(cell);
-                    let nextIndex = e.shiftKey ? currentIndex - 1 : currentIndex + 1;
-                    
-                    if(nextIndex < 0) nextIndex = allCells.length - 1;
-                    if(nextIndex >= allCells.length) nextIndex = 0;
-                    
-                    const nextCell = allCells[nextIndex];
-                    const newRange = document.createRange();
-                    newRange.selectNodeContents(nextCell);
-                    newRange.collapse(true);
-                    selection.removeAllRanges();
-                    selection.addRange(newRange);
+                    prevSibling.remove();
+                    refreshFootnoteNumbers();
+                    saveCurrentNodeData();
                     return;
                 }
-                
-                let node = anchor;
-                let insideList = false;
-                while (node && node !== this) {
-                    if (['LI', 'UL', 'OL'].includes(node.nodeName)) { insideList = true; break; }
-                    node = node.parentNode;
+            } else if (range.startContainer.nodeType === Node.TEXT_NODE) {
+                // 노출 텍스트 끝단 보정용
+                let text = range.startContainer.nodeValue;
+                // 공백 문자 유니코드 우회 체킹 대응
+                if (range.startOffset === 1 && (text.charCodeAt(0) === 160 || text === ' ')) {
+                    let prevSibling = range.startContainer.previousSibling;
+                    if (prevSibling && prevSibling.classList && prevSibling.classList.contains('footnote-ref')) {
+                        e.preventDefault();
+                        prevSibling.remove();
+                        range.startContainer.nodeValue = "";
+                        refreshFootnoteNumbers();
+                        saveCurrentNodeData();
+                        return;
+                    }
                 }
-                if (insideList) {
+            }
+        }
+
+        if (e.key === 'Delete') {
+            const range = selection.getRangeAt(0);
+            // 커서 바로 오른쪽에 주석 엘리먼트가 있는지 검사
+            if (range.startContainer.nodeType === Node.TEXT_NODE) {
+                let text = range.startContainer.nodeValue;
+                if (range.startOffset === text.length) {
+                    let nextSibling = range.startContainer.nextSibling;
+                    if (nextSibling && nextSibling.classList && nextSibling.classList.contains('footnote-ref')) {
+                        e.preventDefault();
+                        nextSibling.remove();
+                        refreshFootnoteNumbers();
+                        saveCurrentNodeData();
+                        return;
+                    }
+                }
+            } else {
+                let nextNode = range.startContainer.childNodes[range.startOffset];
+                if (nextNode && nextNode.classList && nextNode.classList.contains('footnote-ref')) {
                     e.preventDefault();
-                    if (e.shiftKey) document.execCommand('outdent', false, null);
-                    else document.execCommand('indent', false, null);
-                    saveCurrentNodeData(); 
+                    nextNode.remove();
+                    refreshFootnoteNumbers();
+                    saveCurrentNodeData();
+                    return;
                 }
             }
         }
         
         if (e.key === 'Enter') {
             document.getElementById('slash-menu').style.display = 'none';
-            const selection = window.getSelection();
             if (selection.rangeCount > 0) {
                 let node = selection.anchorNode;
                 let liNode = null;
@@ -477,15 +545,13 @@
         }
     });
 
-    // 슬래시(/) 감지기 커스텀 리스너 통합 연동
     editorField.addEventListener('keyup', function(e) {
         if (e.key === '/') {
             const selection = window.getSelection();
             if (selection.rangeCount > 0) {
                 const range = selection.getRangeAt(0);
-                savedSlashRange = range.cloneRange(); // 현재 커서 위치 정밀 기억
+                savedSlashRange = range.cloneRange();
                 
-                // 마우스나 가상 커서 기반의 현재 클라이언트 좌표 기반 팝업 메뉴 매핑 구현
                 const rect = range.getBoundingClientRect();
                 const bodyRect = document.querySelector('.detail-body').getBoundingClientRect();
                 const slashMenu = document.getElementById('slash-menu');
@@ -495,7 +561,6 @@
                 slashMenu.style.left = (rect.left - bodyRect.left) + 'px';
             }
         } else if (e.key === 'Escape' || e.key === 'Backspace') {
-            // 특수키 이탈 시 메뉴 즉시 소거 보정
             if (editorField.innerText.indexOf('/') === -1 || e.key === 'Escape') {
                 document.getElementById('slash-menu').style.display = 'none';
             }
@@ -578,9 +643,9 @@
         }
     });
 
+    /* ➔ [개선] 강제 첫 줄 파란색 스타일 초기값에서 완전 제외한 베이직 빌더 고도화 */
     function generateDynamicTable(rows, cols) {
         const table = document.createElement('table');
-        table.className = "has-th-row";
         const tbody = document.createElement('tbody');
 
         for (let r = 0; r < rows; r++) {
