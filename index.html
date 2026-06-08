@@ -44,7 +44,6 @@
         
         #editor { min-height: 200px; line-height: 1.8; font-size: 18px; color: #2d3748; }
 
-        /* 맨 밑 주석 목록 레이아웃 스타일 */
         .bottom-footnotes-area { display: none; margin-top: 50px; padding-top: 20px; border-top: 1px dashed #cbd5e0; color: #555; font-size: 15px; user-select: none; }
         .bottom-footnotes-area h5 { margin: 0 0 10px 0; font-size: 16px; color: #2d3436; font-weight: 700; }
         .bottom-footnote-item { margin-bottom: 6px; line-height: 1.5; word-break: break-all; scroll-margin-top: 20px; }
@@ -79,7 +78,6 @@
         .footnote-ref::after { content: attr(data-note); position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); background: #2d3436; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 14px; font-weight: normal; line-height: 1.5; white-space: nowrap; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; font-family: 'Pretendard', sans-serif; }
         .footnote-ref:hover::after { opacity: 1; transform: translateX(-50%) translateY(-4px); }
 
-        /* 주석 이동 시 하이라이트 애니메이션 Effect */
         @keyframes target-flash {
             0% { background-color: rgba(74, 144, 226, 0.4); transform: scale(1.2); border-radius: 3px; }
             100% { background-color: transparent; transform: scale(1); }
@@ -200,7 +198,7 @@
             
             <div id="table-bubble-menu">
                 <label><input type="checkbox" id="toggle-th-row" onchange="toggleTableHeader('row')"> 제목 열 강조</label>
-                <label><input type="checkbox" id="toggle-th-col" onchange="toggleTableHeader('col'col'제목 행 강조</label>
+                <label><input type="checkbox" id="toggle-th-col" onchange="toggleTableHeader('col')"> 제목 행 강조</label>
                 <button class="table-del-btn" onclick="deleteActiveTable()">🗑️ 표 전체 삭제</button>
             </div>
 
@@ -447,7 +445,6 @@
         }
     }
 
-    // 주석 양방향 네비게이션 고유 ID 매핑 처리 포함 리프레시 함수
     function refreshFootnoteNumbers() {
         const refs = editorField.querySelectorAll('.footnote-ref');
         const areaContainer = document.getElementById('bottom-footnotes-area');
@@ -466,7 +463,6 @@
             const numText = `[${index + 1}]`;
             ref.innerText = numText; 
             
-            // 상호 작용을 위한 고유 ID 강제 세팅
             const fnId = `fn-ref-${index}`;
             const targetId = `fn-item-${index}`;
             ref.id = fnId;
@@ -483,20 +479,18 @@
         listContainer.innerHTML = listHtml;
     }
 
-    // 목록 클릭시 본문 주석 위치로 스크롤 및 번쩍임 연출
     function scrollToFootnoteRef(refId) {
         const target = document.getElementById(refId);
         if(target) {
             target.scrollIntoView({ behavior: 'smooth', block: 'center' });
             target.classList.remove('flash-highlight');
-            void target.offsetWidth; // 리플로우 강제 유도
+            void target.offsetWidth; 
             target.classList.add('flash-highlight');
         }
     }
 
-    // 본문 클릭시 아래 목록 주석 위치로 스크롤 및 번쩍임 연출
     function scrollToFootnoteItem(itemId) {
-        event.stopPropagation(); // 모달 팝업 조건 차단
+        event.stopPropagation(); 
         const target = document.getElementById(itemId);
         if(target) {
             target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
