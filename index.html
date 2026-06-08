@@ -42,7 +42,13 @@
         #detail-title { font-size: 32px; font-weight: 800; color: #2d3436; margin-bottom: 10px; }
         #detail-summary { background: #f8fafb; border-left: 5px solid var(--primary); padding: 15px; margin-bottom: 30px; border-radius: 8px; font-style: italic; color: #4a5568; }
         
-        #editor { min-height: 350px; line-height: 1.8; font-size: 18px; color: #2d3748; }
+        #editor { min-height: 200px; line-height: 1.8; font-size: 18px; color: #2d3748; }
+
+        /* 맨 밑 주석 목록 레이아웃 스타일 */
+        .bottom-footnotes-area { margin-top: 50px; padding-top: 20px; border-top: 1px dashed #cbd5e0; color: #555; font-size: 15px; user-select: none; }
+        .bottom-footnotes-area h5 { margin: 0 0 10px 0; font-size: 16px; color: #2d3436; font-weight: 700; }
+        .bottom-footnote-item { margin-bottom: 6px; line-height: 1.5; word-break: break-all; }
+        .bottom-footnote-item .fn-num { font-weight: bold; color: var(--primary); margin-right: 6px; }
 
         #editor h1, .pdf-content h1 { font-size: 30px; margin: 20px 0 10px; font-weight: 800; color: #111; }
         #editor h2, .pdf-content h2 { font-size: 24px; margin: 18px 0 8px; font-weight: 700; color: #222; }
@@ -69,7 +75,6 @@
         #editor ol ol, .pdf-content ol ol { list-style-type: lower-alpha !important; }
         #editor ol ol ol, .pdf-content ol ol ol { list-style-type: lower-roman !important; }
 
-        /* 주석 스타일 반투명 및 터치 강조 추가 */
         .footnote-ref { color: #3498db; font-size: 13px; font-weight: 700; vertical-align: super; cursor: pointer; margin-left: 2px; margin-right: 2px; user-select: none; display: inline-block; position: relative; WebkitTapHighlightColor: transparent; }
         .footnote-ref::after { content: attr(data-note); position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); background: #2d3436; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 14px; font-weight: normal; line-height: 1.5; white-space: nowrap; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; font-family: 'Pretendard', sans-serif; }
         .footnote-ref:hover::after { opacity: 1; transform: translateX(-50%) translateY(-4px); }
@@ -102,8 +107,6 @@
         .input-group { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
         .input-group label { font-size: 15px; font-weight: 600; color: #4a5568; }
         .input-group input { width: 80px; padding: 8px; border: 1px solid #cbd5e0; border-radius: 6px; text-align: center; font-size: 16px; }
-        
-        /* 주석 전용 수정을 위한 스타일 기입그룹 */
         .input-group textarea { width: 100%; height: 80px; padding: 10px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 15px; resize: none; font-family: inherit; box-sizing: border-box; }
 
         .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
@@ -175,7 +178,13 @@
         <div class="detail-body">
             <div id="detail-title" contenteditable="true" placeholder="주제 입력..."></div>
             <div id="detail-summary" contenteditable="true" placeholder="간단한 요약이나 키워드를 입력하세요..."></div>
+            
             <div id="editor" contenteditable="true" placeholder="상세 내용을 자유롭게 작성하세요... (- 나 1. 입력 후 스페이스바를 누르면 목록 생성!)"></div>
+            
+            <div class="bottom-footnotes-area" id="bottom-footnotes-area" contenteditable="false">
+                <h5>📋 주석 목록 (Footnotes)</h5>
+                <div id="bottom-footnotes-list">등록된 주석이 없습니다.</div>
+            </div>
             
             <div id="table-bubble-menu">
                 <label><input type="checkbox" id="toggle-th-row" onchange="toggleTableHeader('row')"> ⬆️ 맨 윗줄 강조</label>
@@ -264,7 +273,6 @@
     let savedSlashRange = null;
     let slashIdx = -1;
     
-    // 주석 꾹 누르기/수정용 전역 타임트래커
     let activeFootnoteTarget = null;
     let touchTimer = null;
 
@@ -283,7 +291,12 @@
         saveCurrentNodeData();
     });
     summaryField.addEventListener('input', saveCurrentNodeData);
-    editorField.addEventListener('input', saveCurrentNodeData);
+    
+    // 본문 수정 시 하단 목록 실시간 갱신 결합
+    editorField.addEventListener('input', function() {
+        refreshFootnoteNumbers();
+        saveCurrentNodeData();
+    });
 
     function toggleColorMenu(menuId) {
         event.stopPropagation();
@@ -367,7 +380,7 @@
         closeTableModal();
     }
 
-    // [주석 관리 모달 제어 함수군]
+    // [주석 제어 모달 제어 로직]
     function openFootnoteModal(targetEl) {
         activeFootnoteTarget = targetEl;
         const currentText = targetEl.getAttribute('data-note') || '';
@@ -384,6 +397,7 @@
             const updatedText = document.getElementById('modal-note-text').value.trim();
             if (!updatedText) return alert("주석 설명을 입력해 주세요.");
             activeFootnoteTarget.setAttribute('data-note', updatedText);
+            refreshFootnoteNumbers();
             saveCurrentNodeData();
         }
         closeFootnoteModal();
@@ -395,35 +409,51 @@
         }
     }
 
+    // [핵심 동기화 로직] 본문 번호 리넘버링 + 맨 밑 영역 리스트 빌드 조립
     function refreshFootnoteNumbers() {
         const refs = editorField.querySelectorAll('.footnote-ref');
-        refs.forEach((ref, index) => { ref.innerText = `[${index + 1}]`; });
+        const listContainer = document.getElementById('bottom-footnotes-list');
+        
+        if (refs.length === 0) {
+            listContainer.innerHTML = '등록된 주석이 없습니다.';
+            return;
+        }
+
+        let listHtml = '';
+        refs.forEach((ref, index) => { 
+            const numText = `[${index + 1}]`;
+            ref.innerText = numText; 
+            const noteContent = ref.getAttribute('data-note') || '내용 없음';
+            
+            // 하단 목록 HTML 추가 생성
+            listHtml += `
+                <div class="bottom-footnote-item">
+                    <span class="fn-num">${numText}</span> ${noteContent}
+                </div>
+            `;
+        });
+        listContainer.innerHTML = listHtml;
     }
 
-    // [버그 방지 완벽 패치] 주석 삭제 시 뒤의 글자 보존하며 텍스트 노드를 합치는 안전 함수
+    // 주석 안전 제거
     function safelyRemoveFootnote(refElement) {
         if (!refElement) return;
         const prevNode = refElement.previousSibling;
         const nextNode = refElement.nextSibling;
 
-        // 뒤쪽 텍스트 노드가 있고 앞쪽 텍스트 노드도 있다면 병합 진행
         if (prevNode && prevNode.nodeType === Node.TEXT_NODE && nextNode && nextNode.nodeType === Node.TEXT_NODE) {
-            // 주석 생성 시 자동 삽입된 특수공백(&nbsp; -> \u00A0) 제거 처리
             let nextVal = nextNode.nodeValue;
             if (nextVal.startsWith('\u00A0') || nextVal.startsWith(' ')) {
                 nextVal = nextVal.substring(1);
             }
             
-            // 기존 텍스트 완벽 이어붙이기
             const mergedText = prevNode.nodeValue + nextVal;
             const originalPrevLength = prevNode.nodeValue.length;
             prevNode.nodeValue = mergedText;
             
-            // 뒷노드 및 주석 제거
             refElement.remove();
             nextNode.remove();
 
-            // 커서를 결합 지점에 재배치하여 이음새 없게 만듦
             const sel = window.getSelection();
             const range = document.createRange();
             range.setStart(prevNode, originalPrevLength);
@@ -431,7 +461,6 @@
             sel.removeAllRanges();
             sel.addRange(range);
         } else {
-            // 예외적인 단독 상황일 시 일반 삭제
             refElement.remove();
         }
         
@@ -488,13 +517,13 @@
         }
     }
 
-    // [이벤트 위임 기법 구현] 동적으로 추가되는 주석들의 꾹 누르기(모바일) 및 우클릭/더블클릭(PC) 이벤트 통합 관리
+    // 모바일 롱프레스 터치 이벤트 연동 및 데스크톱 우클릭/더블클릭 상호작용 바인딩
     editorField.addEventListener('touchstart', function(e) {
         const ref = e.target.closest('.footnote-ref');
         if (ref) {
             touchTimer = setTimeout(() => {
                 openFootnoteModal(ref);
-            }, 500); // 0.5초 동안 누르고 있으면 팝업 오픈
+            }, 500);
         }
     }, {passive: true});
 
@@ -505,7 +534,7 @@
     editorField.addEventListener('contextmenu', function(e) {
         const ref = e.target.closest('.footnote-ref');
         if (ref) {
-            e.preventDefault(); // 기본 우클릭 차단
+            e.preventDefault();
             openFootnoteModal(ref);
         }
     });
@@ -583,7 +612,6 @@
             }
         }
 
-        // [버그 수정 완료] 백스페이스 키로 주석 지울 때 뒤 글자 살리기
         if (e.key === 'Backspace') {
             const range = selection.getRangeAt(0);
             if (range.startOffset === 0) {
@@ -595,7 +623,6 @@
                 }
             } else if (range.startContainer.nodeType === Node.TEXT_NODE) {
                 let text = range.startContainer.nodeValue;
-                // 커서가 자동공백 바짝 뒤에 있을 때 백스페이스 누를 시 예외 안전장치
                 if (range.startOffset === 1 && (text.charCodeAt(0) === 160 || text === ' ')) {
                     let prevSibling = range.startContainer.previousSibling;
                     if (prevSibling && prevSibling.classList && prevSibling.classList.contains('footnote-ref')) {
@@ -607,7 +634,6 @@
             }
         }
 
-        // [버그 수정 완료] 딜리트 키로 주석 지울 때 뒤 글자 살리기
         if (e.key === 'Delete') {
             const range = selection.getRangeAt(0);
             if (range.startContainer.nodeType === Node.TEXT_NODE) {
@@ -991,6 +1017,7 @@
         currentDoc.nodes.push(newNode); save(); renderMindmap();
     }
 
+    // PDF 및 리포트 인쇄 시 하단 주석 목록 출력 결합 고도화
     function generatePremiumPDF() {
         const printArea = document.getElementById('print-area');
         const rootNode = currentDoc.nodes.find(n => n.id === 'root');
@@ -1012,13 +1039,31 @@
         const rootSummaryClean = rootNode.summary ? rootNode.summary.trim() : "";
         const rootContentClean = rootNode.content ? rootNode.content.trim() : "";
         
+        // PDF 내부 가상 DOM 구성을 활용한 동적 주석 리스트 빌더 함수
+        function buildPdfFootnotesHtml(contentHtml) {
+            if(!contentHtml) return '';
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = contentHtml;
+            const refs = tempDiv.querySelectorAll('.footnote-ref');
+            if(refs.length === 0) return '';
+            
+            let fHtml = `<div class="bottom-footnotes-area" style="margin-top:30px; border-top:1px dashed #aaa; padding-top:10px; font-size:13px; color:#555;">`;
+            fHtml += `<h5 style="margin:0 0 5px 0; font-size:14px; color:#333;">주석 (Footnotes)</h5>`;
+            refs.forEach((ref, idx) => {
+                fHtml += `<div style="margin-bottom:3px;"><span style="font-weight:bold; color:var(--primary);">[${idx+1}]</span> ${ref.getAttribute('data-note') || ''}</div>`;
+            });
+            fHtml += `</div>`;
+            return fHtml;
+        }
+
         html += `<div class="pdf-section">
             <div class="pdf-h1">00. Overview</div>
             <div style="font-size: 20px; font-weight: 700; color: var(--primary); margin-bottom: 15px;">
                 중심 주제: ${rootNode.title || '제목 없음'}
             </div>
             ${rootSummaryClean !== "" ? `<div class="pdf-summary-box">${rootNode.summary}</div>` : ''}
-            ${rootContentClean !== "" ? `<div class="pdf-content">${rootNode.content}</div>` : `<p style="color: #888; font-style: italic;">(중심 노드의 '요약'이나 '상세 내용'을 입력하시면 이 Overview 섹션에 보고서 총평으로 자동 기록됩니다.)</p>`}
+            ${rootContentClean !== "" ? `<div class="pdf-content">${rootNode.content}</div>` : `<p style="color: #888; font-style: italic;">(내용 없음)</p>`}
+            ${buildPdfFootnotesHtml(rootNode.content)}
         </div>`;
 
         function processNodes(parentId, depth) {
@@ -1033,6 +1078,9 @@
                 const childSummaryClean = child.summary ? child.summary.trim() : "";
                 if(childSummaryClean !== "") html += `<div class="pdf-summary-box">${child.summary}</div>`;
                 if(child.content) html += `<div class="pdf-content">${child.content}</div>`;
+                
+                // 개별 섹션 자식 노드의 하단 주석 연동
+                html += buildPdfFootnotesHtml(child.content);
                 
                 processNodes(child.id, depth + 1);
                 html += `</div>`;
@@ -1054,6 +1102,8 @@
         summaryField.innerText = node.summary || '';
         editorField.innerHTML = node.content || '';
         document.getElementById('detail-view').style.display = 'flex';
+        
+        // 상세 보기 토글 시 주석 목록 초기화 렌더링
         refreshFootnoteNumbers();
     }
 
