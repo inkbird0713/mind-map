@@ -3,78 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ink's Canvas - Advanced File Management System</title>
+    <title>Ink's Canvas - Ultimate Executive Report with File Manager</title>
     <style>
         :root {
             --primary: #4a90e2;
             --bg: #f4f7f9;
             --panel: #ffffff;
             --node-border: #d1d8dd;
-            --sidebar-width: 280px;
-            --text-dark: #2d3436;
+            --sidebar-bg: #2d3436;
+            --sidebar-text: #dfe6e9;
         }
 
         body, html { margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, sans-serif; background: var(--bg); height: 100%; overflow: hidden; touch-action: none; }
         
-        /* 메인 레이아웃 구조 */
-        #app-layout { display: flex; width: 100vw; height: 100vh; overflow: hidden; position: relative; }
-        
-        /* 📂 사이드바 UI 디자인 */
-        #sidebar { 
-            width: var(--sidebar-width); 
-            height: 100%; 
-            background: #ffffff; 
-            border-right: 1px solid #e2e8f0; 
-            display: flex; 
-            flex-direction: column; 
-            transition: transform 0.3s ease; 
-            z-index: 2100;
-            flex-shrink: 0;
-        }
-        
-        .sidebar-header { padding: 20px 15px; border-bottom: 1px solid #f0f4f8; display: flex; flex-direction: column; gap: 10px; }
-        .sidebar-title { font-size: 18px; font-weight: 800; color: var(--text-dark); display: flex; justify-content: space-between; align-items: center; }
-        .sidebar-actions { display: flex; gap: 6px; }
-        .sidebar-actions button { flex: 1; padding: 8px 4px; font-size: 12px; font-weight: bold; border-radius: 6px; border: 1px solid #e2e8f0; background: #fff; cursor: pointer; }
-        .sidebar-actions button.btn-primary { background: var(--primary); color: white; border: none; }
-        
-        /* 정렬 및 필터 */
-        .sidebar-filter { padding: 8px 15px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
-        .sidebar-filter select { border: none; background: transparent; font-size: 12px; color: #4a5568; font-weight: 600; outline: none; cursor: pointer; }
+        #home-screen { padding: 50px 20px; display: flex; flex-direction: column; align-items: center; height: 100vh; overflow-y: auto; box-sizing: border-box; position: relative; z-index: 2000; background: var(--bg); }
+        .doc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; width: 100%; max-width: 1000px; margin-top: 40px; }
+        .doc-card { background: var(--panel); padding: 35px 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); cursor: pointer; position: relative; border: 1.5px solid transparent; transition: 0.3s; text-align: center; }
+        .doc-card:hover { border-color: var(--primary); transform: translateY(-5px); }
+        .doc-delete-btn { position: absolute; bottom: 12px; right: 12px; font-size: 11px; color: #bbb; background: none; border: none; cursor: pointer; padding: 5px; text-decoration: underline; }
 
-        /* 트리뷰 영역 */
-        .sidebar-content { flex: 1; overflow-y: auto; padding: 10px 0; }
-        .tree-section-title { font-size: 11px; font-weight: 700; color: #a0aec0; padding: 5px 15px; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .tree-item { display: flex; align-items: center; padding: 8px 15px; cursor: pointer; font-size: 14px; color: #4a5568; position: relative; gap: 8px; transition: 0.15s; }
-        .tree-item:hover { background: #f1f5f9; }
-        .tree-item.active { background: #e0f2fe; color: #0369a1; font-weight: 700; }
-        .tree-item .item-icon { display: flex; align-items: center; justify-content: center; width: 18px; }
-        .tree-item .item-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .tree-item .item-meta { display: flex; gap: 4px; align-items: center; }
-        .tree-item .btn-fav { color: #cbd5e0; cursor: pointer; transition: 0.15s; }
-        .tree-item .btn-fav.active { color: #f59e0b; }
-        .tree-item .btn-opt { color: #cbd5e0; opacity: 0; padding: 2px 4px; }
-        .tree-item:hover .btn-opt { opacity: 1; }
-        
-        /* 폴더 내 하위 아이템 들여쓰기 */
-        .tree-folder-children { border-left: 1px dashed #cbd5e0; margin-left: 23px; padding-left: 5px; display: block; }
-        .tree-folder-children.collapsed { display: none; }
-
-        /* 메인 콘텐츠 영역 */
-        #main-content { flex: 1; height: 100%; position: relative; display: flex; flex-direction: column; background: var(--bg); }
-        
-        /* 상단 네비바 (사이드바 토글 및 홈 화면용) */
-        #top-bar { height: 55px; background: #fff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; padding: 0 20px; gap: 15px; z-index: 2000; }
-        .menu-toggle { font-size: 20px; background: none; border: none; cursor: pointer; color: var(--text-dark); }
-
-        #home-screen { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; flex: 1; overflow-y: auto; box-sizing: border-box; }
-        .doc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; width: 100%; max-width: 1000px; margin-top: 30px; }
-        .doc-card { background: var(--panel); padding: 30px 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); cursor: pointer; position: relative; border: 2px solid transparent; transition: 0.3s; text-align: center; }
-        .doc-card:hover { border-color: var(--primary); transform: translateY(-3px); }
-        .doc-delete-btn { position: absolute; bottom: 12px; right: 12px; font-size: 11px; color: #ff7675; background: none; border: none; cursor: pointer; text-decoration: underline; }
-
-        #mindmap-container { display: none; width: 100%; flex: 1; position: relative; background: #eaeff2; overflow: hidden; cursor: grab; }
+        #mindmap-container { display: none; width: 100vw; height: 100vh; position: relative; background: #eaeff2; overflow: hidden; cursor: grab; }
         #mindmap-container:active { cursor: grabbing; }
         #canvas-content { position: absolute; top: 0; left: 0; transform-origin: 0 0; will-change: transform; }
         
@@ -88,7 +36,6 @@
         svg { position: absolute; top: 0; left: 0; width: 20000px; height: 20000px; pointer-events: none; }
         .connection { fill: none; stroke: #cbd5e0; stroke-width: 2.5; stroke-linecap: round; }
 
-        /* 📝 모바일 특화 상세 에디터 및 하단 웹기반 컴포넌트 */
         #detail-view { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: white; z-index: 3000; flex-direction: column; }
         .detail-header { padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f0f0; }
         .detail-body { flex: 1; overflow-y: auto; padding: 40px 10% 180px; position: relative; scroll-behavior: smooth; }
@@ -104,36 +51,52 @@
         .bottom-footnote-item { margin-bottom: 6px; line-height: 1.5; word-break: break-all; scroll-margin-top: 20px; }
         .bottom-footnote-item .fn-link-num { font-weight: bold; color: var(--primary); margin-right: 6px; cursor: pointer; text-decoration: underline; }
 
-        /* 에디터 스타일 및 표 */
         #editor h1, .pdf-content h1 { font-size: 30px; margin: 20px 0 10px; font-weight: 800; color: #111; }
         #editor h2, .pdf-content h2 { font-size: 24px; margin: 18px 0 8px; font-weight: 700; color: #222; }
         #editor h3, .pdf-content h3 { font-size: 20px; margin: 16px 0 6px; font-weight: 700; color: #333; }
+        #editor h4, .pdf-content h4 { font-size: 18px; margin: 14px 0 4px; font-weight: 700; color: #444; }
         #editor hr, .pdf-content hr { border: 0; border-top: 1px solid #cbd5e0; margin: 16px 0; display: block; height: 1px; }
 
         #editor table, .pdf-content table { border-collapse: collapse; width: 100%; margin: 15px 0; table-layout: fixed; position: relative; font-size: 15px !important; }
-        #editor th, #editor td, .pdf-content th, .pdf-content td { border: 1px solid #cbd5e0; padding: 10px 12px; min-height: 40px; text-align: left; word-break: break-all; font-weight: normal; font-size: 15px !important; line-height: 1.5 !important; }
+        #editor th, #editor td, .pdf-content th, .pdf-content td { border: 1px solid #cbd5e0; padding: 10px 12px; min-height: 40px; text-align: left; word-break: break-all; font-weight: normal; background-color: transparent; font-size: 15px !important; line-height: 1.5 !important; }
+        
         #editor table.has-th-row tr:first-child td, #editor table.has-th-row tr:first-child th { background-color: #f7fafc !important; font-weight: 700 !important; }
         #editor table.has-th-col tr td:first-child, #editor table.has-th-col tr th:first-child { background-color: #f7fafc !important; font-weight: 700 !important; }
 
-        #editor ul, .pdf-content ul { padding-left: 24px; margin: 6px 0; list-style-type: disc !important; }
-        #editor ol, .pdf-content ol { padding-left: 24px; margin: 6px 0; list-style-type: decimal !important; }
-        #editor li, .pdf-content li { margin-bottom: 4px; line-height: 1.8 !important; font-size: 18px !important; }
+        #editor ul, .pdf-content ul { padding-left: 24px; margin: 6px 0; }
+        #editor ol, .pdf-content ol { padding-left: 24px; margin: 6px 0; }
+        #editor li, .pdf-content li { margin-bottom: 4px; line-height: 1.8 !important; font-family: 'Pretendard', -apple-system, sans-serif !important; font-size: 18px !important; }
 
-        .footnote-ref { color: #3498db; font-size: 13px; font-weight: 700; vertical-align: super; cursor: pointer; margin: 0 2px; display: inline-block; position: relative; }
-        
-        @keyframes target-flash { 0% { background-color: rgba(74, 144, 226, 0.4); transform: scale(1.1); } 100% { background-color: transparent; } }
+        #editor ul, .pdf-content ul { list-style-type: disc !important; }
+        #editor ul ul, .pdf-content ul ul { list-style-type: circle !important; }
+        #editor ul ul ul, .pdf-content ul ul ul { list-style-type: square !important; }
+        #editor ul ul ul ul, .pdf-content ul ul ul ul { list-style-type: disc !important; }
+
+        #editor ol, .pdf-content ol { list-style-type: decimal !important; }
+        #editor ol ol, .pdf-content ol ol { list-style-type: lower-alpha !important; }
+        #editor ol ol ol, .pdf-content ol ol ol { list-style-type: lower-roman !important; }
+
+        .footnote-ref { color: #3498db; font-size: 13px; font-weight: 700; vertical-align: super; cursor: pointer; margin-left: 2px; margin-right: 2px; user-select: none; display: inline-block; position: relative; WebkitTapHighlightColor: transparent; scroll-margin-top: 80px; }
+        .footnote-ref::after { content: attr(data-note); position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); background: #2d3436; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 14px; font-weight: normal; line-height: 1.5; white-space: nowrap; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; font-family: 'Pretendard', sans-serif; }
+        .footnote-ref:hover::after { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+
+        @keyframes target-flash {
+            0% { background-color: rgba(74, 144, 226, 0.4); transform: scale(1.2); border-radius: 3px; }
+            100% { background-color: transparent; transform: scale(1); }
+        }
         .flash-highlight { animation: target-flash 1.2s ease-out; }
 
         .floating-bar { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: #2d3436; padding: 4px 12px; border-radius: 6px; display: flex; gap: 4px; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 3100; height: 26px; }
-        .floating-bar button { background: transparent; color: #dfe6e9; border: none; height: 22px; padding: 0 8px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; position: relative; display: flex; align-items: center; }
+        .floating-bar button { background: transparent; color: #dfe6e9; border: none; height: 22px; padding: 0 8px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; position: relative; transition: 0.15s; }
         .floating-bar button:hover { background: #4a5568; color: #fff; }
         
         .color-menu { display: none; position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid #cbd5e0; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-radius: 12px; padding: 10px; gap: 8px; grid-template-columns: repeat(4, 1fr); z-index: 3200; width: 140px; }
-        .color-menu-title { grid-column: span 4; font-size: 11px; font-weight: bold; color: #718096; text-align: center; margin-bottom: 2px;}
-        .color-dot { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #e2e8f0; cursor: pointer; }
+        .color-menu-title { grid-column: span 4; font-size: 11px; font-weight: bold; color: #718096; margin-bottom: 2px; text-align: center; }
+        .color-dot { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.15s; }
+        .color-dot:hover { transform: scale(1.15); }
 
         #slash-menu { display: none; position: absolute; background: white; border: 1px solid #cbd5e0; border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.12); width: 180px; z-index: 4000; overflow: hidden; padding: 4px 0; }
-        .slash-item { padding: 10px 14px; font-size: 14px; color: #2d3748; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .slash-item { padding: 10px 14px; font-size: 14px; color: #2d3748; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.15s; }
         .slash-item:hover, .slash-item.active { background: #e2e8f0; color: var(--primary); font-weight: bold; }
 
         .side-controls { position: fixed; bottom: 35px; right: 35px; display: flex; flex-direction: column-reverse; gap: 12px; z-index: 2500; align-items: center; }
@@ -141,105 +104,155 @@
         
         .side-controls .menu-item { opacity: 0; transform: translateY(20px) scale(0.6); pointer-events: none; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2); }
         .side-controls.open .menu-item { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+        #menu-toggle-btn { z-index: 2501; }
         .side-controls.open #menu-toggle-btn { transform: rotate(45deg); background: #e2e8f0; }
 
-        /* 🗔 공통 디자인 모달 창 */
         .custom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 5000; justify-content: center; align-items: center; }
-        .modal-box { background: white; padding: 25px; border-radius: 16px; width: 340px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 12px; color: var(--text-dark); }
+        .modal-box { background: white; padding: 30px; border-radius: 16px; width: 340px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .modal-title { font-size: 20px; font-weight: 800; margin-bottom: 15px; color: #2d3436; }
         .modal-guide { font-size: 13px; color: #7f8c8d; background: #f8fafb; padding: 10px; border-radius: 8px; margin-bottom: 15px; line-height: 1.4; }
-        .input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-        .input-group label { font-size: 14px; font-weight: 600; color: #4a5568; }
-        .input-group input, .input-group select { padding: 10px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 15px; }
-        .input-group textarea { height: 80px; padding: 10px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 15px; resize: none; font-family: inherit; }
+        .input-group { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .input-group label { font-size: 15px; font-weight: 600; color: #4a5568; }
+        .input-group input { width: 80px; padding: 8px; border: 1px solid #cbd5e0; border-radius: 6px; text-align: center; font-size: 16px; }
+        .input-group textarea { width: 100%; height: 80px; padding: 10px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 15px; resize: none; font-family: inherit; box-sizing: border-box; }
+
+        .radio-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        .radio-option { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #cbd5e0; border-radius: 8px; cursor: pointer; font-size: 15px; transition: 0.15s; }
+        .radio-option:hover { background: #f7fafc; border-color: var(--primary); }
+        .radio-option input { cursor: pointer; }
+
         .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
         .modal-btns button { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
+        
+        #table-bubble-menu { display: none; position: absolute; background: #2d3436; color: white; padding: 6px 12px; border-radius: 8px; font-size: 13px; z-index: 4500; gap: 12px; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); pointer-events: auto; user-select: none; }
+        #table-bubble-menu label { display: flex; align-items: center; gap: 4px; cursor: pointer; pointer-events: auto; }
+        #table-bubble-menu input[type="checkbox"] { cursor: pointer; pointer-events: auto; }
+        .table-del-btn { background: #ff7675; border: none; color: white; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; pointer-events: auto; }
+        .table-del-btn:hover { background: #e66767; }
 
-        #table-bubble-menu { display: none; position: absolute; background: #2d3436; color: white; padding: 6px 12px; border-radius: 8px; font-size: 13px; z-index: 4500; gap: 12px; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .table-del-btn { background: #ff7675; border: none; color: white; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-
-        /* 🖨️ 고급 프리미엄 인쇄 레포트 전용 스타일 */
         #print-area { display: none; background: white; color: #2d3748; font-family: 'Pretendard', sans-serif; line-height: 1.8; }
-        .pdf-cover { height: 100vh; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; padding: 80px; box-sizing: border-box; page-break-after: always; position: relative; }
+        .pdf-cover { height: 100vh; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; padding: 80px; box-sizing: border-box; page-break-after: always; position: relative; background: #ffffff; }
         .pdf-cover::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 15px; background: linear-gradient(90deg, var(--primary), #3182ce); }
         .pdf-cover .canvas-logo { font-size: 14px; color: var(--primary); font-weight: 800; letter-spacing: 6px; text-transform: uppercase; border-bottom: 2px solid var(--primary); padding-bottom: 5px; }
         .cover-mid { margin-top: auto; margin-bottom: auto; width: 100%; display: flex; flex-direction: column; gap: 25px; }
-        .pdf-cover h1 { font-size: 52px; font-weight: 800; margin: 0; color: #1a202c; line-height: 1.25; word-break: keep-all; }
+        .pdf-cover h1 { font-size: 52px; font-weight: 800; margin: 0; color: #1a202c; line-height: 1.25; word-break: keep-all; letter-spacing: -1px; }
         .pdf-cover .cover-decor { width: 120px; height: 6px; background: var(--primary); border-radius: 3px; }
-        .pdf-cover .date { font-size: 16px; color: #4a5568; font-weight: 600; border-left: 3px solid var(--primary); padding-left: 12px; }
+        .pdf-cover .date { font-size: 16px; color: #4a5568; font-weight: 600; letter-spacing: 0.5px; border-left: 3px solid var(--primary); padding-left: 12px; }
+        .cover-bottom { font-size: 12px; color: #a0aec0; letter-spacing: 1px; width: 100%; margin-top: auto; }
         .pdf-body { padding: 40px 80px; box-sizing: border-box; }
         .pdf-section { margin-bottom: 35px; page-break-inside: auto; }
-        .pdf-h1 { font-size: 28px; font-weight: 800; color: #1a202c; border-bottom: 3px solid #1a202c; padding-bottom: 12px; margin-bottom: 25px; }
-        .pdf-h2 { font-size: 21px; font-weight: 700; color: #2b6cb0; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin: 35px 0 20px; }
-        .pdf-summary-box { background: #f7fafc; border-left: 4px solid var(--primary); padding: 18px 24px; margin: 18px 0; border-radius: 4px; color: #4a5568; white-space: pre-wrap; }
+        .pdf-h1 { font-size: 28px; font-weight: 800; color: #1a202c; border-bottom: 3px solid #1a202c; padding-bottom: 12px; margin-top: 10px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: -0.5px; page-break-after: avoid; }
+        .pdf-h2 { font-size: 21px; font-weight: 700; color: #2b6cb0; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin: 35px 0 20px; page-break-after: avoid; }
+        .pdf-h3 { font-size: 17px; font-weight: 700; color: #2d3748; margin: 25px 0 12px; display: flex; align-items: center; page-break-after: avoid; }
+        .pdf-h3::before { content: ""; width: 6px; height: 6px; background: #4a5568; border-radius: 50%; margin-right: 12px; display: inline-block; }
+        .level-indent { border-left: 2px solid #edf2f7; padding-left: 24px; margin-left: 8px; margin-top: 15px; margin-bottom: 15px; }
+        .pdf-summary-box { background: #f7fafc; border-left: 4px solid var(--primary); padding: 18px 24px; margin: 18px 0; border-radius: 4px; font-style: normal; color: #4a5568; font-size: 14.5px; page-break-inside: avoid; white-space: pre-wrap; line-height: 1.6; }
+        .pdf-content { font-size: 15px; color: #2d3748; text-align: justify; }
 
-        @media (max-width: 768px) {
-            #sidebar { position: absolute; left: 0; top: 0; transform: translateX(-100%); }
-            #sidebar.open { transform: translateX(0); }
-        }
+        /* ==================== [신규 추가: 사이드바 파일 시스템 레이아웃 CSS] ==================== */
+        #file-sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100vh; background: var(--sidebar-bg); color: var(--sidebar-text); z-index: 4000; transition: left 0.3s cubic-bezier(0.1, 0.9, 0.2, 1); box-shadow: 5px 0 15px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
+        #file-sidebar.open { left: 0; }
+        .sidebar-header { padding: 15px; background: #1e2223; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #3a4042; }
+        .sidebar-title { font-size: 15px; font-weight: bold; color: white; display: flex; align-items: center; gap: 8px; }
+        .sidebar-close { background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer; }
+        .sidebar-actions { padding: 10px; display: flex; gap: 6px; background: #24292a; border-bottom: 1px solid #3a4042; }
+        .sidebar-actions button { flex: 1; background: #3a4244; color: white; border: none; padding: 6px 0; font-size: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .sidebar-actions button:hover { background: var(--primary); }
+        .sidebar-filter { padding: 8px 12px; background: #24292a; border-bottom: 1px solid #3a4042; display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
+        .sidebar-filter select { background: #3a4244; color: white; border: none; padding: 2px 4px; border-radius: 3px; font-size: 11px; outline: none; cursor: pointer; }
+        .tree-container { flex: 1; overflow-y: auto; padding: 10px; }
+        .tree-folder { margin-bottom: 6px; }
+        .folder-title { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; color: #fff; transition: 0.15s; }
+        .folder-title:hover { background: #3a4244; }
+        .folder-name-container { display: flex; align-items: center; gap: 6px; }
+        .folder-content { padding-left: 14px; margin-top: 2px; display: block; border-left: 1px dashed #4f585a; }
+        .tree-file { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; border-radius: 4px; cursor: pointer; font-size: 13px; margin: 2px 0; transition: 0.15s; border-left: 3px solid transparent; }
+        .tree-file:hover { background: #3a4244; color: white; }
+        .tree-file.active { background: #4a90e2; color: white; font-weight: bold; }
+        .file-name-container { display: flex; align-items: center; gap: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80%; }
+        .tree-more-btn { background: none; border: none; color: #888; cursor: pointer; padding: 2px 4px; font-size: 12px; }
+        .tree-more-btn:hover { color: white; }
+        
+        .sidebar-trigger-btn { position: fixed; top: 15px; left: 15px; z-index: 2500; width: 45px; height: 45px; border-radius: 50%; background: white; border: none; box-shadow: 0 3px 10px rgba(0,0,0,0.1); font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .sidebar-trigger-btn:hover { transform: scale(1.05); }
+
+        /* 파일 옵션 컨텍스트 메뉴 스타일 */
+        .file-context-menu { display: none; position: fixed; background: white; color: black; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 8px; padding: 4px 0; z-index: 6000; width: 140px; font-size: 13px; }
+        .context-item { padding: 8px 12px; cursor: pointer; transition: 0.1s; }
+        .context-item:hover { background: #f0f2f5; color: var(--primary); font-weight: bold; }
+        .context-divider { height: 1px; background: #e2e8f0; margin: 4px 0; }
 
         @media print {
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
             #print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
+            .pdf-cover { height: 100vh !important; max-height: 100vh !important; page-break-after: always !important; box-sizing: border-box !important; overflow: hidden !important; }
         }
     </style>
 </head>
 <body>
 
-    <div id="app-layout">
-        <aside id="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-title">
-                    <span>📁 문서 탐색기</span>
-                </div>
-                <div class="sidebar-actions">
-                    <button class="btn-primary" onclick="openCreateModal('map')">+ 마인드맵</button>
-                    <button onclick="openCreateModal('folder')">+ 폴더 생성</button>
-                </div>
-                <div class="sidebar-actions" style="margin-top:2px;">
-                    <button onclick="exportDataToFile()">📤 백업 (JSON)</button>
-                    <button onclick="document.getElementById('import-file-input').click()">📥 복구 (Load)</button>
-                    <input type="file" id="import-file-input" style="display:none;" accept=".json" onchange="importDataFromFile(event)">
-                </div>
-            </div>
-            <div class="sidebar-filter">
-                <select id="sidebar-sort-select" onchange="renderSidebarTree()">
-                    <option value="recent">⏱️ 최근 수정일순</option>
-                    <option value="name">🔤 가나다 이름순</option>
-                    <option value="color">🎨 색상 태그별</option>
-                </select>
-            </div>
-            <div class="sidebar-content" id="sidebar-tree-container">
-                </div>
-        </aside>
+    <button class="sidebar-trigger-btn" onclick="openSidebar()" title="파일 탐색기 열기">📁</button>
 
-        <main id="main-content">
-            <div id="top-bar">
-                <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-                <div id="top-bar-title" style="font-weight: 700; color: #2d3436; font-size:16px;">Ink's Canvas 메인</div>
+    <div id="file-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">📁 탐색기 및 파일 보관함</div>
+            <button class="sidebar-close" onclick="closeSidebar()">×</button>
+        </div>
+        <div class="sidebar-actions">
+            <button onclick="createNewDoc()">📄 새 파일</button>
+            <button onclick="createNewFolder()">📁 새 폴더</button>
+            <button onclick="exportBackupJSON()" style="background:#2ecc71;">💾 백업</button>
+            <button onclick="triggerImportFileInput()" style="background:#e67e22;">📥 복원</button>
+            <input type="file" id="import-json-file" accept=".json" style="display:none;" onchange="importBackupJSON(event)">
+        </div>
+        <div class="sidebar-filter">
+            <span>정렬 기준</span>
+            <select id="sidebar-sort-select" onchange="renderSidebarTree()">
+                <option value="name">이름순 (A-Z)</option>
+                <option value="date">최근 수정순</option>
+            </select>
+        </div>
+        <div class="tree-container" id="sidebar-tree-target">
             </div>
+    </div>
 
-            <div id="home-screen">
-                <h1 style="font-weight: 800; color: #2d3436; font-size: 34px; margin-bottom: 5px; margin-top:20px;">Ink's Canvas Dashboard</h1>
-                <p style="color:#888; margin-bottom:30px;">기획과 관찰 일지를 체계적으로 담는 마인드맵 워크스페이스</p>
-                <div class="doc-list" id="doc-list"></div>
-            </div>
+    <div class="file-context-menu" id="tree-context-panel">
+        <div class="context-item" onclick="triggerContextRename()">✏️ 이름 변경</div>
+        <div class="context-item" onclick="triggerContextMove()">🚚 폴더 이동</div>
+        <div class="context-divider"></div>
+        <div class="context-item" style="font-weight:bold;">🎨 태그 색상 지정</div>
+        <div style="display:grid; grid-template-columns: repeat(6, 1fr); padding: 4px 10px; gap: 4px;">
+            <div style="width:16px; height:16px; border-radius:50%; background:#ff7675; cursor:pointer;" onclick="setFileTagColor('#ff7675')"></div>
+            <div style="width:16px; height:16px; border-radius:50%; background:#fdcb6e; cursor:pointer;" onclick="setFileTagColor('#fdcb6e')"></div>
+            <div style="width:16px; height:16px; border-radius:50%; background:#2ecc71; cursor:pointer;" onclick="setFileTagColor('#2ecc71')"></div>
+            <div style="width:16px; height:16px; border-radius:50%; background:#3498db; cursor:pointer;" onclick="setFileTagColor('#3498db')"></div>
+            <div style="width:16px; height:16px; border-radius:50%; background:#9b59b6; cursor:pointer;" onclick="setFileTagColor('#9b59b6')"></div>
+            <div style="width:16px; height:16px; border-radius:50%; background:transparent; border:1px dashed #aaa; cursor:pointer;" onclick="setFileTagColor('')"></div>
+        </div>
+        <div class="context-divider"></div>
+        <div class="context-item" onclick="triggerContextDelete()" style="color:#ff7675; font-weight:bold;">🗑️ 원본 삭제</div>
+    </div>
 
-            <div id="mindmap-container">
-                <div id="canvas-content">
-                    <svg id="svg-canvas"></svg>
-                    <div id="nodes-layer"></div>
-                </div>
-                <div class="side-controls" id="side-controls">
-                    <button class="circle-btn" id="menu-toggle-btn" onclick="toggleMenu()">⚙️</button>
-                    <button class="circle-btn menu-item" onclick="handleMenuAction(goHome)" title="홈">🏠</button>
-                    <button class="circle-btn menu-item" onclick="handleMenuAction(resetZoom)" title="중앙 맞춤">🎯</button>
-                    <button class="circle-btn menu-item" onclick="handleMenuAction(fitView)" title="전체 보기">🔍</button>
-                    <button class="circle-btn menu-item" onclick="handleMenuAction(openPdfModal)" title="PDF 보고서 인쇄">📄</button>
-                </div>
-            </div>
-        </main>
+    <div id="home-screen">
+        <h1 style="font-weight: 800; color: #2d3436; font-size: 38px; margin-bottom: 10px;">Ink's Canvas</h1>
+        <p style="color:#888; margin-bottom:30px;">상세 페이지가 있는 마인드 맵</p>
+        <button onclick="createNewDoc()" style="padding: 15px 30px; border-radius: 35px; border: none; background: var(--primary); color: white; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);">+ 마인드맵 생성</button>
+        <div class="doc-list" id="doc-list"></div>
+    </div>
+
+    <div id="mindmap-container">
+        <div id="canvas-content">
+            <svg id="svg-canvas"></svg>
+            <div id="nodes-layer"></div>
+        </div>
+        <div class="side-controls" id="side-controls">
+            <button class="circle-btn" id="menu-toggle-btn" onclick="toggleMenu()" title="메뉴 토글">⚙️</button>
+            <button class="circle-btn menu-item" onclick="handleMenuAction(goHome)" title="홈">🏠</button>
+            <button class="circle-btn menu-item" onclick="handleMenuAction(resetZoom)" title="중앙 맞춤">🎯</button>
+            <button class="circle-btn menu-item" onclick="handleMenuAction(fitView)" title="전체 보기">🔍</button>
+            <button class="circle-btn menu-item" onclick="handleMenuAction(openPdfModal)" title="프리미엄 PDF 내보내기">📄</button>
+        </div>
     </div>
 
     <div id="detail-view">
@@ -252,15 +265,18 @@
         </div>
         <div class="detail-body" id="detail-body-scroll">
             <div id="detail-title" contenteditable="true" placeholder="주제 입력..."></div>
-            <div id="detail-summary" contenteditable="true" placeholder="간단한 요약이나 핵심 키워드를 기입하세요..."></div>
-            <div id="editor" contenteditable="true" placeholder="본문 상세 내용을 자유롭게 작성하세요... (/ 입력 시 고급 서식 메뉴 호출)"></div>
+            <div id="detail-summary" contenteditable="true" placeholder="간단한 요약이나 키워드를 입력하세요..."></div>
+            
+            <div id="editor" contenteditable="true" placeholder="상세 내용을 자유롭게 작성하세요... (- 나 1. 입력 후 스페이스바를 누르면 목록 생성!)"></div>
             
             <div class="bottom-footnotes-area" id="bottom-footnotes-area" contenteditable="false">
                 <h5>주석</h5>
-                <div id="bottom-footnotes-list"></div>
+                <div id="bottom-footnotes-list">등록된 주석이 없습니다.</div>
             </div>
             
             <div id="table-bubble-menu">
+                <label><input type="checkbox" id="toggle-th-row" onchange="toggleTableHeader('row')"> 제목 열 강조</label>
+                <label><input type="checkbox" id="toggle-th-col" onchange="toggleTableHeader('col')"> 제목 행 강조</label>
                 <button class="table-del-btn" onclick="deleteActiveTable()">🗑️ 표 전체 삭제</button>
             </div>
 
@@ -273,85 +289,90 @@
         </div>
         
         <div class="floating-bar" id="floating-bar">
-            <button onclick="execCmd('undo')">↩</button>
-            <button onclick="execCmd('redo')">↪</button>
-            <div style="width:1px; height:12px; background:#4a5568; margin:0 4px;"></div>
-            <button onclick="execCmd('bold')"><b>B</b></button>
-            <button onclick="execCmd('italic')"><i>I</i></button>
-            <button onclick="execCmd('underline')"><u>U</u></button>
-            <button onclick="toggleColorMenu('text-color-menu')">🎨
+            <button onclick="execCmd('undo')" title="실행 취소(Ctrl+Z)">↩</button>
+            <button onclick="execCmd('redo')" title="다시 실행(Ctrl+Y)">↪</button>
+            <div style="width:1px; height:12px; background:#4a5568; margin:0 2px;"></div>
+            <button onclick="execCmd('bold')">B</button>
+            <button onclick="execCmd('italic')">I</button>
+            <button onclick="execCmd('underline')">U</button>
+            <div style="width:1px; height:12px; background:#4a5568; margin:0 2px;"></div>
+            <button onclick="toggleColorMenu('text-color-menu')" id="text-color-btn">🎨
                 <div class="color-menu" id="text-color-menu">
                     <div class="color-menu-title">글자 색상</div>
-                    <div class="color-dot" style="background:#000000;" onclick="execColor('foreColor', '#000000')"></div>
-                    <div class="color-dot" style="background:#e74c3c;" onclick="execColor('foreColor', '#e74c3c')"></div>
-                    <div class="color-dot" style="background:#3498db;" onclick="execColor('foreColor', '#3498db')"></div>
-                    <div class="color-dot" style="background:#2ecc71;" onclick="execColor('foreColor', '#2ecc71')"></div>
+                    <div class="color-dot" style="background:#000000;" onclick="execColor('foreColor', '#000000')" title="검은색"></div>
+                    <div class="color-dot" style="background:#e74c3c;" onclick="execColor('foreColor', '#e74c3c')" title="빨간색"></div>
+                    <div class="color-dot" style="background:#3498db;" onclick="execColor('foreColor', '#3498db')" title="파란색"></div>
+                    <div class="color-dot" style="background:#2ecc71;" onclick="execColor('foreColor', '#2ecc71')" title="초록색"></div>
+                    <div class="color-dot" style="background:#9b59b6;" onclick="execColor('foreColor', '#9b59b6')" title="보라색"></div>
+                    <div class="color-dot" style="background:#e67e22;" onclick="execColor('foreColor', '#e67e22')" title="주황색"></div>
+
+                    <div class="color-menu-title" style="margin-top:4px;">형광펜</div>
+                    <div class="color-dot" style="background:#ffffff; border:1.5px dashed #bbb;" onclick="execColor('hiliteColor', '#ffffff')" title="지우기"></div>
+                    <div class="color-dot" style="background:#ffca28;" onclick="execColor('hiliteColor', '#fefd48')" title="연노란 형광펜"></div>
+                    <div class="color-dot" style="background:#64b5f6;" onclick="execColor('hiliteColor', '#e7edf7')" title="연파란 형광펜"></div>
+                    <div class="color-dot" style="background:#a3e4d7;" onclick="execColor('hiliteColor', '#a3e4d7')" title="연초록 형광펜"></div>
+                    <div class="color-dot" style="background:#f1948a;" onclick="execColor('hiliteColor', '#f1948a')" title="연빨강 형광펜"></div>
+                    <div class="color-dot" style="background:#bb8fce;" onclick="execColor('hiliteColor', '#bb8fce')" title="연보라 형광펜"></div>
                 </div>
             </button>
-        </div>
-    </div>
-
-    <div class="custom-modal" id="create-item-modal">
-        <div class="modal-box">
-            <div class="modal-title" id="modal-creation-title">새 마인드맵 추가</div>
-            <input type="hidden" id="modal-item-type" value="map">
-            <div class="input-group">
-                <label>이름 입력</label>
-                <input type="text" id="modal-item-name" placeholder="제목을 입력하세요...">
-            </div>
-            <div class="input-group" id="modal-folder-select-group">
-                <label>저장할 폴더 위치</label>
-                <select id="modal-item-parent"></select>
-            </div>
-            <div class="input-group" id="modal-color-select-group">
-                <label>카테고리 색상 태그</label>
-                <select id="modal-item-color">
-                    <option value="#4a90e2">🔵 블루 (기본)</option>
-                    <option value="#e74c3c">🔴 레드 (중요)</option>
-                    <option value="#2ecc71">🟢 그린 (아이디어)</option>
-                    <option value="#f1c40f">🟡 옐로우 (진행중)</option>
-                    <option value="#9b59b6">🟣 퍼플 (개인연구)</option>
-                </select>
-            </div>
-            <div class="modal-btns">
-                <button onclick="closeCreateModal()" style="background:#e2e8f0; color:#4a5568;">취소</button>
-                <button onclick="submitCreateModal()" style="background:var(--primary); color:white;">확인 및 생성</button>
-            </div>
         </div>
     </div>
 
     <div class="custom-modal" id="table-modal">
         <div class="modal-box">
             <div class="modal-title">새 표 만들기</div>
+            <div class="modal-guide">💡 행/열 개수를 입력하면 깔끔한 기본 표가 생성됩니다.</div>
             <div class="input-group">
                 <label>행 개수 (가로줄)</label>
-                <input type="number" id="modal-rows" value="3" min="1">
+                <input type="number" id="modal-rows" value="3" min="1" max="20">
             </div>
             <div class="input-group">
                 <label>열 개수 (세로칸)</label>
-                <input type="number" id="modal-cols" value="3" min="1">
+                <input type="number" id="modal-cols" value="3" min="1" max="20">
             </div>
             <div class="modal-btns">
-                <button onclick="closeTableModal()" style="background:#e2e8f0;">취소</button>
+                <button onclick="closeTableModal()" style="background:#e2e8f0; color:#4a5568;">취소</button>
                 <button onclick="submitTableModal()" style="background:var(--primary); color:white;">표 삽입</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="custom-modal" id="footnote-modal">
+        <div class="modal-box">
+            <div class="modal-title">주석 수정하기</div>
+            <div class="modal-guide">💡 주석에 들어갈 설명글을 편집하거나 삭제할 수 있습니다.</div>
+            <div class="input-group">
+                <textarea id="modal-note-text" placeholder="여기에 주석 설명을 입력하세요..."></textarea>
+            </div>
+            <div class="modal-btns">
+                <button onclick="deleteFootnoteFromModal()" style="background:#ff7675; color:white;">🗑️ 주석 삭제</button>
+                <button onclick="closeFootnoteModal()" style="background:#e2e8f0; color:#4a5568;">취소</button>
+                <button onclick="submitFootnoteModal()" style="background:var(--primary); color:white;">저장</button>
             </div>
         </div>
     </div>
 
     <div class="custom-modal" id="pdf-scale-modal">
         <div class="modal-box">
-            <div class="modal-title">PDF 보고서 규격 설정</div>
-            <div class="input-group">
-                <label>출력 배율</label>
-                <select id="pdf-scale-select">
-                    <option value="1.0">표준 크기 (100% 비율)</option>
-                    <option value="0.85">약간 작게 (85% 컴팩트)</option>
-                    <option value="0.70">대용량 맞춤형 (70% 촘촘하게)</option>
-                </select>
+            <div class="modal-title">PDF 인쇄 비율 설정</div>
+            <div class="modal-guide">💡 리포트 분량과 목적에 딱 맞는 여백과 글자 크기 비율을 골라보세요.</div>
+            <div class="radio-group">
+                <label class="radio-option">
+                    <input type="radio" name="pdf-scale-choice" value="1.0" checked>
+                    <span>표준 크기 (100% 비율 - 기본 권장)</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="pdf-scale-choice" value="0.85">
+                    <span>약간 작게 (85% 비율 - 컴팩트한 문서용)</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="pdf-scale-choice" value="0.70">
+                    <span>더 촘촘하게 (70% 비율 - 대용량 리포트용)</span>
+                </label>
             </div>
             <div class="modal-btns">
-                <button onclick="closePdfModal()" style="background:#e2e8f0;">취소</button>
-                <button onclick="generatePremiumPDF()" style="background:var(--primary); color:white;">인쇄 출력</button>
+                <button onclick="closePdfModal()" style="background:#e2e8f0; color:#4a5568;">취소</button>
+                <button onclick="submitPdfModal()" style="background:var(--primary); color:white;">📄 PDF 출력</button>
             </div>
         </div>
     </div>
@@ -359,280 +380,771 @@
     <div id="print-area"></div>
 
 <script>
-    // 🗃️ 핵심 데이터 구조 확장 (폴더와 맵 메타데이터 처리 내장)
-    let workspaceData = JSON.parse(localStorage.getItem('ink_canvas_workspace_v6')) || {
-        folders: [],
-        docs: [
-            { id: 1001, title: "마인드 관찰 서비스 기획", folderId: null, color: "#4a90e2", isFavorite: true, lastModified: Date.now(), nodes: [{ id: 'root', title: "마인드 관찰 서비스 기획", summary: '핵심 브레인스토밍 리포트', content: '', x: 5000, y: 5000, parentId: null, level: 0 }] }
-        ]
-    };
-
     let currentDoc = null;
     let selectedNodeId = null;
+    
+    // 파일 시스템 호환성을 위한 폴더 목록 데이터 로드 로직 추가 통합
+    let docs = JSON.parse(localStorage.getItem('thought_canvas_premium_v5') || '[]');
+    let folders = JSON.parse(localStorage.getItem('thought_canvas_folders_v5') || '[]');
+
     let transform = { x: 0, y: 0, scale: 1 };
     let isPanning = false, startPoint = { x: 0, y: 0 };
     let activeTable = null; 
     let savedSlashRange = null;
     let slashIdx = -1;
+    
+    let activeFootnoteTarget = null;
+    let touchTimer = null;
 
-    // 초기 실행 환경 세팅
-    initApp();
+    // 우클릭 관리용 메타데이터 컨텍스트 변수
+    let selectedContextItem = { type: null, id: null };
 
-    function initApp() {
-        saveWorkspace();
-        renderSidebarTree();
-        renderDashboard();
-    }
+    // 최초 로드 시 탐색기 트리 및 리스트 동시 동기화
+    renderDocList();
+    renderSidebarTree();
 
-    function saveWorkspace() {
-        localStorage.setItem('ink_canvas_workspace_v6', JSON.stringify(workspaceData));
-    }
+    const titleField = document.getElementById('detail-title');
+    const summaryField = document.getElementById('detail-summary');
+    const editorField = document.getElementById('editor');
+    
+    titleField.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); summaryField.focus(); }
+    });
 
-    /* 📂 파일 브라우저 및 트리 아키텍처 제어 시스템 */
-    function toggleSidebar() {
-        const sb = document.getElementById('sidebar');
-        sb.classList.toggle('open');
-        if(window.innerWidth > 768) {
-            sb.style.transform = sb.classList.contains('open') ? 'translateX(-100%)' : 'translateX(0)';
-        }
-    }
+    titleField.addEventListener('input', function() {
+        document.getElementById('parent-title-display').innerText = this.innerText || '주제 없음';
+        saveCurrentNodeData();
+    });
+    summaryField.addEventListener('input', saveCurrentNodeData);
+    
+    editorField.addEventListener('input', function() {
+        refreshFootnoteNumbers();
+        saveCurrentNodeData();
+    });
 
-    function openCreateModal(type) {
-        const modal = document.getElementById('create-item-modal');
-        document.getElementById('modal-item-type').value = type;
-        document.getElementById('modal-item-name').value = '';
-        
-        const folderSelect = document.getElementById('modal-item-parent');
-        folderSelect.innerHTML = '<option value="">루트 위치 (없음)</option>' + 
-            workspaceData.folders.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
-
-        if(type === 'folder') {
-            document.getElementById('modal-creation-title').innerText = "새 보관 폴더 생성";
-            document.getElementById('modal-color-select-group').style.display = 'none';
-        } else {
-            document.getElementById('modal-creation-title').innerText = "새 마인드맵 문서 생성";
-            document.getElementById('modal-color-select-group').style.display = 'flex';
-        }
-        modal.style.display = 'flex';
-    }
-
-    function closeCreateModal() { document.getElementById('create-item-modal').style.display = 'none'; }
-
-    function submitCreateModal() {
-        const type = document.getElementById('modal-item-type').value;
-        const name = document.getElementById('modal-item-name').value.trim() || "지정되지 않은 이름";
-        const parentFolder = document.getElementById('modal-item-parent').value;
-        const folderId = parentFolder ? parseInt(parentFolder, 10) : null;
-
-        if (type === 'folder') {
-            workspaceData.folders.push({ id: Date.now(), name: name });
-        } else {
-            const color = document.getElementById('modal-item-color').value;
-            const newDoc = {
-                id: Date.now(),
-                title: name,
-                folderId: folderId,
-                color: color,
-                isFavorite: false,
-                lastModified: Date.now(),
-                nodes: [{ id: 'root', title: name, summary: '', content: '', x: 5000, y: 5000, parentId: null, level: 0 }]
-            };
-            workspaceData.docs.push(newDoc);
-        }
-        saveWorkspace();
-        closeCreateModal();
-        renderSidebarTree();
-        renderDashboard();
-    }
-
-    // ⭐ 즐겨찾기 토글 시스템
-    function toggleFavorite(docId, event) {
-        if(event) event.stopPropagation();
-        const doc = workspaceData.docs.find(d => d.id === docId);
-        if(doc) {
-            doc.isFavorite = !doc.isFavorite;
-            saveWorkspace();
-            renderSidebarTree();
-            renderDashboard();
-        }
-    }
-
-    // 사이드바 구조 렌더링 (최근 수정일 / 이름 가나다 순 정렬 알고리즘 내장)
-    function renderSidebarTree() {
-        const container = document.getElementById('sidebar-tree-container');
-        const sortType = document.getElementById('sidebar-sort-select').value;
-        container.innerHTML = '';
-
-        // 1. 즐겨찾기 섹션 빌드
-        const favDocs = workspaceData.docs.filter(d => d.isFavorite);
-        if (favDocs.length > 0) {
-            const favSection = document.createElement('div');
-            favSection.innerHTML = `<div class="tree-section-title">⭐ 즐겨찾기 고정</div>`;
-            favDocs.forEach(doc => {
-                favSection.appendChild(createFileTreeItem(doc));
-            });
-            container.appendChild(favSection);
-        }
-
-        // 전체 문서 및 폴더 섹션 빌드
-        const mainSection = document.createElement('div');
-        mainSection.innerHTML = `<div class="tree-section-title" style="margin-top:15px;">📁 모든 보관소</div>`;
-
-        // 복사본 정렬
-        let sortedDocs = [...workspaceData.docs];
-        if (sortType === 'name') sortedDocs.sort((a,b) => a.title.localeCompare(b.title));
-        else if (sortType === 'recent') sortedDocs.sort((a,b) => b.lastModified - a.lastModified);
-        else if (sortType === 'color') sortedDocs.sort((a,b) => a.color.localeCompare(b.color));
-
-        // 루트 마인드맵 출력
-        const rootDocs = sortedDocs.filter(d => d.folderId === null);
-        
-        // 폴더 구조 매핑
-        workspaceData.folders.forEach(folder => {
-            const fDiv = document.createElement('div');
-            fDiv.innerHTML = `
-                <div class="tree-item" style="font-weight:600;">
-                    <div class="item-icon">📂</div>
-                    <div class="item-title">${folder.name}</div>
-                    <button class="btn-opt" onclick="deleteFolder(${folder.id}, event)">🗑️</button>
-                </div>
-                <div class="tree-folder-children" id="f-child-${folder.id}"></div>
-            `;
-            const childContainer = fDiv.querySelector(`#f-child-${folder.id}`);
-            const childrenDocs = sortedDocs.filter(d => d.folderId === folder.id);
-            
-            if(childrenDocs.length === 0) {
-                childContainer.innerHTML = `<div style="padding:5px 15px; font-size:11px; color:#aaa; font-style:italic;">폴더가 비어있음</div>`;
-            } else {
-                childrenDocs.forEach(cDoc => childContainer.appendChild(createFileTreeItem(cDoc)));
-            }
-            mainSection.appendChild(fDiv);
-        });
-
-        rootDocs.forEach(rDoc => mainSection.appendChild(createFileTreeItem(rDoc)));
-        container.appendChild(mainSection);
-    }
-
-    function createFileTreeItem(doc) {
-        const item = document.createElement('div');
-        item.className = `tree-item ${currentDoc && currentDoc.id === doc.id ? 'active' : ''}`;
-        item.onclick = () => openDoc(doc.id);
-        item.innerHTML = `
-            <div class="item-icon" style="color:${doc.color || '#4a90e2'}">■</div>
-            <div class="item-title">${doc.title}</div>
-            <div class="item-meta">
-                <span class="btn-fav ${doc.isFavorite?'active':''}" onclick="toggleFavorite(${doc.id}, event)">★</span>
-                <button class="btn-opt" onclick="deleteDoc(${doc.id}, event)">🗑️</button>
-            </div>
-        `;
-        return item;
-    }
-
-    function deleteFolder(id, event) {
+    function toggleColorMenu(menuId) {
         event.stopPropagation();
-        if(confirm("폴더를 해제하시겠습니까? (내부 문서는 안전하게 루트 영역으로 자동 이동됩니다.)")) {
-            workspaceData.docs.forEach(d => { if(d.folderId === id) d.folderId = null; });
-            workspaceData.folders = workspaceData.folders.filter(f => f.id !== id);
-            saveWorkspace(); initApp();
+        const m = document.getElementById(menuId);
+        m.style.display = (m.style.display === 'grid') ? 'none' : 'grid';
+    }
+
+    document.addEventListener('click', (e) => {
+        document.getElementById('text-color-menu').style.display = 'none';
+        document.getElementById('tree-context-panel').style.display = 'none';
+        if (!e.target.closest('#slash-menu')) {
+            hideSlashMenu();
         }
-    }
-
-    /* 📤 로컬 파일 내보내기/가져오기 (JSON 백업 파일 처리 장치) */
-    function exportDataToFile() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(workspaceData, null, 2));
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `Inks_Canvas_Backup_${new Date().toISOString().slice(0,10)}.json`);
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-    }
-
-    function importDataFromFile(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const importedData = JSON.parse(e.target.result);
-                if (importedData.folders && importedData.docs) {
-                    workspaceData = importedData;
-                    saveWorkspace();
-                    initApp();
-                    alert("📂 전체 문서 데이터가 안전하게 복원되었습니다!");
-                } else {
-                    alert("올바르지 않은 형식의 백업 파일입니다.");
-                }
-            } catch (err) {
-                alert("파일 읽기 도중 에러가 발생했습니다.");
-            }
-        };
-        reader.readAsText(file);
-    }
-
-    /* 🏠 대시보드 메인 홈 제어 흐름 */
-    function renderDashboard() {
-        const container = document.getElementById('doc-list');
-        if (workspaceData.docs.length === 0) {
-            container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:#888;">생성된 파일 목록이 없습니다. 상단에서 새 마인드맵을 생성하세요!</div>`;
+        
+        if (e.target.closest('#table-bubble-menu')) {
             return;
         }
-        container.innerHTML = workspaceData.docs.map(doc => `
-            <div class="doc-card" onclick="openDoc(${doc.id})" style="border-top: 5px solid ${doc.color || 'var(--primary)'}">
+
+        let node = e.target;
+        let foundTable = false;
+        while(node && node !== editorField) {
+            if(node.tagName === 'TABLE') {
+                foundTable = true;
+                activeTable = node;
+                positionTableMenu(node);
+                break;
+            }
+            node = node.parentNode;
+        }
+        
+        if(!foundTable) {
+            document.getElementById('table-bubble-menu').style.display = 'none';
+            activeTable = null;
+        }
+    });
+
+    function positionTableMenu(tableEl) {
+        const menu = document.getElementById('table-bubble-menu');
+        menu.style.display = 'flex';
+        document.getElementById('toggle-th-row').checked = tableEl.classList.contains('has-th-row');
+        document.getElementById('toggle-th-col').checked = tableEl.classList.contains('has-th-col');
+        
+        const rect = tableEl.getBoundingClientRect();
+        const bodyRect = document.querySelector('.detail-body').getBoundingClientRect();
+        const topPos = rect.top - bodyRect.top + document.querySelector('.detail-body').scrollTop - 40;
+        const leftPos = rect.left - bodyRect.left;
+        
+        menu.style.top = topPos + 'px';
+        menu.style.left = Math.max(10, leftPos) + 'px';
+    }
+
+    function toggleTableHeader(type) {
+        if(!activeTable) return;
+        if(type === 'row') activeTable.classList.toggle('has-th-row');
+        else if(type === 'col') activeTable.classList.toggle('has-th-col');
+        saveCurrentNodeData();
+    }
+
+    function deleteActiveTable() {
+        if (!activeTable) return;
+        if (confirm("이 표를 전체 삭제하시겠습니까?")) {
+            activeTable.remove();
+            document.getElementById('table-bubble-menu').style.display = 'none';
+            activeTable = null;
+            saveCurrentNodeData();
+        }
+    }
+
+    function openTableModal() {
+        document.getElementById('table-modal').style.display = 'flex';
+        document.getElementById('modal-rows').focus();
+    }
+    function closeTableModal() {
+        document.getElementById('table-modal').style.display = 'none';
+    }
+    function submitTableModal() {
+        const r = parseInt(document.getElementById('modal-rows').value, 10);
+        const c = parseInt(document.getElementById('modal-cols').value, 10);
+        if(isNaN(r) || isNaN(c) || r <= 0 || c <= 0) return alert("1 이상의 정수를 입력해 주세요.");
+        
+        generateDynamicTable(r, c);
+        closeTableModal();
+    }
+
+    function openFootnoteModal(targetEl) {
+        activeFootnoteTarget = targetEl;
+        const currentText = targetEl.getAttribute('data-note') || '';
+        document.getElementById('modal-note-text').value = currentText;
+        document.getElementById('footnote-modal').style.display = 'flex';
+        document.getElementById('modal-note-text').focus();
+    }
+    function closeFootnoteModal() {
+        document.getElementById('footnote-modal').style.display = 'none';
+        activeFootnoteTarget = null;
+    }
+    function submitFootnoteModal() {
+        if (activeFootnoteTarget) {
+            const updatedText = document.getElementById('modal-note-text').value.trim();
+            if (!updatedText) return alert("주석 설명을 입력해 주세요.");
+            activeFootnoteTarget.setAttribute('data-note', updatedText);
+            refreshFootnoteNumbers();
+            saveCurrentNodeData();
+        }
+        closeFootnoteModal();
+    }
+    function deleteFootnoteFromModal() {
+        if (activeFootnoteTarget && confirm("이 주석을 삭제하시겠습니까?")) {
+            safelyRemoveFootnote(activeFootnoteTarget);
+            closeFootnoteModal();
+        }
+    }
+
+    function refreshFootnoteNumbers() {
+        const refs = editorField.querySelectorAll('.footnote-ref');
+        const areaContainer = document.getElementById('bottom-footnotes-area');
+        const listContainer = document.getElementById('bottom-footnotes-list');
+        
+        if (refs.length === 0) {
+            areaContainer.style.display = 'none';
+            listContainer.innerHTML = '등록된 주석이 없습니다.';
+            return;
+        }
+
+        areaContainer.style.display = 'block'; 
+
+        let listHtml = '';
+        refs.forEach((ref, index) => { 
+            const numText = `[${index + 1}]`;
+            ref.innerText = numText; 
+            
+            const fnId = `fn-ref-${index}`;
+            const targetId = `fn-item-${index}`;
+            ref.id = fnId;
+            ref.setAttribute('onclick', `scrollToFootnoteItem('${targetId}')`);
+
+            const noteContent = ref.getAttribute('data-note') || '내용 없음';
+            
+            listHtml += `
+                <div class="bottom-footnote-item" id="${targetId}">
+                    <span class="fn-link-num" onclick="scrollToFootnoteRef('${fnId}')">${numText}</span> ${noteContent}
+                </div>
+            `;
+        });
+        listContainer.innerHTML = listHtml;
+    }
+
+    function scrollToFootnoteRef(refId) {
+        const target = document.getElementById(refId);
+        if(target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            target.classList.remove('flash-highlight');
+            void target.offsetWidth; 
+            target.classList.add('flash-highlight');
+        }
+    }
+
+    function scrollToFootnoteItem(itemId) {
+        event.stopPropagation(); 
+        const target = document.getElementById(itemId);
+        if(target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            target.classList.remove('flash-highlight');
+            void target.offsetWidth; 
+            target.classList.add('flash-highlight');
+        }
+    }
+
+    function safelyRemoveFootnote(refElement) {
+        if (!refElement) return;
+        const prevNode = refElement.previousSibling;
+        const nextNode = refElement.nextSibling;
+
+        if (prevNode && prevNode.nodeType === Node.TEXT_NODE && nextNode && nextNode.nodeType === Node.TEXT_NODE) {
+            let nextVal = nextNode.nodeValue;
+            if (nextVal.startsWith('\u00A0') || nextVal.startsWith(' ')) {
+                nextVal = nextVal.substring(1);
+            }
+            
+            const mergedText = prevNode.nodeValue + nextVal;
+            const originalPrevLength = prevNode.nodeValue.length;
+            prevNode.nodeValue = mergedText;
+            
+            refElement.remove();
+            nextNode.remove();
+
+            const sel = window.getSelection();
+            const range = document.createRange();
+            range.setStart(prevNode, originalPrevLength);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        } else {
+            refElement.remove();
+        }
+        
+        refreshFootnoteNumbers();
+        saveCurrentNodeData();
+    }
+
+    function execColor(cmd, color) {
+        event.stopPropagation();
+        document.execCommand(cmd, false, color);
+        document.getElementById('text-color-menu').style.display = 'none';
+        saveCurrentNodeData();
+    }
+
+    function hideSlashMenu() {
+        document.getElementById('slash-menu').style.display = 'none';
+        slashIdx = -1;
+        const items = document.querySelectorAll('.slash-item');
+        items.forEach(item => item.classList.remove('active'));
+    }
+
+    function triggerSlashAction(action) {
+        if (!savedSlashRange) return;
+
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(savedSlashRange);
+        
+        if (action === 'table') {
+            document.getElementById('slash-menu').style.display = 'none';
+            openTableModal();
+        } else {
+            hideSlashMenu();
+            document.execCommand('delete', false, null);
+            if (action === 'ul') {
+                execCmd('insertUnorderedList');
+            } else if (action === 'ol') {
+                execCmd('insertOrderedList');
+            } else if (action === 'hr') {
+                const hr = document.createElement('hr');
+                const nextDiv = document.createElement('div');
+                nextDiv.innerHTML = "<br>";
+                savedSlashRange.insertNode(nextDiv);
+                savedSlashRange.insertNode(hr);
+                
+                const newRange = document.createRange();
+                newRange.setStart(nextDiv, 0);
+                newRange.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(newRange);
+                saveCurrentNodeData();
+            }
+            savedSlashRange = null;
+        }
+    }
+
+    editorField.addEventListener('touchstart', function(e) {
+        const ref = e.target.closest('.footnote-ref');
+        if (ref) {
+            touchTimer = setTimeout(() => {
+                openFootnoteModal(ref);
+            }, 500);
+        }
+    }, {passive: true});
+
+    editorField.addEventListener('touchend', function(e) {
+        if (touchTimer) clearTimeout(touchTimer);
+    }, {passive: true});
+
+    editorField.addEventListener('contextmenu', function(e) {
+        const ref = e.target.closest('.footnote-ref');
+        if (ref) {
+            e.preventDefault();
+            openFootnoteModal(ref);
+        }
+    });
+
+    editorField.addEventListener('dblclick', function(e) {
+        const ref = e.target.closest('.footnote-ref');
+        if (ref) {
+            openFootnoteModal(ref);
+        }
+    });
+
+    editorField.addEventListener('keydown', function(e) {
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+
+        const slashMenu = document.getElementById('slash-menu');
+        const isSlashMenuOpen = (slashMenu.style.display === 'block');
+
+        if (isSlashMenuOpen && e.key === 'Tab') {
+            e.preventDefault();
+            const items = document.querySelectorAll('.slash-item');
+            if (items.length === 0) return;
+
+            items.forEach(item => item.classList.remove('active'));
+            
+            if (e.shiftKey) {
+                slashIdx = (slashIdx <= 0) ? items.length - 1 : slashIdx - 1;
+            } else {
+                slashIdx = (slashIdx >= items.length - 1) ? 0 : slashIdx + 1;
+            }
+            
+            items[slashIdx].classList.add('active');
+            return;
+        }
+
+        if (!isSlashMenuOpen && e.key === 'Tab') {
+            let anchor = selection.anchorNode;
+            let cell = null;
+            let temp = anchor;
+            while(temp && temp !== this) {
+                if(temp.tagName === 'TD' || temp.tagName === 'TH') { cell = temp; break; }
+                temp = temp.parentNode;
+            }
+            
+            if(cell) {
+                e.preventDefault();
+                const table = cell.closest('table');
+                const allCells = Array.from(table.querySelectorAll('td, th'));
+                const currentIndex = allCells.indexOf(cell);
+                let nextIndex = e.shiftKey ? currentIndex - 1 : currentIndex + 1;
+                
+                if(nextIndex < 0) nextIndex = allCells.length - 1;
+                if(nextIndex >= allCells.length) nextIndex = 0;
+                
+                const nextCell = allCells[nextIndex];
+                const newRange = document.createRange();
+                newRange.selectNodeContents(nextCell);
+                newRange.collapse(false);
+                selection.removeAllRanges();
+                selection.addRange(newRange);
+                return;
+            }
+
+            let node = anchor;
+            let insideList = false;
+            while (node && node !== this) {
+                if (['LI', 'UL', 'OL'].includes(node.nodeName)) { insideList = true; break; }
+                node = node.parentNode;
+            }
+            if (insideList) {
+                e.preventDefault();
+                if (e.shiftKey) document.execCommand('outdent', false, null);
+                else document.execCommand('indent', false, null);
+                saveCurrentNodeData(); 
+            }
+        }
+
+        if (e.key === 'Backspace') {
+            const range = selection.getRangeAt(0);
+            if (range.startOffset === 0) {
+                let prevSibling = range.startContainer.previousSibling;
+                if (prevSibling && prevSibling.classList && prevSibling.classList.contains('footnote-ref')) {
+                    e.preventDefault();
+                    safelyRemoveFootnote(prevSibling);
+                    return;
+                }
+            } else if (range.startContainer.nodeType === Node.TEXT_NODE) {
+                let text = range.startContainer.nodeValue;
+                if (range.startOffset === 1 && (text.charCodeAt(0) === 160 || text === ' ')) {
+                    let prevSibling = range.startContainer.previousSibling;
+                    if (prevSibling && prevSibling.classList && prevSibling.classList.contains('footnote-ref')) {
+                        e.preventDefault();
+                        safelyRemoveFootnote(prevSibling);
+                        return;
+                    }
+                }
+            }
+        }
+
+        if (e.key === 'Delete') {
+            const range = selection.getRangeAt(0);
+            if (range.startContainer.nodeType === Node.TEXT_NODE) {
+                let text = range.startContainer.nodeValue;
+                if (range.startOffset === text.length) {
+                    let nextSibling = range.startContainer.nextSibling;
+                    if (nextSibling && nextSibling.classList && nextSibling.classList.contains('footnote-ref')) {
+                        e.preventDefault();
+                        safelyRemoveFootnote(nextSibling);
+                        return;
+                    }
+                }
+            } else {
+                let nextNode = range.startContainer.childNodes[range.startOffset];
+                if (nextNode && nextNode.classList && nextNode.classList.contains('footnote-ref')) {
+                    e.preventDefault();
+                    safelyRemoveFootnote(nextNode);
+                    return;
+                }
+            }
+        }
+        
+        if (e.key === 'Enter') {
+            if (isSlashMenuOpen && slashIdx !== -1) {
+                e.preventDefault();
+                const items = document.querySelectorAll('.slash-item');
+                const action = items[slashIdx].getAttribute('data-action');
+                triggerSlashAction(action);
+                return;
+            }
+
+            hideSlashMenu();
+            if (selection.rangeCount > 0) {
+                let node = selection.anchorNode;
+                let liNode = null;
+                let headingNode = null;
+                
+                while (node && node !== this) {
+                    if (node.nodeName === 'LI') liNode = node;
+                    if (['H1','H2','H3','H4'].includes(node.nodeName)) headingNode = node;
+                    node = node.parentNode;
+                }
+                
+                if (headingNode) {
+                    e.preventDefault();
+                    const div = document.createElement('div');
+                    div.innerHTML = "<br>";
+                    headingNode.parentNode.insertBefore(div, headingNode.nextSibling);
+                    const newRange = document.createRange();
+                    newRange.setStart(div, 0);
+                    newRange.collapse(true);
+                    selection.removeAllRanges();
+                    selection.addRange(newRange);
+                    saveCurrentNodeData();
+                    return;
+                }
+                
+                if (liNode && (liNode.innerText.trim() === "" || liNode.innerHTML === "<br>")) {
+                    e.preventDefault();
+                    const parentList = liNode.parentNode;
+                    const div = document.createElement('div');
+                    div.innerHTML = "<br>";
+                    
+                    if (liNode === parentList.lastElementChild) {
+                        liNode.remove();
+                        if (parentList.children.length === 0) parentList.remove();
+                        if (parentList.parentNode && parentList.parentNode !== editorField) {
+                            parentList.parentNode.insertBefore(div, parentList.nextSibling);
+                        } else {
+                            editorField.appendChild(div);
+                        }
+                    } else {
+                        const nextRange = document.createRange();
+                        nextRange.setStartAfter(liNode);
+                        nextRange.setEndAfter(parentList);
+                        const fragment = nextRange.extractContents();
+                        parentList.parentNode.insertBefore(div, parentList.nextSibling);
+                        if (fragment.textContent.trim() !== "" || fragment.querySelector('li')) {
+                            div.parentNode.insertBefore(fragment, div.nextSibling);
+                        }
+                        liNode.remove();
+                        if (parentList.children.length === 0) parentList.remove();
+                    }
+                    
+                    const newRange = document.createRange();
+                    newRange.setStart(div, 0);
+                    newRange.collapse(true);
+                    selection.removeAllRanges();
+                    selection.addRange(newRange);
+                    saveCurrentNodeData();
+                }
+            }
+        }
+    });
+
+    editorField.addEventListener('keyup', function(e) {
+        if (['Tab', 'Enter', 'Shift'].includes(e.key)) return;
+
+        if (e.key === '/') {
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                savedSlashRange = range.cloneRange();
+                
+                const rect = range.getBoundingClientRect();
+                const bodyRect = document.querySelector('.detail-body').getBoundingClientRect();
+                const slashMenu = document.getElementById('slash-menu');
+                
+                slashMenu.style.display = 'block';
+                slashMenu.style.top = (rect.top - bodyRect.top + document.querySelector('.detail-body').scrollTop + 25) + 'px';
+                slashMenu.style.left = (rect.left - bodyRect.left) + 'px';
+                slashIdx = -1;
+            }
+        } else if (e.key === 'Escape' || e.key === 'Backspace') {
+            if (editorField.innerText.indexOf('/') === -1 || e.key === 'Escape') {
+                hideSlashMenu();
+            }
+        }
+    });
+
+    editorField.addEventListener('beforeinput', function(e) {
+        if (e.data === ' ') {
+            const selection = window.getSelection();
+            if (!selection.rangeCount) return;
+
+            const range = selection.getRangeAt(0);
+            const anchorNode = selection.anchorNode;
+
+            if (anchorNode && anchorNode.nodeType === Node.TEXT_NODE) {
+                const text = anchorNode.nodeValue;
+                const offset = range.startOffset;
+                const textBeforeCursor = text.substring(0, offset);
+
+                let nodeCheck = anchorNode;
+                let insideRestrict = false;
+                while (nodeCheck && nodeCheck !== this) {
+                    if (['TABLE', 'H1', 'H2', 'H3', 'H4'].includes(nodeCheck.nodeName)) { insideRestrict = true; break; }
+                    nodeCheck = nodeCheck.parentNode;
+                }
+                if (insideRestrict) return;
+
+                const match = textBeforeCursor.match(/\[\*([^\]]+)\]$/);
+
+                if (match) {
+                    e.preventDefault();
+                    const noteContent = match[1].trim();
+                    
+                    if (noteContent.length > 0) {
+                        const patternLength = match[0].length;
+                        const startIdx = offset - patternLength;
+                        
+                        const textBeforePattern = text.substring(0, startIdx);
+                        const textAfterPattern = text.substring(offset);
+                        
+                        anchorNode.nodeValue = textBeforePattern;
+                        
+                        const span = document.createElement('span');
+                        span.className = 'footnote-ref';
+                        span.setAttribute('contenteditable', 'false');
+                        span.setAttribute('data-note', noteContent);
+                        span.innerText = '[?]';
+                        
+                        const nextTextNode = document.createTextNode('\u00A0' + textAfterPattern);
+                        
+                        if (anchorNode.nextSibling) {
+                            anchorNode.parentNode.insertBefore(span, anchorNode.nextSibling);
+                            anchorNode.parentNode.insertBefore(nextTextNode, span.nextSibling);
+                        } else {
+                            anchorNode.parentNode.appendChild(span);
+                            anchorNode.parentNode.appendChild(nextTextNode);
+                        }
+                        
+                        refreshFootnoteNumbers();
+                        
+                        const newRange = document.createRange();
+                        newRange.setStart(nextTextNode, 1);
+                        newRange.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(newRange);
+                        
+                        saveCurrentNodeData();
+                        return;
+                    }
+                }
+
+                const trimmed = textBeforeCursor.trim();
+                if (textBeforeCursor === trimmed) {
+                    if (trimmed === '-') {
+                        e.preventDefault();
+                        range.setStart(anchorNode, 0);
+                        range.setEnd(anchorNode, offset);
+                        range.deleteContents();
+                        document.execCommand('insertUnorderedList', false, null);
+                        saveCurrentNodeData();
+                        return;
+                    }
+
+                    if (/^\d+\.$/.test(trimmed)) {
+                        e.preventDefault();
+                        range.setStart(anchorNode, 0);
+                        range.setEnd(anchorNode, offset);
+                        range.deleteContents();
+                        document.execCommand('insertOrderedList', false, null);
+                        saveCurrentNodeData();
+                        return;
+                    }
+
+                    if (/^#{1,4}$/.test(trimmed)) {
+                        e.preventDefault();
+                        const level = trimmed.length; 
+                        range.setStart(anchorNode, 0);
+                        range.setEnd(anchorNode, offset);
+                        range.deleteContents();
+                        
+                        const heading = document.createElement('h' + level);
+                        heading.innerHTML = "<br>";
+                        range.insertNode(heading);
+                        
+                        const newRange = document.createRange();
+                        newRange.setStart(heading, 0);
+                        newRange.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(newRange);
+                        saveCurrentNodeData();
+                    }
+                }
+            }
+        }
+    });
+
+    function generateDynamicTable(rows, cols) {
+        const table = document.createElement('table');
+        const tbody = document.createElement('tbody');
+
+        for (let r = 0; r < rows; r++) {
+            const tr = document.createElement('tr');
+            for (let c = 0; c < cols; c++) {
+                const cell = document.createElement('td');
+                cell.innerHTML = "<br>";
+                tr.appendChild(cell);
+            }
+            tbody.appendChild(tr);
+        }
+        table.appendChild(tbody);
+
+        const nextDiv = document.createElement('div');
+        nextDiv.innerHTML = "<br>";
+
+        hideSlashMenu();
+        editorField.focus();
+        const selection = window.getSelection();
+
+        if (savedSlashRange) {
+            selection.removeAllRanges();
+            selection.addRange(savedSlashRange);
+            document.execCommand('delete', false, null); 
+            
+            const currentRange = selection.getRangeAt(0);
+            currentRange.insertNode(nextDiv);
+            currentRange.insertNode(table);
+            
+            savedSlashRange = null;
+        } else {
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                range.deleteContents();
+                range.insertNode(nextDiv);
+                range.insertNode(table);
+            } else {
+                editorField.appendChild(table);
+                editorField.appendChild(nextDiv);
+            }
+        }
+
+        const firstCell = table.querySelector('td');
+        if (firstCell) {
+            const newRange = document.createRange();
+            newRange.setStart(firstCell, 0);
+            newRange.collapse(true);
+            selection.removeAllRanges();
+            selection.addRange(newRange);
+        }
+        
+        saveCurrentNodeData();
+    }
+
+    function saveCurrentNodeData() {
+        if (!currentDoc || !selectedNodeId) return;
+        const node = currentDoc.nodes.find(n => n.id === selectedNodeId);
+        if (node) {
+            node.title = titleField.innerText;
+            node.summary = summaryField.innerText;
+            node.content = editorField.innerHTML;
+            
+            // 파일 리스트 제목 메타데이터 동시 반영
+            if(selectedNodeId === 'root') {
+                currentDoc.title = titleField.innerText;
+            }
+            currentDoc.updatedAt = Date.now();
+            save(); 
+            renderSidebarTree();
+        }
+    }
+
+    function toggleMenu() { document.getElementById('side-controls').classList.toggle('open'); }
+    function closeMenu() { document.getElementById('side-controls').classList.remove('open'); }
+    function handleMenuAction(action) { action(); document.getElementById('side-controls').classList.remove('open'); }
+
+    // [개선 반영]: 새 마인드맵 파일 생성 및 초기 타임스탬프 탑재
+    function createNewDoc() {
+        const title = prompt("프로젝트 마인드맵 이름:");
+        if (!title) return;
+        const newDoc = { 
+            id: Date.now(), 
+            title: title, 
+            parentId: null, // 최상위 루트 폴더 기준 배치
+            colorTag: '',   // 기본 투명 태그 색상
+            updatedAt: Date.now(),
+            nodes: [{ id: 'root', title: title, summary: '', content: '', x: 5000, y: 5000, parentId: null, level: 0 }] 
+        };
+        docs.push(newDoc); 
+        save(); 
+        renderDocList();
+        renderSidebarTree();
+    }
+
+    function renderDocList() {
+        const container = document.getElementById('doc-list');
+        container.innerHTML = docs.map(doc => `
+            <div class="doc-card" onclick="openDoc(${doc.id})" style="border-top: 5px solid ${doc.colorTag || 'transparent'}">
                 <h3 style="margin:0; font-size:18px; color:#111;">${doc.title}</h3>
-                <p style="font-size:12px; color:#999; margin-top:8px;">📄 노드 개수: ${doc.nodes.length}개</p>
-                <button class="doc-delete-btn" onclick="deleteDoc(${doc.id}, event)">삭제</button>
+                <p style="font-size:12px; color:#999; margin-top:8px;">${doc.nodes.length} Thoughts</p>
+                <button class="doc-delete-btn" onclick="deleteDoc(event, ${doc.id})">삭제</button>
             </div>
         `).join('');
     }
 
-    function deleteDoc(id, event) {
-        if(event) event.stopPropagation();
-        if(confirm("이 마인드맵을 영구히 삭제하시겠습니까?")) {
-            workspaceData.docs = workspaceData.docs.filter(d => d.id !== id);
-            if(currentDoc && currentDoc.id === id) goHome();
-            saveWorkspace(); initApp();
-        }
-    }
+    function deleteDoc(e, id) { e.stopPropagation(); if(confirm("정말 이 마인드맵 파일을 완전히 삭제하시겠습니까?")) { docs = docs.filter(d => d.id !== id); save(); renderDocList(); renderSidebarTree(); } }
 
     function openDoc(id) {
-        currentDoc = workspaceData.docs.find(d => d.id === id);
-        document.getElementById('top-bar-title').innerText = `📌 프로젝트: ${currentDoc.title}`;
+        currentDoc = docs.find(d => d.id === id);
         document.getElementById('home-screen').style.display = 'none';
         document.getElementById('mindmap-container').style.display = 'block';
-        resetZoom(); renderMindmap(); renderSidebarTree();
-    }
-
-    function goHome() {
-        currentDoc = null;
-        document.getElementById('top-bar-title').innerText = "Ink's Canvas 메인";
-        document.getElementById('home-screen').style.display = 'flex';
-        document.getElementById('mindmap-container').style.display = 'none';
+        resetZoom(); 
+        renderMindmap();
         renderSidebarTree();
-        renderDashboard();
     }
 
-    /* 🎨 무한 캔버스 엔진 및 드로잉 로직 */
     function renderMindmap() {
         const layer = document.getElementById('nodes-layer');
         const svg = document.getElementById('svg-canvas');
         layer.innerHTML = ''; svg.innerHTML = '';
-        
-        if(!currentDoc) return;
-
         currentDoc.nodes.forEach(node => {
             const div = document.createElement('div');
             div.className = `node ${node.id === 'root' ? 'root' : ''}`;
-            if(node.id === 'root' && currentDoc.color) {
-                div.style.backgroundColor = currentDoc.color;
-            }
             div.style.left = node.x + 'px'; div.style.top = node.y + 'px';
-            div.innerHTML = `<div class="node-info"><b>${node.title || '주제 설정'}</b><div class="summary">${node.summary || ''}</div></div><button class="add-btn">+</button>`;
-            
+            div.innerHTML = `<div class="node-info"><b>${node.title || (node.id === 'root' ? '중심' : '주제 없음')}</b><div class="summary">${node.summary || ''}</div></div><button class="add-btn">+</button>`;
             div.querySelector('.node-info').onclick = (e) => { e.stopPropagation(); openDetail(node.id); };
             div.querySelector('.add-btn').onclick = (e) => { e.stopPropagation(); addChildNode(node.id); };
             layer.appendChild(div);
-
             if (node.parentId) {
                 const parent = currentDoc.nodes.find(n => n.id === node.parentId);
                 if (parent) {
@@ -646,186 +1158,428 @@
 
     function addChildNode(parentId) {
         const parent = currentDoc.nodes.find(n => n.id === parentId);
-        const nextLevel = (parent.level || 0) + 1;
+        const nextLevel = (parent.level !== undefined) ? parent.level + 1 : 1;
+        let distance = 300; 
+        let finalX = parent.x + distance; 
+        let finalY = parent.y;
+        let foundPlace = false;
+
         const siblingCount = currentDoc.nodes.filter(n => n.parentId === parentId).length;
-        
-        const finalX = parent.x + 280;
-        const finalY = parent.y + (siblingCount * 110) - 100;
+        let baseAngle = siblingCount * (Math.PI / 4);
+
+        for (let distMultiplier = 0; distMultiplier < 8; distMultiplier++) {
+            let currentDist = distance + (distMultiplier * 100);
+            for (let angleStep = 0; angleStep < 32; angleStep++) {
+                let testAngle = baseAngle + (angleStep * (Math.PI * 2 / 32));
+                let targetX = parent.x + Math.cos(testAngle) * currentDist;
+                let targetY = parent.y + Math.sin(testAngle) * currentDist;
+                let isOverlap = currentDoc.nodes.some(n => Math.hypot(n.x - targetX, n.y - targetY) < 230);
+                if (!isOverlap) { finalX = targetX; finalY = targetY; foundPlace = true; break; }
+            }
+            if (foundPlace) break;
+        }
+
+        if (!foundPlace) {
+            finalX = parent.x + 350 + (Math.random() - 0.5) * 200;
+            finalY = parent.y + (Math.random() - 0.5) * 500;
+        }
 
         const newNode = { id: 'n' + Date.now(), title: '', summary: '', content: '', x: finalX, y: finalY, parentId: parentId, level: nextLevel };
-        currentDoc.nodes.push(newNode); 
-        currentDoc.lastModified = Date.now();
-        saveWorkspace(); renderMindmap();
+        currentDoc.nodes.push(newNode); save(); renderMindmap();
     }
 
-    /* 📝 실시간 동기화 에디터 시스템 및 주석 엔진 */
+    function openPdfModal() {
+        document.getElementById('pdf-scale-modal').style.display = 'flex';
+    }
+    function closePdfModal() {
+        document.getElementById('pdf-scale-modal').style.display = 'none';
+    }
+    function submitPdfModal() {
+        const selectedScale = document.querySelector('input[name="pdf-scale-choice"]:checked').value;
+        closePdfModal();
+        generatePremiumPDF(selectedScale); 
+    }
+
+    function generatePremiumPDF(scaleValue) {
+        const printArea = document.getElementById('print-area');
+        const rootNode = currentDoc.nodes.find(n => n.id === 'root');
+        const now = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+        
+        let html = `
+            <style>
+                @media print {
+                    #print-area {
+                        transform: scale(${scaleValue});
+                        transform-origin: top left;
+                        width: ${100 / parseFloat(scaleValue)}% !important;
+                    }
+                }
+            </style>
+            <div class="pdf-cover">
+                <div class="canvas-logo">Ink's Canvas Standard Report</div>
+                <div class="cover-mid">
+                    <h1>${rootNode.title || '무제 리포트 프로젝트'}</h1>
+                    <div class="cover-decor"></div>
+                    <div class="date">${now}</div>
+                </div>
+                <div class="cover-bottom"></div>
+            </div>
+            <div class="pdf-body">
+        `;
+
+        const rootSummaryClean = rootNode.summary ? rootNode.summary.trim() : "";
+        const rootContentClean = rootNode.content ? rootNode.content.trim() : "";
+        
+        function buildPdfFootnotesHtml(contentHtml) {
+            if(!contentHtml) return '';
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = contentHtml;
+            const refs = tempDiv.querySelectorAll('.footnote-ref');
+            if(refs.length === 0) return '';
+            
+            let fHtml = `<div class="bottom-footnotes-area" style="display:block; margin-top:30px; border-top:1px dashed #aaa; padding-top:10px; font-size:13px; color:#555;">`;
+            fHtml += `<h5 style="margin:0 0 5px 0; font-size:14px; color:#333;">주석 (Footnotes)</h5>`;
+            refs.forEach((ref, idx) => {
+                fHtml += `<div style="margin-bottom:3px;"><span style="font-weight:bold; color:var(--primary);">[${idx+1}]</span> ${ref.getAttribute('data-note') || ''}</div>`;
+            });
+            fHtml += `</div>`;
+            return fHtml;
+        }
+
+        html += `<div class="pdf-section">
+            <div class="pdf-h1">00. Overview</div>
+            <div style="font-size: 20px; font-weight: 700; color: var(--primary); margin-bottom: 15px;">
+                중심 주제: ${rootNode.title || '제목 없음'}
+            </div>
+            ${rootSummaryClean !== "" ? `<div class="pdf-summary-box">${rootNode.summary}</div>` : ''}
+            ${rootContentClean !== "" ? `<div class="pdf-content">${rootNode.content}</div>` : `<p style="color: #888; font-style: italic;">(내용 없음)</p>`}
+            ${buildPdfFootnotesHtml(rootNode.content)}
+        </div>`;
+
+        function processNodes(parentId, depth) {
+            const children = currentDoc.nodes.filter(n => n.parentId === parentId);
+            children.forEach((child, index) => {
+                let classTag = (depth === 1) ? "pdf-h2" : "pdf-h3";
+
+                html += `<div class="pdf-section ${depth > 1 ? 'level-indent' : ''}">`;
+                const listPrefix = depth === 1 ? `Section 0${index + 1}. ` : '';
+                html += `<div class="${classTag}">${listPrefix}${child.title || '제목 없음'}</div>`;
+                
+                const childSummaryClean = child.summary ? child.summary.trim() : "";
+                if(childSummaryClean !== "") html += `<div class="pdf-summary-box">${child.summary}</div>`;
+                if(child.content) html += `<div class="pdf-content">${child.content}</div>`;
+                
+                html += buildPdfFootnotesHtml(child.content);
+                
+                processNodes(child.id, depth + 1);
+                html += `</div>`;
+            });
+        }
+
+        processNodes('root', 1);
+        html += `</div>`;
+        
+        printArea.innerHTML = html;
+        setTimeout(() => { window.print(); }, 500);
+    }
+
     function openDetail(nodeId) {
         selectedNodeId = nodeId;
         const node = currentDoc.nodes.find(n => n.id === nodeId);
-        document.getElementById('parent-title-display').innerText = node.title || '주제 입력';
-        document.getElementById('detail-title').innerText = node.title || '';
-        document.getElementById('detail-summary').innerText = node.summary || '';
-        document.getElementById('editor').innerHTML = node.content || '';
+        document.getElementById('parent-title-display').innerText = node.title || '주제 없음';
+        titleField.innerText = node.title || '';
+        summaryField.innerText = node.summary || '';
+        editorField.innerHTML = node.content || '';
         document.getElementById('detail-view').style.display = 'flex';
+        
         refreshFootnoteNumbers();
     }
 
-    function saveCurrentNodeData() {
-        if (!currentDoc || !selectedNodeId) return;
-        const node = currentDoc.nodes.find(n => n.id === selectedNodeId);
-        if (node) {
-            node.title = document.getElementById('detail-title').innerText;
-            node.summary = document.getElementById('detail-summary').innerText;
-            node.content = document.getElementById('editor').innerHTML;
-            currentDoc.lastModified = Date.now();
-            saveWorkspace();
-        }
-    }
-
     function closeDetail() {
-        saveCurrentNodeData();
+        saveCurrentNodeData(); 
         selectedNodeId = null;
-        document.getElementById('detail-view').style.display = 'none';
+        document.getElementById('detail-view').style.display = 'none'; 
         renderMindmap();
     }
 
     function deleteNode() {
-        if (selectedNodeId === 'root') return alert("중심 주제는 삭제가 불가합니다.");
+        if (selectedNodeId === 'root') return alert("중심 노드는 삭제할 수 없습니다.");
         currentDoc.nodes = currentDoc.nodes.filter(n => n.id !== selectedNodeId);
-        currentDoc.lastModified = Date.now();
-        saveWorkspace();
-        document.getElementById('detail-view').style.display = 'none';
+        save(); 
+        selectedNodeId = null;
+        document.getElementById('detail-view').style.display = 'none'; 
         renderMindmap();
     }
 
-    // 슬래시 모드 단축키 UI 트리거 
-    const editor = document.getElementById('editor');
-    editor.addEventListener('keyup', function(e) {
-        if(e.key === '/') {
-            const sel = window.getSelection();
-            if(sel.rangeCount > 0) {
-                savedSlashRange = sel.getRangeAt(0).cloneRange();
-                const rect = savedSlashRange.getBoundingClientRect();
-                const menu = document.getElementById('slash-menu');
-                menu.style.display = 'block';
-                menu.style.top = (rect.top + window.scrollY + 20) + 'px';
-                menu.style.left = (rect.left + window.scrollX) + 'px';
-            }
+    function execCmd(cmd) { 
+        document.execCommand(cmd, false, null); 
+        if(cmd === 'undo' || cmd === 'redo') {
+            refreshFootnoteNumbers();
         }
-    });
-
-    function triggerSlashAction(action) {
-        if(!savedSlashRange) return;
-        window.getSelection().removeAllRanges();
-        window.getSelection().addRange(savedSlashRange);
-        document.execCommand('delete', false, null);
-        
-        if(action === 'table') {
-            document.getElementById('table-modal').style.display = 'flex';
-        } else if(action === 'ul') {
-            document.execCommand('insertUnorderedList');
-        } else if(action === 'ol') {
-            document.execCommand('insertOrderedList');
-        } else if(action === 'hr') {
-            document.execCommand('insertHorizontalRule');
-        }
-        document.getElementById('slash-menu').style.display = 'none';
+        saveCurrentNodeData(); 
     }
 
-    function submitTableModal() {
-        const rows = document.getElementById('modal-rows').value;
-        const cols = document.getElementById('modal-cols').value;
-        let html = '<table border="1"><tbody>';
-        for(let i=0; i<rows; i++) {
-            html += '<tr>';
-            for(let j=0; j<cols; j++) html += '<td><br></td>';
-            html += '</tr>';
-        }
-        html += '</tbody></table><br>';
-        document.execCommand('insertHTML', false, html);
-        document.getElementById('table-modal').style.display = 'none';
-        saveCurrentNodeData();
+    function fitView() {
+        if (!currentDoc.nodes.length) return;
+        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        currentDoc.nodes.forEach(n => { minX = Math.min(minX, n.x); maxX = Math.max(maxX, n.x + 200); minY = Math.min(minY, n.y); maxY = Math.max(maxY, n.y + 100); });
+        const scale = Math.min((window.innerWidth - 100) / (maxX - minX), (window.innerHeight - 100) / (maxY - minY), 1);
+        transform.scale = scale;
+        transform.x = window.innerWidth / 2 - (minX + (maxX - minX) / 2) * scale;
+        transform.y = window.innerHeight / 2 - (minY + (maxY - minY) / 2) * scale;
+        updateTransform();
     }
 
-    function refreshFootnoteNumbers() {
-        // 기존 주석 관리 로직 호환 처리
-        const refs = editor.querySelectorAll('.footnote-ref');
-        const list = document.getElementById('bottom-footnotes-list');
-        if(refs.length === 0) {
-            document.getElementById('bottom-footnotes-area').style.display = 'none';
-            return;
-        }
-        document.getElementById('bottom-footnotes-area').style.display = 'block';
-        list.innerHTML = Array.from(refs).map((r, i) => {
-            r.innerText = `[${i+1}]`;
-            return `<div><b>[${i+1}]</b> ${r.getAttribute('data-note') || '내용 없음'}</div>`;
-        }).join('');
-    }
-
-    // 리치 텍스트 제어 유틸리티
-    function execCmd(cmd) { document.execCommand(cmd, false, null); saveCurrentNodeData(); }
-    function execColor(cmd, value) { document.execCommand(cmd, false, value); saveCurrentNodeData(); }
-    function toggleColorMenu(id) { const m = document.getElementById(id); m.style.display = m.style.display === 'grid' ? 'none' : 'grid'; }
-
-    /* ⚙️ 컨트롤 휠 패닝 앤 줌 엔진 */
     const container = document.getElementById('mindmap-container');
     const content = document.getElementById('canvas-content');
     
     container.onpointerdown = (e) => {
-        if(e.target === container || e.target.id === 'canvas-content' || e.target.tagName === 'svg') {
+        if (e.target === container || e.target.id === 'canvas-content' || e.target.tagName === 'svg') {
             isPanning = true;
             startPoint = { x: e.clientX - transform.x, y: e.clientY - transform.y };
             container.setPointerCapture(e.pointerId);
+            document.getElementById('side-controls').classList.remove('open');
         }
     };
-    container.onpointermove = (e) => { if(isPanning) { transform.x = e.clientX - startPoint.x; transform.y = e.clientY - startPoint.y; updateTransform(); } };
-    container.onpointerup = (e) => { isPanning = false; };
+    container.onpointermove = (e) => { if (isPanning) { transform.x = e.clientX - startPoint.x; transform.y = e.clientY - startPoint.y; updateTransform(); } };
+    container.onpointerup = (e) => { isPanning = false; container.releasePointerCapture(e.pointerId); };
     container.onwheel = (e) => {
-        const factor = e.deltaY > 0 ? 0.9 : 1.1;
-        transform.scale = Math.min(Math.max(0.2, transform.scale * factor), 2);
-        updateTransform();
+        e.preventDefault();
+        const f = e.deltaY > 0 ? 0.9 : 1.1;
+        const ns = Math.min(Math.max(0.1, transform.scale * f), 3);
+        const r = ns / transform.scale;
+        transform.x = e.clientX - (e.clientX - transform.x) * r; transform.y = e.clientY - (e.clientY - transform.y) * r;
+        transform.scale = ns; updateTransform();
     };
-    function updateTransform() { content.style.transform = `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`; }
-    function resetZoom() { transform = { x: window.innerWidth/4, y: window.innerHeight/4, scale: 0.8 }; updateTransform(); }
-    function fitView() { transform = { x: 100, y: 100, scale: 0.6 }; updateTransform(); }
     
-    function toggleMenu() { document.getElementById('side-controls').classList.toggle('open'); }
-    function handleMenuAction(fn) { fn(); toggleMenu(); }
+    function updateTransform() { content.style.transform = `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`; }
+    function resetZoom() { 
+        const root = currentDoc.nodes.find(n => n.id === 'root'); 
+        transform.scale = 0.8; 
+        transform.x = window.innerWidth / 2 - root.x * transform.scale - 80; transform.y = window.innerHeight / 2 - root.y * transform.scale - 35; 
+        updateTransform(); 
+    }
+    function goHome() { document.getElementById('home-screen').style.display = 'flex'; document.getElementById('mindmap-container').style.display = 'none'; }
+    
+    // [개선 연동]: 기존 세이브 로직에 가상 폴더 스토리지 트래킹 연동 추가
+    function save() { 
+        localStorage.setItem('thought_canvas_premium_v5', JSON.stringify(docs)); 
+        localStorage.setItem('thought_canvas_folders_v5', JSON.stringify(folders));
+    }
 
-    /* 📄 프리미엄 기획서 PDF 출력 장치 */
-    function openPdfModal() { document.getElementById('pdf-scale-modal').style.display = 'flex'; }
-    function closePdfModal() { document.getElementById('pdf-scale-modal').style.display = 'none'; }
-    function generatePremiumPDF() {
-        closePdfModal();
-        const printArea = document.getElementById('print-area');
-        const scale = document.getElementById('pdf-scale-select').value;
-        const root = currentDoc.nodes.find(n => n.id === 'root');
+    /* ==================== [신규 구현: 사이드바 파일/폴더 코어 엔진 스크립트] ==================== */
+    function openSidebar() {
+        document.getElementById('file-sidebar').classList.add('open');
+    }
+    
+    function closeSidebar() {
+        document.getElementById('file-sidebar').classList.remove('open');
+    }
+
+    function createNewFolder() {
+        const name = prompt("생성할 폴더명을 입력하세요:");
+        if(!name) return;
+        folders.push({ id: 'f_' + Date.now(), title: name });
+        save();
+        renderSidebarTree();
+    }
+
+    function renderSidebarTree() {
+        const target = document.getElementById('sidebar-tree-target');
+        const sortType = document.getElementById('sidebar-sort-select').value;
         
-        let html = `
-            <div class="pdf-cover">
-                <div class="canvas-logo">Ink's Canvas Premium Executive Report</div>
-                <div class="cover-mid">
-                    <h1>${currentDoc.title}</h1>
-                    <div class="cover-decor"></div>
-                    <div class="date">${new Date().toLocaleDateString()} 생성</div>
-                </div>
-            </div>
-            <div class="pdf-body" style="transform: scale(${scale}); transform-origin: top left;">
-        `;
-        
-        currentDoc.nodes.forEach(n => {
+        // 정렬 엔진 가동
+        let sortedDocs = [...docs];
+        if (sortType === 'name') {
+            sortedDocs.sort((a,b) => a.title.localeCompare(b.title));
+        } else if (sortType === 'date') {
+            sortedDocs.sort((a,b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+        }
+
+        let html = '';
+
+        // 1. 폴더 목록 및 내부 배속 파일 렌더링
+        folders.forEach(folder => {
+            const folderFiles = sortedDocs.filter(d => d.parentId === folder.id);
             html += `
-                <div class="pdf-section">
-                    <div class="pdf-h2">📌 ${n.title || '제목 없음'}</div>
-                    ${n.summary ? `<div class="pdf-summary-box">${n.summary}</div>` : ''}
-                    <div>${n.content || ''}</div>
+                <div class="tree-folder">
+                    <div class="folder-title" onclick="toggleFolderSection(this)">
+                        <div class="folder-name-container">📁 <span>${folder.title}</span></div>
+                        <button class="tree-more-btn" onclick="openContextOptions(event, 'folder', '${folder.id}')">···</button>
+                    </div>
+                    <div class="folder-content">
+                        ${folderFiles.map(file => getFileItemRowHtml(file)).join('')}
+                        ${folderFiles.length === 0 ? '<div style="padding:6px 8px; font-size:11px; color:#666;">(폴더 비어있음)</div>' : ''}
+                    </div>
                 </div>
             `;
         });
+
+        // 2. 소속 폴더가 없는 루트 계층 파일 독립 렌더링
+        const rootFiles = sortedDocs.filter(d => !d.parentId);
+        if(rootFiles.length > 0) {
+            html += `<div style="margin-top:10px; padding:2px 4px; font-size:11px; color:#888; border-top:1px solid #3a4042;">독립 파일 리스트</div>`;
+            html += rootFiles.map(file => getFileItemRowHtml(file)).join('');
+        }
+
+        if(folders.length === 0 && rootFiles.length === 0) {
+            html = `<div style="padding:20px; text-align:center; color:#666; font-size:13px;">생성된 마인드맵 파일이나 폴더가 없습니다.</div>`;
+        }
+
+        target.innerHTML = html;
+    }
+
+    function getFileItemRowHtml(file) {
+        const isActive = currentDoc && currentDoc.id === file.id ? 'active' : '';
+        return `
+            <div class="tree-file ${isActive}" onclick="openDoc(${file.id})" style="border-left-color: ${file.colorTag || 'transparent'}">
+                <div class="file-name-container" title="${file.title}">
+                    📄 <span>${file.title || '주제 없음'}</span>
+                </div>
+                <button class="tree-more-btn" onclick="openContextOptions(event, 'file', '${file.id}')">···</button>
+            </div>
+        `;
+    }
+
+    function toggleFolderSection(el) {
+        const content = el.nextElementSibling;
+        content.style.display = (content.style.display === 'none') ? 'block' : 'none';
+    }
+
+    // 트리 전용 메타 컨텍스트 메뉴 오픈 제어
+    function openContextOptions(e, type, id) {
+        e.stopPropagation();
+        selectedContextItem = { type, id };
         
-        html += `</div>`;
-        printArea.innerHTML = html;
-        setTimeout(() => { window.print(); }, 300);
+        const menu = document.getElementById('tree-context-panel');
+        menu.style.display = 'block';
+        menu.style.top = e.clientY + 'px';
+        menu.style.left = (e.clientX - 140) + 'px';
+    }
+
+    function triggerContextRename() {
+        const id = selectedContextItem.id;
+        if(selectedContextItem.type === 'folder') {
+            const folder = folders.find(f => f.id === id);
+            const nextName = prompt("변경할 폴더 이름을 입력하세요:", folder.title);
+            if(nextName) folder.title = nextName;
+        } else {
+            const doc = docs.find(d => d.id == id);
+            const nextName = prompt("변경할 마인드맵 이름을 입력하세요:", doc.title);
+            if(nextName) {
+                doc.title = nextName;
+                const rootNode = doc.nodes.find(n => n.id === 'root');
+                if(rootNode) rootNode.title = nextName;
+                if(currentDoc && currentDoc.id == id) {
+                    document.getElementById('parent-title-display').innerText = nextName;
+                    renderMindmap();
+                }
+            }
+        }
+        save();
+        renderDocList();
+        renderSidebarTree();
+    }
+
+    function triggerContextMove() {
+        if(selectedContextItem.type === 'folder') return alert("폴더 간 이동은 지원하지 않습니다. 파일만 이동 가능합니다.");
+        const doc = docs.find(d => d.id == selectedContextItem.id);
+        
+        let moveMenuText = "이동할 대상 폴더의 번호를 입력하세요:\n0. [지정 안 함 - 최상위 독립 파일로 이동]\n";
+        folders.forEach((f, idx) => {
+            moveMenuText += `${idx + 1}. ${f.title}\n`;
+        });
+
+        const choice = prompt(moveMenuText, "0");
+        if(choice === null) return;
+        const targetIdx = parseInt(choice, 10);
+
+        if(targetIdx === 0) {
+            doc.parentId = null;
+        } else if(folders[targetIdx - 1]) {
+            doc.parentId = folders[targetIdx - 1].id;
+        } else {
+            return alert("잘못된 상위 폴더 선택입니다.");
+        }
+
+        save();
+        renderSidebarTree();
+    }
+
+    function setFileTagColor(color) {
+        if(selectedContextItem.type === 'folder') return alert("색상 태그는 마인드맵 파일 전용 옵션입니다.");
+        const doc = docs.find(d => d.id == selectedContextItem.id);
+        if(doc) {
+            doc.colorTag = color;
+            save();
+            renderDocList();
+            renderSidebarTree();
+        }
+    }
+
+    function triggerContextDelete() {
+        const id = selectedContextItem.id;
+        if(selectedContextItem.type === 'folder') {
+            if(confirm("폴더를 삭제하시겠습니까? (내부 마인드맵 파일은 유지되며 독립 파일로 이전됩니다.)")) {
+                docs.forEach(d => { if(d.parentId === id) d.parentId = null; });
+                folders = folders.filter(f => f.id !== id);
+            }
+        } else {
+            if(!confirm("이 마인드맵 파일을 완전히 영구 삭제하시겠습니까?")) return;
+            docs = docs.filter(d => d.id == id);
+            if(currentDoc && currentDoc.id == id) goHome();
+        }
+        save();
+        renderDocList();
+        renderSidebarTree();
+    }
+
+    // 외부 로컬 JSON 파일화 덤프 내보내기 (백업 기능)
+    function exportBackupJSON() {
+        const backupData = {
+            version: "5.0-inkcanvas",
+            timestamp: Date.now(),
+            folders: folders,
+            docs: docs
+        };
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
+        const dlAnchorElem = document.createElement('a');
+        dlAnchorElem.setAttribute("href", dataStr);
+        dlAnchorElem.setAttribute("download", `InkCanvas_Backup_${Date.now()}.json`);
+        dlAnchorElem.click();
+    }
+
+    function triggerImportFileInput() {
+        document.getElementById('import-json-file').click();
+    }
+
+    // 로컬 JSON 데이터 로드 파싱 파이프라인 (복원 기능)
+    function importBackupJSON(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const parsed = JSON.parse(e.target.result);
+                if(parsed.version && parsed.docs) {
+                    if(confirm("기존 스토리지 데이터를 덮어쓰고 불러온 백업 파일 데이터로 복원하시겠습니까?")) {
+                        docs = parsed.docs || [];
+                        folders = parsed.folders || [];
+                        save();
+                        renderDocList();
+                        renderSidebarTree();
+                        alert("성공적으로 데이터가 완벽히 복원되었습니다.");
+                        goHome();
+                    }
+                } else {
+                    alert("호환되지 않는 양식의 백업 파일 파일입니다.");
+                }
+            } catch (err) {
+                alert("JSON 파일 판독 중 오류가 발생했습니다.");
+            }
+        };
+        reader.readAsText(file);
     }
 </script>
 </body>
