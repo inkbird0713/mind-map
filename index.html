@@ -57,6 +57,8 @@
         #detail-title { font-size: 32px; font-weight: 800; color: #111; margin-bottom: 15px; }
         #detail-summary { background: #fffcf5; border: 2px solid #333; border-left: 8px solid var(--miffy-blue); padding: 15px; margin-bottom: 30px; border-radius: 14px; font-style: normal; color: #333; white-space: pre-wrap; }
         
+        /* contenteditable용 플레이스홀더 스타일 지원 */
+        [contenteditable]:empty::before { content: attr(placeholder); color: #b2bec3; font-style: italic; pointer-events: none; display: block; }
         #editor { min-height: 200px; line-height: 1.8; font-size: 18px; color: #222; }
 
         .bottom-footnotes-area { display: none; margin-top: 50px; padding-top: 20px; border-top: 2px dashed #333; color: #333; font-size: 15px; user-select: none; }
@@ -319,24 +321,24 @@
             <button onclick="execCmd('italic')">I</button>
             <button onclick="execCmd('underline')">U</button>
             <div style="width:1px; height:12px; background:#4a5568; margin:0 2px;"></div>
-            <button onclick="toggleColorMenu('text-color-menu')" id="text-color-btn">🅰︎
+            <button onclick="toggleColorMenu(event, 'text-color-menu')" id="text-color-btn">🅰︎
                 <div class="color-menu" id="text-color-menu">
                     <div class="color-menu-title">글자 색상</div>
-                    <div class="color-dot" style="background:#000000;" onclick="execColor('foreColor', '#000000')" title="검은색"></div>
-                    <div class="color-dot" style="background:#ff5a36;" onclick="execColor('foreColor', '#ff5a36')" title="오렌지 레드"></div>
-                    <div class="color-dot" style="background:#007bc4;" onclick="execColor('foreColor', '#007bc4')" title="브루너 블루"></div>
-                    <div class="color-dot" style="background:#009640;" onclick="execColor('foreColor', '#009640')" title="브루너 그린"></div>
-                    <div class="color-dot" style="background:#9b59b6;" onclick="execColor('foreColor', '#9b59b6')" title="보라색"></div>
-                    <div class="color-dot" style="background:#e67e22;" onclick="execColor('foreColor', '#e67e22')" title="주황색"></div>
-                    <div class="color-dot" style="background:#ced4da;" onclick="execColor('foreColor', '#ced4da')" title="회색"></div>
+                    <div class="color-dot" style="background:#000000;" onclick="execColor(event, 'foreColor', '#000000')" title="검은색"></div>
+                    <div class="color-dot" style="background:#ff5a36;" onclick="execColor(event, 'foreColor', '#ff5a36')" title="오렌지 레드"></div>
+                    <div class="color-dot" style="background:#007bc4;" onclick="execColor(event, 'foreColor', '#007bc4')" title="브루너 블루"></div>
+                    <div class="color-dot" style="background:#009640;" onclick="execColor(event, 'foreColor', '#009640')" title="브루너 그린"></div>
+                    <div class="color-dot" style="background:#9b59b6;" onclick="execColor(event, 'foreColor', '#9b59b6')" title="보라색"></div>
+                    <div class="color-dot" style="background:#e67e22;" onclick="execColor(event, 'foreColor', '#e67e22')" title="주황색"></div>
+                    <div class="color-dot" style="background:#ced4da;" onclick="execColor(event, 'foreColor', '#ced4da')" title="회색"></div>
 
                     <div class="color-menu-title" style="margin-top:4px;">형광펜</div>
-                    <div class="color-dot" style="background:#ffffff; border:2px dashed #333;" onclick="execColor('hiliteColor', '#ffffff')" title="지우기"></div>
-                    <div class="color-dot" style="background:#ffde00;" onclick="execColor('hiliteColor', '#ffde00')" title="브루너 옐로우"></div>
-                    <div class="color-dot" style="background:#e7edf7;" onclick="execColor('hiliteColor', '#e7edf7')" title="연파란 형광펜"></div>
-                    <div class="color-dot" style="background:#a3e4d7;" onclick="execColor('hiliteColor', '#a3e4d7')" title="연초록 형광펜"></div>
-                    <div class="color-dot" style="background:#f1948a;" onclick="execColor('hiliteColor', '#f1948a')" title="연빨강 형광펜"></div>
-                    <div class="color-dot" style="background:#bb8fce;" onclick="execColor('hiliteColor', '#bb8fce')" title="연보라 형광펜"></div>
+                    <div class="color-dot" style="background:#ffffff; border:2px dashed #333;" onclick="execColor(event, 'hiliteColor', '#ffffff')" title="지우기"></div>
+                    <div class="color-dot" style="background:#ffde00;" onclick="execColor(event, 'hiliteColor', '#ffde00')" title="브루너 옐로우"></div>
+                    <div class="color-dot" style="background:#e7edf7;" onclick="execColor(event, 'hiliteColor', '#e7edf7')" title="연파란 형광펜"></div>
+                    <div class="color-dot" style="background:#a3e4d7;" onclick="execColor(event, 'hiliteColor', '#a3e4d7')" title="연초록 형광펜"></div>
+                    <div class="color-dot" style="background:#f1948a;" onclick="execColor(event, 'hiliteColor', '#f1948a')" title="연빨강 형광펜"></div>
+                    <div class="color-dot" style="background:#bb8fce;" onclick="execColor(event, 'hiliteColor', '#bb8fce')" title="연보라 형광펜"></div>
                 </div>
             </button>
         </div>
@@ -391,7 +393,7 @@
                 </label>
                 <label class="radio-option">
                     <input type="radio" name="pdf-scale-choice" value="0.70">
-                    <span>더 촘촘하게 (70% 비율 - 대용량 리포트용)</span>
+                    <span>더 촘춤하게 (70% 비율 - 대용량 리포트용)</span>
                 </label>
             </div>
             <div class="modal-btns">
@@ -420,8 +422,6 @@
     let touchTimer = null;
 
     let selectedContextItem = { type: null, id: null };
-
-    // 글로벌 파일 드래깅 트래킹용 아이디 변수
     let draggedFileId = null;
 
     renderDocList();
@@ -446,15 +446,19 @@
         saveCurrentNodeData();
     });
 
-    function toggleColorMenu(menuId) {
-        event.stopPropagation();
+    function toggleColorMenu(e, menuId) {
+        if (e && e.stopPropagation) e.stopPropagation();
         const m = document.getElementById(menuId);
         m.style.display = (m.style.display === 'grid') ? 'none' : 'grid';
     }
 
     document.addEventListener('click', (e) => {
-        document.getElementById('text-color-menu').style.display = 'none';
-        document.getElementById('tree-context-panel').style.display = 'none';
+        const colorMenu = document.getElementById('text-color-menu');
+        if (colorMenu) colorMenu.style.display = 'none';
+        
+        const contextPanel = document.getElementById('tree-context-panel');
+        if (contextPanel) contextPanel.style.display = 'none';
+
         if (!e.target.closest('#slash-menu')) {
             hideSlashMenu();
         }
@@ -578,7 +582,7 @@
             const fnId = `fn-ref-${index}`;
             const targetId = `fn-item-${index}`;
             ref.id = fnId;
-            ref.setAttribute('onclick', `scrollToFootnoteItem('${targetId}')`);
+            ref.setAttribute('onclick', `scrollToFootnoteItem(event, '${targetId}')`);
 
             const noteContent = ref.getAttribute('data-note') || '내용 없음';
             
@@ -601,8 +605,8 @@
         }
     }
 
-    function scrollToFootnoteItem(itemId) {
-        event.stopPropagation(); 
+    function scrollToFootnoteItem(e, itemId) {
+        if (e && e.stopPropagation) e.stopPropagation(); 
         const target = document.getElementById(itemId);
         if(target) {
             target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -644,8 +648,8 @@
         saveCurrentNodeData();
     }
 
-    function execColor(cmd, color) {
-        event.stopPropagation();
+    function execColor(e, cmd, color) {
+        if (e && e.stopPropagation) e.stopPropagation();
         document.execCommand(cmd, false, color);
         document.getElementById('text-color-menu').style.display = 'none';
         saveCurrentNodeData();
@@ -1124,7 +1128,7 @@
             id: Date.now(), 
             title: title, 
             parentId: null, 
-            colorTag: '#ff5a36', // 기본 초기 태그 색상 지정 (미피 레드)
+            colorTag: '#ff5a36', 
             updatedAt: Date.now(),
             nodes: [{ id: 'root', title: title, summary: '', content: '', x: 5000, y: 5000, parentId: null, level: 0 }] 
         };
@@ -1409,6 +1413,7 @@
     }
     
     function closeSidebar() {
+        document.getElementById('file-sidebar').classList.remove('remove');
         document.getElementById('file-sidebar').classList.remove('open');
     }
 
@@ -1422,6 +1427,7 @@
 
     function renderSidebarTree() {
         const target = document.getElementById('sidebar-tree-target');
+        if (!target) return;
         const sortType = document.getElementById('sidebar-sort-select').value;
         
         let sortedDocs = [...docs];
@@ -1445,7 +1451,7 @@
                         <div class="folder-name-container">📁 <span>${folder.title}</span></div>
                         <button class="tree-more-btn" onclick="openContextOptions(event, 'folder', '${folder.id}')">···</button>
                     </div>
-                    <div class="folder-content">
+                    <div class="folder-content" style="display: block;">
                         ${folderFiles.map(file => getFileItemRowHtml(file)).join('')}
                         ${folderFiles.length === 0 ? '<div style="padding:6px 10px; font-size:11px; color:#a1978a; font-style:italic;">(폴더 비어있음)</div>' : ''}
                     </div>
@@ -1489,11 +1495,10 @@
     }
 
     function cycleFileTagColor(e, fileId) {
-        e.stopPropagation(); 
+        if (e && e.stopPropagation) e.stopPropagation(); 
         const doc = docs.find(d => d.id == fileId);
         if(!doc) return;
 
-        // 미피 딕 브루너 감성 전용 태그 순환 컬러셋 매핑
         const colors = ['#ff5a36', '#ffde00', '#007bc4', '#009640', '#9b59b6', '#f5eedf', '#333333'];
         let currentIdx = colors.indexOf(doc.colorTag);
         
@@ -1551,7 +1556,7 @@
     }
 
     function handleRootFolderDrop(e) {
-        if(e.target.id === 'sidebar-tree-target' && draggedFileId) {
+        if(draggedFileId) {
             e.preventDefault();
             const doc = docs.find(d => d.id == draggedFileId);
             if(doc) {
@@ -1565,11 +1570,13 @@
 
     function toggleFolderSection(el) {
         const content = el.nextElementSibling;
-        content.style.display = (content.style.display === 'none') ? 'block' : 'none';
+        if(content) {
+            content.style.display = (content.style.display === 'none') ? 'block' : 'none';
+        }
     }
 
     function openContextOptions(e, type, id) {
-        e.stopPropagation();
+        if (e && e.stopPropagation) e.stopPropagation();
         selectedContextItem = { type, id };
         
         const menu = document.getElementById('tree-context-panel');
