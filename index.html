@@ -219,12 +219,12 @@
 
     <div id="file-sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-title">📂 생각 보관함 탐색기</div>
+            <div class="sidebar-title">📂 파일</div>
             <button class="sidebar-close" onclick="closeSidebar()">×</button>
         </div>
         <div class="sidebar-actions">
-            <button onclick="createNewDoc()">📄 새 파일 생성</button>
-            <button onclick="createNewFolder()">📁 새 폴더 생성</button>
+            <button onclick="createNewDoc()">📄 새 파일</button>
+            <button onclick="createNewFolder()">📁 새 폴더</button>
         </div>
         <div class="sidebar-filter">
             <span>파일 정렬</span>
@@ -305,7 +305,7 @@
             <button onclick="execCmd('italic')">I</button>
             <button onclick="execCmd('underline')">U</button>
             <div style="width:1px; height:12px; background:#4a5568; margin:0 2px;"></div>
-            <button onclick="toggleColorMenu('text-color-menu')" id="text-color-btn">🎨
+            <button onclick="toggleColorMenu('text-color-menu')" id="text-color-btn">🅰︎
                 <div class="color-menu" id="text-color-menu">
                     <div class="color-menu-title">글자 색상</div>
                     <div class="color-dot" style="background:#000000;" onclick="execColor('foreColor', '#000000')" title="검은색"></div>
@@ -314,6 +314,8 @@
                     <div class="color-dot" style="background:#2ecc71;" onclick="execColor('foreColor', '#2ecc71')" title="초록색"></div>
                     <div class="color-dot" style="background:#9b59b6;" onclick="execColor('foreColor', '#9b59b6')" title="보라색"></div>
                     <div class="color-dot" style="background:#e67e22;" onclick="execColor('foreColor', '#e67e22')" title="주황색"></div>
+                    <div class="color-dot" style="background:#ced4da;" onclick="execColor('foreColor', '#ced4da')" title="회색"></div>
+
 
                     <div class="color-menu-title" style="margin-top:4px;">형광펜</div>
                     <div class="color-dot" style="background:#ffffff; border:1.5px dashed #bbb;" onclick="execColor('hiliteColor', '#ffffff')" title="지우기"></div>
