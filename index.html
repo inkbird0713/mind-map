@@ -6,19 +6,24 @@
     <title>Ink's Canvas - Ultimate Executive Report with File Manager</title>
     <style>
         :root {
-            --primary: #4a90e2;
-            --bg: #f4f7f9;
+            --primary: #8c7b6e; /* 어텀 뮤트 메인 무드 브라운 */
+            --bg: #fcfbfa;
             --panel: #ffffff;
-            --node-border: #d1d8dd;
-            --sidebar-bg: #2d3436;
-            --sidebar-text: #dfe6e9;
+            --node-border: #e8e3da;
+            
+            /* --- [디자인 개선] "밤티" 디자인을 탈출한 Cozy & Minimal 사이드바 테마 --- */
+            --sidebar-bg: #f4f1eb;
+            --sidebar-text: #4a453f;
+            --sidebar-border: #e0dad0;
+            --sidebar-hover: #e9e4da;
+            --sidebar-accent: #cfc9be;
         }
 
         body, html { margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, sans-serif; background: var(--bg); height: 100%; overflow: hidden; touch-action: none; }
         
         #home-screen { padding: 50px 20px; display: flex; flex-direction: column; align-items: center; height: 100vh; overflow-y: auto; box-sizing: border-box; position: relative; z-index: 2000; background: var(--bg); }
         .doc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; width: 100%; max-width: 1000px; margin-top: 40px; }
-        .doc-card { background: var(--panel); padding: 35px 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); cursor: pointer; position: relative; border: 1.5px solid transparent; transition: 0.3s; text-align: center; }
+        .doc-card { background: var(--panel); padding: 35px 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); cursor: pointer; position: relative; border: 1.5px solid transparent; transition: 0.3s; text-align: center; }
         .doc-card:hover { border-color: var(--primary); transform: translateY(-5px); }
         .doc-delete-btn { position: absolute; bottom: 12px; right: 12px; font-size: 11px; color: #bbb; background: none; border: none; cursor: pointer; padding: 5px; text-decoration: underline; }
 
@@ -30,7 +35,7 @@
         .node.root { background: var(--primary); color: white; border: none; font-weight: bold; padding: 18px 28px; }
         .node-info { flex: 1; pointer-events: auto; min-width: 80px; }
         .node .summary { font-size: 11px; color: #888; margin-top: 3px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .node.root .summary { color: #d0e6ff; }
+        .node.root .summary { color: #f4f1eb; }
         .add-btn { width: 26px; height: 26px; background: #f0f2f5; color: #777; border-radius: 7px; border: none; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
         svg { position: absolute; top: 0; left: 0; width: 20000px; height: 20000px; pointer-events: none; }
@@ -132,7 +137,7 @@
 
         #print-area { display: none; background: white; color: #2d3748; font-family: 'Pretendard', sans-serif; line-height: 1.8; }
         .pdf-cover { height: 100vh; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; padding: 80px; box-sizing: border-box; page-break-after: always; position: relative; background: #ffffff; }
-        .pdf-cover::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 15px; background: linear-gradient(90deg, var(--primary), #3182ce); }
+        .pdf-cover::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 15px; background: linear-gradient(90deg, var(--primary), #bfa89e); }
         .pdf-cover .canvas-logo { font-size: 14px; color: var(--primary); font-weight: 800; letter-spacing: 6px; text-transform: uppercase; border-bottom: 2px solid var(--primary); padding-bottom: 5px; }
         .cover-mid { margin-top: auto; margin-bottom: auto; width: 100%; display: flex; flex-direction: column; gap: 25px; }
         .pdf-cover h1 { font-size: 52px; font-weight: 800; margin: 0; color: #1a202c; line-height: 1.25; word-break: keep-all; letter-spacing: -1px; }
@@ -149,38 +154,56 @@
         .pdf-summary-box { background: #f7fafc; border-left: 4px solid var(--primary); padding: 18px 24px; margin: 18px 0; border-radius: 4px; font-style: normal; color: #4a5568; font-size: 14.5px; page-break-inside: avoid; white-space: pre-wrap; line-height: 1.6; }
         .pdf-content { font-size: 15px; color: #2d3748; text-align: justify; }
 
-        /* ==================== [신규 추가: 사이드바 파일 시스템 레이아웃 CSS] ==================== */
-        #file-sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100vh; background: var(--sidebar-bg); color: var(--sidebar-text); z-index: 4000; transition: left 0.3s cubic-bezier(0.1, 0.9, 0.2, 1); box-shadow: 5px 0 15px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
+        /* ==================== [개선 수정 및 고도화: 사이드바 인프라 레이아웃] ==================== */
+        #file-sidebar { position: fixed; top: 0; left: -290px; width: 290px; height: 100vh; background: var(--sidebar-bg); color: var(--sidebar-text); z-index: 4000; transition: left 0.3s cubic-bezier(0.1, 0.9, 0.2, 1); box-shadow: 5px 0 20px rgba(0,0,0,0.05); display: flex; flex-direction: column; border-right: 1px solid var(--sidebar-border); }
         #file-sidebar.open { left: 0; }
-        .sidebar-header { padding: 15px; background: #1e2223; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #3a4042; }
-        .sidebar-title { font-size: 15px; font-weight: bold; color: white; display: flex; align-items: center; gap: 8px; }
-        .sidebar-close { background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer; }
-        .sidebar-actions { padding: 10px; display: flex; gap: 6px; background: #24292a; border-bottom: 1px solid #3a4042; }
-        .sidebar-actions button { flex: 1; background: #3a4244; color: white; border: none; padding: 6px 0; font-size: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .sidebar-actions button:hover { background: var(--primary); }
-        .sidebar-filter { padding: 8px 12px; background: #24292a; border-bottom: 1px solid #3a4042; display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
-        .sidebar-filter select { background: #3a4244; color: white; border: none; padding: 2px 4px; border-radius: 3px; font-size: 11px; outline: none; cursor: pointer; }
-        .tree-container { flex: 1; overflow-y: auto; padding: 10px; }
-        .tree-folder { margin-bottom: 6px; }
-        .folder-title { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; color: #fff; transition: 0.15s; }
-        .folder-title:hover { background: #3a4244; }
-        .folder-name-container { display: flex; align-items: center; gap: 6px; }
-        .folder-content { padding-left: 14px; margin-top: 2px; display: block; border-left: 1px dashed #4f585a; }
-        .tree-file { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; border-radius: 4px; cursor: pointer; font-size: 13px; margin: 2px 0; transition: 0.15s; border-left: 3px solid transparent; }
-        .tree-file:hover { background: #3a4244; color: white; }
-        .tree-file.active { background: #4a90e2; color: white; font-weight: bold; }
-        .file-name-container { display: flex; align-items: center; gap: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80%; }
-        .tree-more-btn { background: none; border: none; color: #888; cursor: pointer; padding: 2px 4px; font-size: 12px; }
-        .tree-more-btn:hover { color: white; }
+        .sidebar-header { padding: 20px 16px 12px; background: transparent; display: flex; align-items: center; justify-content: space-between; }
+        .sidebar-title { font-size: 16px; font-weight: 700; color: #4a453f; display: flex; align-items: center; gap: 8px; }
+        .sidebar-close { background: none; border: none; color: #888; font-size: 22px; cursor: pointer; transition: 0.2s; }
+        .sidebar-close:hover { color: #111; }
         
-        .sidebar-trigger-btn { position: fixed; top: 15px; left: 15px; z-index: 2500; width: 45px; height: 45px; border-radius: 50%; background: white; border: none; box-shadow: 0 3px 10px rgba(0,0,0,0.1); font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
-        .sidebar-trigger-btn:hover { transform: scale(1.05); }
+        /* 다이어트 반영: 불필요한 백업/복원 버튼 삭제 후 구조 슬림화 */
+        .sidebar-actions { padding: 0 16px 12px; display: flex; gap: 8px; border-bottom: 1px solid var(--sidebar-border); }
+        .sidebar-actions button { flex: 1; background: #ffffff; color: #5a524b; border: 1px solid #e0dad0; padding: 8px 0; font-size: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .sidebar-actions button:hover { background: var(--sidebar-hover); color: #000; border-color: #ccc; }
+        
+        .sidebar-filter { padding: 10px 16px; background: transparent; border-bottom: 1px solid var(--sidebar-border); display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #8c8378; }
+        .sidebar-filter select { background: #ffffff; color: var(--sidebar-text); border: 1px solid #e0dad0; padding: 4px 6px; border-radius: 6px; font-size: 11px; outline: none; cursor: pointer; font-family: inherit; }
+        
+        .tree-container { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+        
+        /* 드래그 앤 드롭 폴더 영역 스펙 */
+        .tree-folder { margin-bottom: 4px; border-radius: 10px; transition: background 0.2s; }
+        .tree-folder.drag-over-folder { background: var(--sidebar-accent); }
+        
+        .folder-title { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 13.5px; color: #4a453f; transition: 0.15s; }
+        .folder-title:hover { background: var(--sidebar-hover); }
+        .folder-name-container { display: flex; align-items: center; gap: 8px; }
+        
+        .folder-content { padding-left: 12px; margin-top: 2px; display: block; border-left: 1px dashed #d3cbbd; min-height: 10px; }
+        
+        /* 파일 아이템 로우 인터페이스 스펙 */
+        .tree-file { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; margin: 2px 0; transition: all 0.2s ease; user-select: none; color: #5a524b; background: transparent; }
+        .tree-file:hover { background: var(--sidebar-hover); color: #000; }
+        .tree-file.active { background: #e9e4da; color: #000; font-weight: 700; }
+        .tree-file.dragging { opacity: 0.4; background: var(--sidebar-accent); }
+        
+        .file-name-container { display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80%; }
+        
+        /* 파일 개별 지정 색상 점 라벨 */
+        .file-status-dot { width: 11px; height: 11px; border-radius: 50%; background: #ccc; border: 1px solid rgba(0,0,0,0.06); display: inline-block; flex-shrink: 0; cursor: pointer; transition: transform 0.15s; }
+        .file-status-dot:hover { transform: scale(1.3); }
 
-        /* 파일 옵션 컨텍스트 메뉴 스타일 */
-        .file-context-menu { display: none; position: fixed; background: white; color: black; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 8px; padding: 4px 0; z-index: 6000; width: 140px; font-size: 13px; }
+        .tree-more-btn { background: none; border: none; color: #a1978a; cursor: pointer; padding: 4px; font-size: 12px; border-radius: 4px; }
+        .tree-more-btn:hover { background: #dfd9ce; color: #111; }
+        
+        .sidebar-trigger-btn { position: fixed; top: 15px; left: 15px; z-index: 2500; width: 45px; height: 45px; border-radius: 50%; background: white; border: none; box-shadow: 0 3px 10px rgba(0,0,0,0.06); font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; border: 1px solid #e8e3da; }
+        .sidebar-trigger-btn:hover { transform: scale(1.05); background: #fcfbfa; }
+
+        .file-context-menu { display: none; position: fixed; background: white; color: black; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 10px; padding: 5px 0; z-index: 6000; width: 140px; font-size: 13px; border: 1px solid #e2e8f0; }
         .context-item { padding: 8px 12px; cursor: pointer; transition: 0.1s; }
-        .context-item:hover { background: #f0f2f5; color: var(--primary); font-weight: bold; }
-        .context-divider { height: 1px; background: #e2e8f0; margin: 4px 0; }
+        .context-item:hover { background: #f4f1eb; color: #8c7b6e; font-weight: bold; }
+        .context-divider { height: 1px; background: #edf2f7; margin: 4px 0; }
 
         @media print {
             body * { visibility: hidden; }
@@ -196,40 +219,26 @@
 
     <div id="file-sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-title">📁 탐색기 및 파일 보관함</div>
+            <div class="sidebar-title">📂 생각 보관함 탐색기</div>
             <button class="sidebar-close" onclick="closeSidebar()">×</button>
         </div>
         <div class="sidebar-actions">
-            <button onclick="createNewDoc()">📄 새 파일</button>
-            <button onclick="createNewFolder()">📁 새 폴더</button>
-            <button onclick="exportBackupJSON()" style="background:#2ecc71;">💾 백업</button>
-            <button onclick="triggerImportFileInput()" style="background:#e67e22;">📥 복원</button>
-            <input type="file" id="import-json-file" accept=".json" style="display:none;" onchange="importBackupJSON(event)">
+            <button onclick="createNewDoc()">📄 새 파일 생성</button>
+            <button onclick="createNewFolder()">📁 새 폴더 생성</button>
         </div>
         <div class="sidebar-filter">
-            <span>정렬 기준</span>
+            <span>파일 정렬</span>
             <select id="sidebar-sort-select" onchange="renderSidebarTree()">
                 <option value="name">이름순 (A-Z)</option>
                 <option value="date">최근 수정순</option>
             </select>
         </div>
-        <div class="tree-container" id="sidebar-tree-target">
-            </div>
+        <div class="tree-container" id="sidebar-tree-target" ondragover="allowRootFolderDrop(event)" ondrop="handleRootFolderDrop(event)">
+        </div>
     </div>
 
     <div class="file-context-menu" id="tree-context-panel">
         <div class="context-item" onclick="triggerContextRename()">✏️ 이름 변경</div>
-        <div class="context-item" onclick="triggerContextMove()">🚚 폴더 이동</div>
-        <div class="context-divider"></div>
-        <div class="context-item" style="font-weight:bold;">🎨 태그 색상 지정</div>
-        <div style="display:grid; grid-template-columns: repeat(6, 1fr); padding: 4px 10px; gap: 4px;">
-            <div style="width:16px; height:16px; border-radius:50%; background:#ff7675; cursor:pointer;" onclick="setFileTagColor('#ff7675')"></div>
-            <div style="width:16px; height:16px; border-radius:50%; background:#fdcb6e; cursor:pointer;" onclick="setFileTagColor('#fdcb6e')"></div>
-            <div style="width:16px; height:16px; border-radius:50%; background:#2ecc71; cursor:pointer;" onclick="setFileTagColor('#2ecc71')"></div>
-            <div style="width:16px; height:16px; border-radius:50%; background:#3498db; cursor:pointer;" onclick="setFileTagColor('#3498db')"></div>
-            <div style="width:16px; height:16px; border-radius:50%; background:#9b59b6; cursor:pointer;" onclick="setFileTagColor('#9b59b6')"></div>
-            <div style="width:16px; height:16px; border-radius:50%; background:transparent; border:1px dashed #aaa; cursor:pointer;" onclick="setFileTagColor('')"></div>
-        </div>
         <div class="context-divider"></div>
         <div class="context-item" onclick="triggerContextDelete()" style="color:#ff7675; font-weight:bold;">🗑️ 원본 삭제</div>
     </div>
@@ -237,7 +246,7 @@
     <div id="home-screen">
         <h1 style="font-weight: 800; color: #2d3436; font-size: 38px; margin-bottom: 10px;">Ink's Canvas</h1>
         <p style="color:#888; margin-bottom:30px;">상세 페이지가 있는 마인드 맵</p>
-        <button onclick="createNewDoc()" style="padding: 15px 30px; border-radius: 35px; border: none; background: var(--primary); color: white; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);">+ 마인드맵 생성</button>
+        <button onclick="createNewDoc()" style="padding: 15px 30px; border-radius: 35px; border: none; background: var(--primary); color: white; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(140, 123, 110, 0.3);">+ 마인드맵 생성</button>
         <div class="doc-list" id="doc-list"></div>
     </div>
 
@@ -383,7 +392,6 @@
     let currentDoc = null;
     let selectedNodeId = null;
     
-    // 파일 시스템 호환성을 위한 폴더 목록 데이터 로드 로직 추가 통합
     let docs = JSON.parse(localStorage.getItem('thought_canvas_premium_v5') || '[]');
     let folders = JSON.parse(localStorage.getItem('thought_canvas_folders_v5') || '[]');
 
@@ -396,10 +404,11 @@
     let activeFootnoteTarget = null;
     let touchTimer = null;
 
-    // 우클릭 관리용 메타데이터 컨텍스트 변수
     let selectedContextItem = { type: null, id: null };
 
-    // 최초 로드 시 탐색기 트리 및 리스트 동시 동기화
+    // 글로벌 파일 드래깅 트래킹용 아이디 변수
+    let draggedFileId = null;
+
     renderDocList();
     renderSidebarTree();
 
@@ -1079,12 +1088,12 @@
             node.summary = summaryField.innerText;
             node.content = editorField.innerHTML;
             
-            // 파일 리스트 제목 메타데이터 동시 반영
             if(selectedNodeId === 'root') {
                 currentDoc.title = titleField.innerText;
             }
             currentDoc.updatedAt = Date.now();
             save(); 
+            renderDocList();
             renderSidebarTree();
         }
     }
@@ -1093,15 +1102,14 @@
     function closeMenu() { document.getElementById('side-controls').classList.remove('open'); }
     function handleMenuAction(action) { action(); document.getElementById('side-controls').classList.remove('open'); }
 
-    // [개선 반영]: 새 마인드맵 파일 생성 및 초기 타임스탬프 탑재
     function createNewDoc() {
         const title = prompt("프로젝트 마인드맵 이름:");
         if (!title) return;
         const newDoc = { 
             id: Date.now(), 
             title: title, 
-            parentId: null, // 최상위 루트 폴더 기준 배치
-            colorTag: '',   // 기본 투명 태그 색상
+            parentId: null, 
+            colorTag: '#ff7675', // 기본 초기 태그 색상 지정
             updatedAt: Date.now(),
             nodes: [{ id: 'root', title: title, summary: '', content: '', x: 5000, y: 5000, parentId: null, level: 0 }] 
         };
@@ -1113,8 +1121,9 @@
 
     function renderDocList() {
         const container = document.getElementById('doc-list');
+        if(!container) return;
         container.innerHTML = docs.map(doc => `
-            <div class="doc-card" onclick="openDoc(${doc.id})" style="border-top: 5px solid ${doc.colorTag || 'transparent'}">
+            <div class="doc-card" onclick="openDoc(${doc.id})" style="border-top: 5px solid ${doc.colorTag || '#ccc'}">
                 <h3 style="margin:0; font-size:18px; color:#111;">${doc.title}</h3>
                 <p style="font-size:12px; color:#999; margin-top:8px;">${doc.nodes.length} Thoughts</p>
                 <button class="doc-delete-btn" onclick="deleteDoc(event, ${doc.id})">삭제</button>
@@ -1124,8 +1133,10 @@
 
     function deleteDoc(e, id) { e.stopPropagation(); if(confirm("정말 이 마인드맵 파일을 완전히 삭제하시겠습니까?")) { docs = docs.filter(d => d.id !== id); save(); renderDocList(); renderSidebarTree(); } }
 
+    /* [개선 반영]: 사이드바 연동 강화 - 어디서든 파일 선택 시 본화면(마인드맵) 즉각 로드 전환 */
     function openDoc(id) {
         currentDoc = docs.find(d => d.id === id);
+        if(!currentDoc) return;
         document.getElementById('home-screen').style.display = 'none';
         document.getElementById('mindmap-container').style.display = 'block';
         resetZoom(); 
@@ -1141,6 +1152,12 @@
             const div = document.createElement('div');
             div.className = `node ${node.id === 'root' ? 'root' : ''}`;
             div.style.left = node.x + 'px'; div.style.top = node.y + 'px';
+            
+            // 파일별 지정 색상이 루팅 노드 배경에 미러링되도록 적용 스펙 추가
+            if(node.id === 'root' && currentDoc.colorTag) {
+                div.style.backgroundColor = currentDoc.colorTag;
+            }
+
             div.innerHTML = `<div class="node-info"><b>${node.title || (node.id === 'root' ? '중심' : '주제 없음')}</b><div class="summary">${node.summary || ''}</div></div><button class="add-btn">+</button>`;
             div.querySelector('.node-info').onclick = (e) => { e.stopPropagation(); openDetail(node.id); };
             div.querySelector('.add-btn').onclick = (e) => { e.stopPropagation(); addChildNode(node.id); };
@@ -1320,7 +1337,7 @@
     }
 
     function fitView() {
-        if (!currentDoc.nodes.length) return;
+        if (!currentDoc || !currentDoc.nodes.length) return;
         let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
         currentDoc.nodes.forEach(n => { minX = Math.min(minX, n.x); maxX = Math.max(maxX, n.x + 200); minY = Math.min(minY, n.y); maxY = Math.max(maxY, n.y + 100); });
         const scale = Math.min((window.innerWidth - 100) / (maxX - minX), (window.innerHeight - 100) / (maxY - minY), 1);
@@ -1344,6 +1361,7 @@
     container.onpointermove = (e) => { if (isPanning) { transform.x = e.clientX - startPoint.x; transform.y = e.clientY - startPoint.y; updateTransform(); } };
     container.onpointerup = (e) => { isPanning = false; container.releasePointerCapture(e.pointerId); };
     container.onwheel = (e) => {
+        if(!currentDoc) return;
         e.preventDefault();
         const f = e.deltaY > 0 ? 0.9 : 1.1;
         const ns = Math.min(Math.max(0.1, transform.scale * f), 3);
@@ -1354,20 +1372,20 @@
     
     function updateTransform() { content.style.transform = `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`; }
     function resetZoom() { 
+        if(!currentDoc) return;
         const root = currentDoc.nodes.find(n => n.id === 'root'); 
         transform.scale = 0.8; 
         transform.x = window.innerWidth / 2 - root.x * transform.scale - 80; transform.y = window.innerHeight / 2 - root.y * transform.scale - 35; 
         updateTransform(); 
     }
-    function goHome() { document.getElementById('home-screen').style.display = 'flex'; document.getElementById('mindmap-container').style.display = 'none'; }
+    function goHome() { currentDoc = null; document.getElementById('home-screen').style.display = 'flex'; document.getElementById('mindmap-container').style.display = 'none'; renderSidebarTree(); }
     
-    // [개선 연동]: 기존 세이브 로직에 가상 폴더 스토리지 트래킹 연동 추가
     function save() { 
         localStorage.setItem('thought_canvas_premium_v5', JSON.stringify(docs)); 
         localStorage.setItem('thought_canvas_folders_v5', JSON.stringify(folders));
     }
 
-    /* ==================== [신규 구현: 사이드바 파일/폴더 코어 엔진 스크립트] ==================== */
+    /* ==================== [신규 구현 및 전면 개편: 파일/폴더 코어 탐색기 엔진 스크립트] ==================== */
     function openSidebar() {
         document.getElementById('file-sidebar').classList.add('open');
     }
@@ -1388,7 +1406,6 @@
         const target = document.getElementById('sidebar-tree-target');
         const sortType = document.getElementById('sidebar-sort-select').value;
         
-        // 정렬 엔진 가동
         let sortedDocs = [...docs];
         if (sortType === 'name') {
             sortedDocs.sort((a,b) => a.title.localeCompare(b.title));
@@ -1398,47 +1415,142 @@
 
         let html = '';
 
-        // 1. 폴더 목록 및 내부 배속 파일 렌더링
+        // 1. 가을 테마 폴더 목록 렌더링 및 드래그 오버 인터랙션 바인딩
         folders.forEach(folder => {
             const folderFiles = sortedDocs.filter(d => d.parentId === folder.id);
             html += `
-                <div class="tree-folder">
+                <div class="tree-folder" 
+                     data-folder-id="${folder.id}" 
+                     ondragover="handleFolderDragOver(event, this)" 
+                     ondragleave="handleFolderDragLeave(event, this)" 
+                     ondrop="handleFolderDrop(event, this)">
                     <div class="folder-title" onclick="toggleFolderSection(this)">
                         <div class="folder-name-container">📁 <span>${folder.title}</span></div>
                         <button class="tree-more-btn" onclick="openContextOptions(event, 'folder', '${folder.id}')">···</button>
                     </div>
                     <div class="folder-content">
                         ${folderFiles.map(file => getFileItemRowHtml(file)).join('')}
-                        ${folderFiles.length === 0 ? '<div style="padding:6px 8px; font-size:11px; color:#666;">(폴더 비어있음)</div>' : ''}
+                        ${folderFiles.length === 0 ? '<div style="padding:6px 10px; font-size:11px; color:#a1978a; font-style:italic;">(폴더 비어있음)</div>' : ''}
                     </div>
                 </div>
             `;
         });
 
-        // 2. 소속 폴더가 없는 루트 계층 파일 독립 렌더링
+        // 2. 소속 폴더가 없는 루트 독립형 파일 레이아웃 배정
         const rootFiles = sortedDocs.filter(d => !d.parentId);
         if(rootFiles.length > 0) {
-            html += `<div style="margin-top:10px; padding:2px 4px; font-size:11px; color:#888; border-top:1px solid #3a4042;">독립 파일 리스트</div>`;
+            html += `<div style="margin-top:12px; padding:4px 10px; font-size:11px; color:#8c8378; border-top:1px dashed var(--sidebar-border);">독립 파일 리스트</div>`;
             html += rootFiles.map(file => getFileItemRowHtml(file)).join('');
         }
 
         if(folders.length === 0 && rootFiles.length === 0) {
-            html = `<div style="padding:20px; text-align:center; color:#666; font-size:13px;">생성된 마인드맵 파일이나 폴더가 없습니다.</div>`;
+            html = `<div style="padding:30px 20px; text-align:center; color:#a1978a; font-size:13px; line-height:1.5;">생성된 파일이나<br>폴더가 없습니다.</div>`;
         }
 
         target.innerHTML = html;
     }
 
+    /* [개선 반영]: 드래그앤드롭 스펙 탑재(draggable="true") 및 클릭 컬러 서클 라벨링 순환 시스템 탑재 */
     function getFileItemRowHtml(file) {
         const isActive = currentDoc && currentDoc.id === file.id ? 'active' : '';
+        const tagColor = file.colorTag || '#d3cbbd'; // 지정 색상 없을 시 기본 세련된 무트 크림 컬러 지정
+        
         return `
-            <div class="tree-file ${isActive}" onclick="openDoc(${file.id})" style="border-left-color: ${file.colorTag || 'transparent'}">
+            <div class="tree-file ${isActive}" 
+                 draggable="true" 
+                 ondragstart="handleFileDragStart(event, '${file.id}', this)" 
+                 ondragend="handleFileDragEnd(event, this)"
+                 onclick="openDoc(${file.id})">
                 <div class="file-name-container" title="${file.title}">
-                    📄 <span>${file.title || '주제 없음'}</span>
+                    <span class="file-status-dot" 
+                          style="background-color: ${tagColor};" 
+                          onclick="cycleFileTagColor(event, '${file.id}')" 
+                          title="라벨 색상 즉시 변경"></span>
+                    <span>${file.title || '주제 없음'}</span>
                 </div>
                 <button class="tree-more-btn" onclick="openContextOptions(event, 'file', '${file.id}')">···</button>
             </div>
         `;
+    }
+
+    /* [개선 신규 구현]: 색상 메뉴 분리창 대신 라벨 서클을 클릭하면 고유 컬러가 컴팩트하게 순환 지정되는 기능 */
+    function cycleFileTagColor(e, fileId) {
+        e.stopPropagation(); // 메인 문서 열림 버블링 차단
+        const doc = docs.find(d => d.id == fileId);
+        if(!doc) return;
+
+        // Autumn Mute 차분한 소프트 가을 톤앤매너 컬러 팔레트 배정
+        const colors = ['#ff7675', '#fdcb6e', '#2ecc71', '#3498db', '#9b59b6', '#bfa89e', '#8c7b6e'];
+        let currentIdx = colors.indexOf(doc.colorTag);
+        
+        // 다음 인덱스 색상 배정 매핑
+        let nextIdx = (currentIdx + 1) % colors.length;
+        doc.colorTag = colors[nextIdx];
+
+        save();
+        renderDocList();
+        renderSidebarTree();
+        
+        // 현재 로드 완료되어 활성화된 상태의 마인드맵이면 실시간 동기화 트리거
+        if(currentDoc && currentDoc.id == fileId) {
+            renderMindmap();
+        }
+    }
+
+    /* ==================== [핵심 개선 신규 구현: 드래그 앤 드롭 파일 이동 엔진 인터랙션] ==================== */
+    function handleFileDragStart(e, fileId, element) {
+        draggedFileId = fileId;
+        setTimeout(() => element.classList.add('dragging'), 0);
+        e.dataTransfer.setData('text/plain', fileId); // 크로스브라우징 호환 스펙
+    }
+
+    function handleFileDragEnd(e, element) {
+        element.classList.remove('dragging');
+        draggedFileId = null;
+    }
+
+    function handleFolderDragOver(e, folderElement) {
+        e.preventDefault(); // 드롭 이벤트 트리거 허용 필수 요건
+        folderElement.classList.add('drag-over-folder');
+    }
+
+    function handleFolderDragLeave(e, folderElement) {
+        folderElement.classList.remove('drag-over-folder');
+    }
+
+    function handleFolderDrop(e, folderElement) {
+        e.preventDefault();
+        e.stopPropagation();
+        folderElement.classList.remove('drag-over-folder');
+        
+        const targetFolderId = folderElement.getAttribute('data-folder-id');
+        if (draggedFileId && targetFolderId) {
+            const doc = docs.find(d => d.id == draggedFileId);
+            if (doc) {
+                doc.parentId = targetFolderId; // 해당 폴더 하위로 종속 이동 변경
+                save();
+                renderSidebarTree();
+                if(currentDoc && currentDoc.id == doc.id) renderMindmap();
+            }
+        }
+    }
+
+    // 최상위 컨테이너 빈 여백 영역에 드롭 시 독립 파일로 배정 전환 처리 스펙
+    function allowRootFolderDrop(e) {
+        e.preventDefault();
+    }
+
+    function handleRootFolderDrop(e) {
+        if(e.target.id === 'sidebar-tree-target' && draggedFileId) {
+            e.preventDefault();
+            const doc = docs.find(d => d.id == draggedFileId);
+            if(doc) {
+                doc.parentId = null; // 상위 폴더 지정을 해제하여 최상위 독립 파일 계층으로 구조 변경
+                save();
+                renderSidebarTree();
+                if(currentDoc && currentDoc.id == doc.id) renderMindmap();
+            }
+        }
     }
 
     function toggleFolderSection(el) {
@@ -1446,7 +1558,6 @@
         content.style.display = (content.style.display === 'none') ? 'block' : 'none';
     }
 
-    // 트리 전용 메타 컨텍스트 메뉴 오픈 제어
     function openContextOptions(e, type, id) {
         e.stopPropagation();
         selectedContextItem = { type, id };
@@ -1481,42 +1592,6 @@
         renderSidebarTree();
     }
 
-    function triggerContextMove() {
-        if(selectedContextItem.type === 'folder') return alert("폴더 간 이동은 지원하지 않습니다. 파일만 이동 가능합니다.");
-        const doc = docs.find(d => d.id == selectedContextItem.id);
-        
-        let moveMenuText = "이동할 대상 폴더의 번호를 입력하세요:\n0. [지정 안 함 - 최상위 독립 파일로 이동]\n";
-        folders.forEach((f, idx) => {
-            moveMenuText += `${idx + 1}. ${f.title}\n`;
-        });
-
-        const choice = prompt(moveMenuText, "0");
-        if(choice === null) return;
-        const targetIdx = parseInt(choice, 10);
-
-        if(targetIdx === 0) {
-            doc.parentId = null;
-        } else if(folders[targetIdx - 1]) {
-            doc.parentId = folders[targetIdx - 1].id;
-        } else {
-            return alert("잘못된 상위 폴더 선택입니다.");
-        }
-
-        save();
-        renderSidebarTree();
-    }
-
-    function setFileTagColor(color) {
-        if(selectedContextItem.type === 'folder') return alert("색상 태그는 마인드맵 파일 전용 옵션입니다.");
-        const doc = docs.find(d => d.id == selectedContextItem.id);
-        if(doc) {
-            doc.colorTag = color;
-            save();
-            renderDocList();
-            renderSidebarTree();
-        }
-    }
-
     function triggerContextDelete() {
         const id = selectedContextItem.id;
         if(selectedContextItem.type === 'folder') {
@@ -1532,54 +1607,6 @@
         save();
         renderDocList();
         renderSidebarTree();
-    }
-
-    // 외부 로컬 JSON 파일화 덤프 내보내기 (백업 기능)
-    function exportBackupJSON() {
-        const backupData = {
-            version: "5.0-inkcanvas",
-            timestamp: Date.now(),
-            folders: folders,
-            docs: docs
-        };
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
-        const dlAnchorElem = document.createElement('a');
-        dlAnchorElem.setAttribute("href", dataStr);
-        dlAnchorElem.setAttribute("download", `InkCanvas_Backup_${Date.now()}.json`);
-        dlAnchorElem.click();
-    }
-
-    function triggerImportFileInput() {
-        document.getElementById('import-json-file').click();
-    }
-
-    // 로컬 JSON 데이터 로드 파싱 파이프라인 (복원 기능)
-    function importBackupJSON(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const parsed = JSON.parse(e.target.result);
-                if(parsed.version && parsed.docs) {
-                    if(confirm("기존 스토리지 데이터를 덮어쓰고 불러온 백업 파일 데이터로 복원하시겠습니까?")) {
-                        docs = parsed.docs || [];
-                        folders = parsed.folders || [];
-                        save();
-                        renderDocList();
-                        renderSidebarTree();
-                        alert("성공적으로 데이터가 완벽히 복원되었습니다.");
-                        goHome();
-                    }
-                } else {
-                    alert("호환되지 않는 양식의 백업 파일 파일입니다.");
-                }
-            } catch (err) {
-                alert("JSON 파일 판독 중 오류가 발생했습니다.");
-            }
-        };
-        reader.readAsText(file);
     }
 </script>
 </body>
