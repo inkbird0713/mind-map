@@ -208,7 +208,7 @@
         @media print {
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
-            #print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
+            #print-area { display: block !important; position: absolute; left: 0; top: 0; }
             .pdf-cover { height: 100vh !important; max-height: 100vh !important; page-break-after: always !important; box-sizing: border-box !important; overflow: hidden !important; }
         }
     </style>
@@ -1219,18 +1219,26 @@
         generatePremiumPDF(selectedScale); 
     }
 
+    /* ==================== [핵심 레이아웃 버그 수정: 비율 축소 시 여백 단절 처리 동적 보정 엔진] ==================== */
     function generatePremiumPDF(scaleValue) {
         const printArea = document.getElementById('print-area');
         const rootNode = currentDoc.nodes.find(n => n.id === 'root');
         const now = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
         
+        // 역산 가상 가로 폭 스펙 설계 (축소된 비율만큼 박스 크기를 늘려서 브라우저가 공간을 꽉 채워 연산하도록 가이드)
+        const inversePercentage = (100 / parseFloat(scaleValue)).toFixed(2);
+
         let html = `
             <style>
                 @media print {
                     #print-area {
                         transform: scale(${scaleValue});
                         transform-origin: top left;
-                        width: ${100 / parseFloat(scaleValue)}% !important;
+                        width: ${inversePercentage}% !important;
+                        display: block !important;
+                    }
+                    .pdf-cover, .pdf-body {
+                        box-sizing: border-box !important;
                     }
                 }
             </style>
@@ -1603,7 +1611,7 @@
             }
         } else {
             if(!confirm("이 마인드맵 파일을 완전히 영구 삭제하시겠습니까?")) return;
-            docs = docs.filter(d => d.id == id);
+            docs = docs.filter(d => d.id != id);
             if(currentDoc && currentDoc.id == id) goHome();
         }
         save();
