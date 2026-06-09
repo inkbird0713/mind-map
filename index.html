@@ -6,53 +6,61 @@
     <title>Ink's Canvas - Ultimate Executive Report with File Manager</title>
     <style>
         :root {
-            --primary: #8c7b6e; /* 어텀 뮤트 메인 무드 브라운 */
-            --bg: #fcfbfa;
+            /* --- [미피(Miffy) 감성 딕 브루너 시그니처 팔레트] --- */
+            --primary: #ff5a36;        /* 미피 오렌지 레드 */
+            --miffy-blue: #007bc4;     /* 브루너 블루 */
+            --miffy-yellow: #ffde00;   /* 브루너 옐로우 */
+            --miffy-green: #009640;    /* 브루너 그린 */
+            --bg: #faf6f0;             /* 포근하고 따뜻한 웜크림 베이스 */
             --panel: #ffffff;
-            --node-border: #e8e3da;
+            --node-border: #333333;    /* 미피 드로잉의 얇고 명확한 먹선 느낌 */
             
-            /* --- [디자인 개선] "밤티" 디자인을 탈출한 Cozy & Minimal 사이드바 테마 --- */
-            --sidebar-bg: #f4f1eb;
-            --sidebar-text: #4a453f;
-            --sidebar-border: #e0dad0;
-            --sidebar-hover: #e9e4da;
-            --sidebar-accent: #cfc9be;
+            /* --- Cozy & Minimal 미피 스타일 사이드바 테마 --- */
+            --sidebar-bg: #f5eedf;
+            --sidebar-text: #2c2520;
+            --sidebar-border: #dcd1bd;
+            --sidebar-hover: #ede3d0;
+            --sidebar-accent: #fce8bd;
         }
 
-        body, html { margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, sans-serif; background: var(--bg); height: 100%; overflow: hidden; touch-action: none; }
+        body, html { margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, sans-serif; background: var(--bg); height: 100%; overflow: hidden; touch-action: none; color: #333; }
         
         #home-screen { padding: 50px 20px; display: flex; flex-direction: column; align-items: center; height: 100vh; overflow-y: auto; box-sizing: border-box; position: relative; z-index: 2000; background: var(--bg); }
         .doc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; width: 100%; max-width: 1000px; margin-top: 40px; }
-        .doc-card { background: var(--panel); padding: 35px 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); cursor: pointer; position: relative; border: 1.5px solid transparent; transition: 0.3s; text-align: center; }
-        .doc-card:hover { border-color: var(--primary); transform: translateY(-5px); }
-        .doc-delete-btn { position: absolute; bottom: 12px; right: 12px; font-size: 11px; color: #bbb; background: none; border: none; cursor: pointer; padding: 5px; text-decoration: underline; }
+        
+        /* 미피 그림책 스타일의 볼드 스트로크 카드 디자인 */
+        .doc-card { background: var(--panel); padding: 35px 20px; border-radius: 24px; box-shadow: 0 6px 0px rgba(0,0,0,0.05); cursor: pointer; position: relative; border: 2px solid #333333; transition: 0.2s ease-in-out; text-align: center; }
+        .doc-card:hover { border-color: var(--primary); transform: translateY(-4px); box-shadow: 0 10px 0px rgba(0,0,0,0.06); }
+        .doc-delete-btn { position: absolute; bottom: 12px; right: 16px; font-size: 11px; color: #999; background: none; border: none; cursor: pointer; padding: 5px; text-decoration: underline; }
 
-        #mindmap-container { display: none; width: 100vw; height: 100vh; position: relative; background: #eaeff2; overflow: hidden; cursor: grab; }
+        #mindmap-container { display: none; width: 100vw; height: 100vh; position: relative; background: #e3edf7; overflow: hidden; cursor: grab; }
         #mindmap-container:active { cursor: grabbing; }
         #canvas-content { position: absolute; top: 0; left: 0; transform-origin: 0 0; will-change: transform; }
         
-        .node { position: absolute; padding: 12px 16px; background: white; border-radius: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); cursor: pointer; min-width: 150px; border: 1.5px solid var(--node-border); z-index: 2; display: flex; align-items: center; gap: 10px; user-select: none; transition: left 0.3s ease, top 0.3s ease; }
-        .node.root { background: var(--primary); color: white; border: none; font-weight: bold; padding: 18px 28px; }
+        /* 둥글고 장난감 같은 노드 스타일 */
+        .node { position: absolute; padding: 14px 20px; background: white; border-radius: 20px; box-shadow: 0 5px 0px rgba(0,0,0,0.05); cursor: pointer; min-width: 150px; border: 2px solid var(--node-border); z-index: 2; display: flex; align-items: center; gap: 10px; user-select: none; transition: left 0.3s ease, top 0.3s ease; }
+        .node.root { background: var(--primary); color: white; border: 2px solid #333333; font-weight: bold; padding: 18px 28px; box-shadow: 0 6px 0px rgba(0,0,0,0.1); }
         .node-info { flex: 1; pointer-events: auto; min-width: 80px; }
-        .node .summary { font-size: 11px; color: #888; margin-top: 3px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .node.root .summary { color: #f4f1eb; }
-        .add-btn { width: 26px; height: 26px; background: #f0f2f5; color: #777; border-radius: 7px; border: none; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .node .summary { font-size: 11px; color: #777; margin-top: 4px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .node.root .summary { color: #ffeae5; }
+        .add-btn { width: 28px; height: 28px; background: #f0f2f5; color: #333; border-radius: 10px; border: 2px solid #333; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold; }
+        .add-btn:hover { background: var(--miffy-yellow); }
 
         svg { position: absolute; top: 0; left: 0; width: 20000px; height: 20000px; pointer-events: none; }
-        .connection { fill: none; stroke: #cbd5e0; stroke-width: 2.5; stroke-linecap: round; }
+        .connection { fill: none; stroke: #333333; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 2 6; } /* 미피 특유의 드로잉 느낌을 위한 점선 처리 */
 
         #detail-view { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: white; z-index: 3000; flex-direction: column; }
-        .detail-header { padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f0f0; }
+        .detail-header { padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; background: #faf6f0; }
         .detail-body { flex: 1; overflow-y: auto; padding: 40px 10% 180px; position: relative; scroll-behavior: smooth; }
         
         #detail-title, #detail-summary, #editor { outline: none; width: 100%; }
-        #detail-title { font-size: 32px; font-weight: 800; color: #2d3436; margin-bottom: 10px; }
-        #detail-summary { background: #f8fafb; border-left: 5px solid var(--primary); padding: 15px; margin-bottom: 30px; border-radius: 8px; font-style: italic; color: #4a5568; white-space: pre-wrap; }
+        #detail-title { font-size: 32px; font-weight: 800; color: #111; margin-bottom: 15px; }
+        #detail-summary { background: #fffcf5; border: 2px solid #333; border-left: 8px solid var(--miffy-blue); padding: 15px; margin-bottom: 30px; border-radius: 14px; font-style: normal; color: #333; white-space: pre-wrap; }
         
-        #editor { min-height: 200px; line-height: 1.8; font-size: 18px; color: #2d3748; }
+        #editor { min-height: 200px; line-height: 1.8; font-size: 18px; color: #222; }
 
-        .bottom-footnotes-area { display: none; margin-top: 50px; padding-top: 20px; border-top: 1px dashed #cbd5e0; color: #555; font-size: 15px; user-select: none; }
-        .bottom-footnotes-area h5 { margin: 0 0 10px 0; font-size: 16px; color: #2d3436; font-weight: 700; }
+        .bottom-footnotes-area { display: none; margin-top: 50px; padding-top: 20px; border-top: 2px dashed #333; color: #333; font-size: 15px; user-select: none; }
+        .bottom-footnotes-area h5 { margin: 0 0 10px 0; font-size: 16px; color: #111; font-weight: 700; }
         .bottom-footnote-item { margin-bottom: 6px; line-height: 1.5; word-break: break-all; scroll-margin-top: 20px; }
         .bottom-footnote-item .fn-link-num { font-weight: bold; color: var(--primary); margin-right: 6px; cursor: pointer; text-decoration: underline; }
 
@@ -60,13 +68,13 @@
         #editor h2, .pdf-content h2 { font-size: 24px; margin: 18px 0 8px; font-weight: 700; color: #222; }
         #editor h3, .pdf-content h3 { font-size: 20px; margin: 16px 0 6px; font-weight: 700; color: #333; }
         #editor h4, .pdf-content h4 { font-size: 18px; margin: 14px 0 4px; font-weight: 700; color: #444; }
-        #editor hr, .pdf-content hr { border: 0; border-top: 1px solid #cbd5e0; margin: 16px 0; display: block; height: 1px; }
+        #editor hr, .pdf-content hr { border: 0; border-top: 2px dashed #cbd5e0; margin: 16px 0; display: block; height: 1px; }
 
-        #editor table, .pdf-content table { border-collapse: collapse; width: 100%; margin: 15px 0; table-layout: fixed; position: relative; font-size: 15px !important; }
-        #editor th, #editor td, .pdf-content th, .pdf-content td { border: 1px solid #cbd5e0; padding: 10px 12px; min-height: 40px; text-align: left; word-break: break-all; font-weight: normal; background-color: transparent; font-size: 15px !important; line-height: 1.5 !important; }
+        #editor table, .pdf-content table { border-collapse: collapse; width: 100%; margin: 15px 0; table-layout: fixed; position: relative; font-size: 15px !important; border: 2px solid #333; border-radius: 8px; overflow: hidden; }
+        #editor th, #editor td, .pdf-content th, .pdf-content td { border: 1px solid #333; padding: 12px 14px; min-height: 40px; text-align: left; word-break: break-all; font-weight: normal; background-color: transparent; font-size: 15px !important; line-height: 1.5 !important; }
         
-        #editor table.has-th-row tr:first-child td, #editor table.has-th-row tr:first-child th { background-color: #f7fafc !important; font-weight: 700 !important; }
-        #editor table.has-th-col tr td:first-child, #editor table.has-th-col tr th:first-child { background-color: #f7fafc !important; font-weight: 700 !important; }
+        #editor table.has-th-row tr:first-child td, #editor table.has-th-row tr:first-child th { background-color: #fff9eb !important; font-weight: 700 !important; }
+        #editor table.has-th-col tr td:first-child, #editor table.has-th-col tr th:first-child { background-color: #fff9eb !important; font-weight: 700 !important; }
 
         #editor ul, .pdf-content ul { padding-left: 24px; margin: 6px 0; }
         #editor ol, .pdf-content ol { padding-left: 24px; margin: 6px 0; }
@@ -81,63 +89,66 @@
         #editor ol ol, .pdf-content ol ol { list-style-type: lower-alpha !important; }
         #editor ol ol ol, .pdf-content ol ol ol { list-style-type: lower-roman !important; }
 
-        .footnote-ref { color: #3498db; font-size: 13px; font-weight: 700; vertical-align: super; cursor: pointer; margin-left: 2px; margin-right: 2px; user-select: none; display: inline-block; position: relative; WebkitTapHighlightColor: transparent; scroll-margin-top: 80px; }
-        .footnote-ref::after { content: attr(data-note); position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); background: #2d3436; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 14px; font-weight: normal; line-height: 1.5; white-space: nowrap; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; font-family: 'Pretendard', sans-serif; }
+        .footnote-ref { color: var(--miffy-blue); font-size: 13px; font-weight: 700; vertical-align: super; cursor: pointer; margin-left: 2px; margin-right: 2px; user-select: none; display: inline-block; position: relative; WebkitTapHighlightColor: transparent; scroll-margin-top: 80px; }
+        .footnote-ref::after { content: attr(data-note); position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); background: #2d3436; color: #fff; padding: 8px 14px; border-radius: 10px; font-size: 14px; font-weight: normal; line-height: 1.5; white-space: nowrap; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; font-family: 'Pretendard', sans-serif; }
         .footnote-ref:hover::after { opacity: 1; transform: translateX(-50%) translateY(-4px); }
 
         @keyframes target-flash {
-            0% { background-color: rgba(74, 144, 226, 0.4); transform: scale(1.2); border-radius: 3px; }
+            0% { background-color: rgba(0, 123, 196, 0.3); transform: scale(1.1); border-radius: 4px; }
             100% { background-color: transparent; transform: scale(1); }
         }
         .flash-highlight { animation: target-flash 1.2s ease-out; }
 
-        .floating-bar { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: #2d3436; padding: 4px 12px; border-radius: 6px; display: flex; gap: 4px; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 3100; height: 26px; }
-        .floating-bar button { background: transparent; color: #dfe6e9; border: none; height: 22px; padding: 0 8px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; position: relative; transition: 0.15s; }
-        .floating-bar button:hover { background: #4a5568; color: #fff; }
+        .floating-bar { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: #333333; padding: 6px 16px; border-radius: 16px; display: flex; gap: 6px; align-items: center; box-shadow: 0 6px 0px rgba(0,0,0,0.1); z-index: 3100; height: 32px; border: 2px solid #333; }
+        .floating-bar button { background: transparent; color: #dfe6e9; border: none; height: 26px; padding: 0 10px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center; position: relative; transition: 0.15s; }
+        .floating-bar button:hover { background: #555; color: #fff; }
         
-        .color-menu { display: none; position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid #cbd5e0; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-radius: 12px; padding: 10px; gap: 8px; grid-template-columns: repeat(4, 1fr); z-index: 3200; width: 140px; }
-        .color-menu-title { grid-column: span 4; font-size: 11px; font-weight: bold; color: #718096; margin-bottom: 2px; text-align: center; }
-        .color-dot { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.15s; }
+        .color-menu { display: none; position: absolute; bottom: 34px; left: 50%; transform: translateX(-50%); background: #fff; border: 2px solid #333; box-shadow: 0 6px 0px rgba(0,0,0,0.05); border-radius: 16px; padding: 12px; gap: 8px; grid-template-columns: repeat(4, 1fr); z-index: 3200; width: 150px; }
+        .color-menu-title { grid-column: span 4; font-size: 11px; font-weight: bold; color: #777; margin-bottom: 2px; text-align: center; }
+        .color-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #333; cursor: pointer; transition: 0.15s; }
         .color-dot:hover { transform: scale(1.15); }
 
-        #slash-menu { display: none; position: absolute; background: white; border: 1px solid #cbd5e0; border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.12); width: 180px; z-index: 4000; overflow: hidden; padding: 4px 0; }
-        .slash-item { padding: 10px 14px; font-size: 14px; color: #2d3748; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.15s; }
-        .slash-item:hover, .slash-item.active { background: #e2e8f0; color: var(--primary); font-weight: bold; }
+        #slash-menu { display: none; position: absolute; background: white; border: 2px solid #333; border-radius: 14px; box-shadow: 0 6px 0px rgba(0,0,0,0.05); width: 190px; z-index: 4000; overflow: hidden; padding: 6px 0; }
+        .slash-item { padding: 10px 14px; font-size: 14px; color: #333; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.15s; }
+        .slash-item:hover, .slash-item.active { background: #fff4db; color: var(--primary); font-weight: bold; }
 
+        /* 동글동글한 컨트롤 버튼 시스템 */
         .side-controls { position: fixed; bottom: 35px; right: 35px; display: flex; flex-direction: column-reverse; gap: 12px; z-index: 2500; align-items: center; }
-        .circle-btn { width: 50px; height: 50px; border-radius: 50%; border: none; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.12); cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .circle-btn { width: 52px; height: 52px; border-radius: 50%; border: 2px solid #333; background: white; box-shadow: 0 5px 0px rgba(0,0,0,0.05); cursor: pointer; font-size: 22px; display: flex; align-items: center; justify-content: center; transition: 0.2s ease-in-out; }
+        .circle-btn:hover { transform: scale(1.08); background: #faf6f0; }
         
         .side-controls .menu-item { opacity: 0; transform: translateY(20px) scale(0.6); pointer-events: none; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2); }
         .side-controls.open .menu-item { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
-        #menu-toggle-btn { z-index: 2501; }
+        #menu-toggle-btn { z-index: 2501; background: var(--miffy-yellow); }
         .side-controls.open #menu-toggle-btn { transform: rotate(45deg); background: #e2e8f0; }
 
         .custom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 5000; justify-content: center; align-items: center; }
-        .modal-box { background: white; padding: 30px; border-radius: 16px; width: 340px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .modal-title { font-size: 20px; font-weight: 800; margin-bottom: 15px; color: #2d3436; }
-        .modal-guide { font-size: 13px; color: #7f8c8d; background: #f8fafb; padding: 10px; border-radius: 8px; margin-bottom: 15px; line-height: 1.4; }
+        .modal-box { background: white; padding: 30px; border-radius: 24px; width: 340px; box-shadow: 0 10px 0px rgba(0,0,0,0.05); border: 2.5px solid #333; }
+        .modal-title { font-size: 20px; font-weight: 800; margin-bottom: 15px; color: #111; }
+        .modal-guide { font-size: 13px; color: #666; background: #faf6f0; border: 1.5px solid #333; padding: 10px; border-radius: 12px; margin-bottom: 15px; line-height: 1.4; }
         .input-group { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-        .input-group label { font-size: 15px; font-weight: 600; color: #4a5568; }
-        .input-group input { width: 80px; padding: 8px; border: 1px solid #cbd5e0; border-radius: 6px; text-align: center; font-size: 16px; }
-        .input-group textarea { width: 100%; height: 80px; padding: 10px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 15px; resize: none; font-family: inherit; box-sizing: border-box; }
+        .input-group label { font-size: 15px; font-weight: 600; color: #333; }
+        .input-group input { width: 80px; padding: 8px; border: 2px solid #333; border-radius: 10px; text-align: center; font-size: 16px; font-weight: bold; }
+        .input-group textarea { width: 100%; height: 80px; padding: 10px; border: 2px solid #333; border-radius: 12px; font-size: 15px; resize: none; font-family: inherit; box-sizing: border-box; }
 
         .radio-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
-        .radio-option { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #cbd5e0; border-radius: 8px; cursor: pointer; font-size: 15px; transition: 0.15s; }
-        .radio-option:hover { background: #f7fafc; border-color: var(--primary); }
+        .radio-option { display: flex; align-items: center; gap: 10px; padding: 12px; border: 2px solid #333; border-radius: 14px; cursor: pointer; font-size: 15px; transition: 0.15s; background: white; }
+        .radio-option:hover { background: #fffcf2; border-color: var(--primary); }
         .radio-option input { cursor: pointer; }
 
         .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
-        .modal-btns button { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
+        .modal-btns button { flex: 1; padding: 12px; border-radius: 12px; border: 2px solid #333; font-weight: bold; cursor: pointer; box-shadow: 0 3px 0px #333; }
+        .modal-btns button:active { transform: translateY(3px); box-shadow: none; }
         
-        #table-bubble-menu { display: none; position: absolute; background: #2d3436; color: white; padding: 6px 12px; border-radius: 8px; font-size: 13px; z-index: 4500; gap: 12px; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); pointer-events: auto; user-select: none; }
+        #table-bubble-menu { display: none; position: absolute; background: #333; color: white; padding: 8px 14px; border-radius: 12px; font-size: 13px; z-index: 4500; gap: 12px; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); pointer-events: auto; user-select: none; }
         #table-bubble-menu label { display: flex; align-items: center; gap: 4px; cursor: pointer; pointer-events: auto; }
         #table-bubble-menu input[type="checkbox"] { cursor: pointer; pointer-events: auto; }
-        .table-del-btn { background: #ff7675; border: none; color: white; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; pointer-events: auto; }
+        .table-del-btn { background: #ff7675; border: 1.5px solid #333; color: white; padding: 2px 8px; border-radius: 6px; cursor: pointer; font-weight: bold; pointer-events: auto; }
         .table-del-btn:hover { background: #e66767; }
 
         #print-area { display: none; background: white; color: #2d3748; font-family: 'Pretendard', sans-serif; line-height: 1.8; }
         .pdf-cover { height: 100vh; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; padding: 80px; box-sizing: border-box; page-break-after: always; position: relative; background: #ffffff; }
-        .pdf-cover::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 15px; background: linear-gradient(90deg, var(--primary), #bfa89e); }
+        .pdf-cover::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 15px; background: linear-gradient(90deg, var(--primary), var(--miffy-yellow), var(--miffy-blue)); }
         .pdf-cover .canvas-logo { font-size: 14px; color: var(--primary); font-weight: 800; letter-spacing: 6px; text-transform: uppercase; border-bottom: 2px solid var(--primary); padding-bottom: 5px; }
         .cover-mid { margin-top: auto; margin-bottom: auto; width: 100%; display: flex; flex-direction: column; gap: 25px; }
         .pdf-cover h1 { font-size: 52px; font-weight: 800; margin: 0; color: #1a202c; line-height: 1.25; word-break: keep-all; letter-spacing: -1px; }
@@ -147,63 +158,66 @@
         .pdf-body { padding: 40px 80px; box-sizing: border-box; }
         .pdf-section { margin-bottom: 35px; page-break-inside: auto; }
         .pdf-h1 { font-size: 28px; font-weight: 800; color: #1a202c; border-bottom: 3px solid #1a202c; padding-bottom: 12px; margin-top: 10px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: -0.5px; page-break-after: avoid; }
-        .pdf-h2 { font-size: 21px; font-weight: 700; color: #2b6cb0; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin: 35px 0 20px; page-break-after: avoid; }
+        .pdf-h2 { font-size: 21px; font-weight: 700; color: var(--miffy-blue); border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin: 35px 0 20px; page-break-after: avoid; }
         .pdf-h3 { font-size: 17px; font-weight: 700; color: #2d3748; margin: 25px 0 12px; display: flex; align-items: center; page-break-after: avoid; }
         .pdf-h3::before { content: ""; width: 6px; height: 6px; background: #4a5568; border-radius: 50%; margin-right: 12px; display: inline-block; }
         .level-indent { border-left: 2px solid #edf2f7; padding-left: 24px; margin-left: 8px; margin-top: 15px; margin-bottom: 15px; }
         .pdf-summary-box { background: #f7fafc; border-left: 4px solid var(--primary); padding: 18px 24px; margin: 18px 0; border-radius: 4px; font-style: normal; color: #4a5568; font-size: 14.5px; page-break-inside: avoid; white-space: pre-wrap; line-height: 1.6; }
         .pdf-content { font-size: 15px; color: #2d3748; text-align: justify; }
 
-        /* ==================== [개선 수정 및 고도화: 사이드바 인프라 레이아웃] ==================== */
-        #file-sidebar { position: fixed; top: 0; left: -290px; width: 290px; height: 100vh; background: var(--sidebar-bg); color: var(--sidebar-text); z-index: 4000; transition: left 0.3s cubic-bezier(0.1, 0.9, 0.2, 1); box-shadow: 5px 0 20px rgba(0,0,0,0.05); display: flex; flex-direction: column; border-right: 1px solid var(--sidebar-border); }
+        /* ==================== [사이드바 미피 일러스트 풍 테마 레이아웃] ==================== */
+        #file-sidebar { position: fixed; top: 0; left: -290px; width: 290px; height: 100vh; background: var(--sidebar-bg); color: var(--sidebar-text); z-index: 4000; transition: left 0.3s cubic-bezier(0.1, 0.9, 0.2, 1); box-shadow: 4px 0 0px rgba(0,0,0,0.05); display: flex; flex-direction: column; border-right: 2px solid #333; }
         #file-sidebar.open { left: 0; }
-        .sidebar-header { padding: 20px 16px 12px; background: transparent; display: flex; align-items: center; justify-content: space-between; }
-        .sidebar-title { font-size: 16px; font-weight: 700; color: #4a453f; display: flex; align-items: center; gap: 8px; }
-        .sidebar-close { background: none; border: none; color: #888; font-size: 22px; cursor: pointer; transition: 0.2s; }
-        .sidebar-close:hover { color: #111; }
+        .sidebar-header { padding: 24px 18px 12px; background: transparent; display: flex; align-items: center; justify-content: space-between; }
+        .sidebar-title { font-size: 18px; font-weight: 800; color: var(--sidebar-text); display: flex; align-items: center; gap: 8px; }
+        .sidebar-close { background: none; border: none; color: #555; font-size: 26px; cursor: pointer; transition: 0.2s; font-weight: bold; }
+        .sidebar-close:hover { color: #000; }
         
-        /* 다이어트 반영: 불필요한 백업/복원 버튼 삭제 후 구조 슬림화 */
-        .sidebar-actions { padding: 0 16px 12px; display: flex; gap: 8px; border-bottom: 1px solid var(--sidebar-border); }
-        .sidebar-actions button { flex: 1; background: #ffffff; color: #5a524b; border: 1px solid #e0dad0; padding: 8px 0; font-size: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
-        .sidebar-actions button:hover { background: var(--sidebar-hover); color: #000; border-color: #ccc; }
+        .sidebar-actions { padding: 0 16px 14px; display: flex; gap: 8px; border-bottom: 2px solid #333; }
+        .sidebar-actions button { flex: 1; background: #ffffff; color: #333; border: 2px solid #333; padding: 10px 0; font-size: 13px; border-radius: 12px; cursor: pointer; font-weight: 700; transition: all 0.15s; box-shadow: 0 3px 0px #333; }
+        .sidebar-actions button:hover { background: var(--sidebar-hover); color: #000; }
+        .sidebar-actions button:active { transform: translateY(3px); box-shadow: none; }
         
-        .sidebar-filter { padding: 10px 16px; background: transparent; border-bottom: 1px solid var(--sidebar-border); display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #8c8378; }
-        .sidebar-filter select { background: #ffffff; color: var(--sidebar-text); border: 1px solid #e0dad0; padding: 4px 6px; border-radius: 6px; font-size: 11px; outline: none; cursor: pointer; font-family: inherit; }
+        .sidebar-filter { padding: 12px 16px; background: transparent; border-bottom: 2px dashed #b8ab94; display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #554a40; font-weight: 600; }
+        .sidebar-filter select { background: #ffffff; color: var(--sidebar-text); border: 2px solid #333; padding: 4px 8px; border-radius: 8px; font-size: 11px; outline: none; cursor: pointer; font-family: inherit; font-weight: bold; }
         
-        .tree-container { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+        .tree-container { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
         
-        /* 드래그 앤 드롭 폴더 영역 스펙 */
-        .tree-folder { margin-bottom: 4px; border-radius: 10px; transition: background 0.2s; }
-        .tree-folder.drag-over-folder { background: var(--sidebar-accent); }
+        /* 폴더 및 드래그 인터페이스 */
+        .tree-folder { margin-bottom: 4px; border-radius: 14px; transition: background 0.2s; border: 1.5px solid transparent; }
+        .tree-folder.drag-over-folder { background: var(--sidebar-accent); border-color: #333; }
         
-        .folder-title { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 13.5px; color: #4a453f; transition: 0.15s; }
+        .folder-title { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 12px; cursor: pointer; font-weight: 800; font-size: 14px; color: #2c2520; transition: 0.15s; }
         .folder-title:hover { background: var(--sidebar-hover); }
         .folder-name-container { display: flex; align-items: center; gap: 8px; }
         
-        .folder-content { padding-left: 12px; margin-top: 2px; display: block; border-left: 1px dashed #d3cbbd; min-height: 10px; }
+        .folder-content { padding-left: 14px; margin-top: 2px; display: block; border-left: 2px dashed #bcaf96; min-height: 10px; }
         
-        /* 파일 아이템 로우 인터페이스 스펙 */
-        .tree-file { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; margin: 2px 0; transition: all 0.2s ease; user-select: none; color: #5a524b; background: transparent; }
+        /* 장난감 블록 같은 파일 리스트 인터페이스 */
+        .tree-file { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 12px; cursor: pointer; font-size: 13.5px; margin: 4px 0; transition: all 0.15s ease; user-select: none; color: #333; background: #ffffff; border: 2px solid #333; box-shadow: 0 3px 0px #333; font-weight: 600; }
         .tree-file:hover { background: var(--sidebar-hover); color: #000; }
-        .tree-file.active { background: #e9e4da; color: #000; font-weight: 700; }
+        .tree-file.active { background: var(--miffy-yellow); color: #000; font-weight: 800; }
         .tree-file.dragging { opacity: 0.4; background: var(--sidebar-accent); }
+        .tree-file:active { transform: translateY(2px); box-shadow: 0 1px 0px #333; }
         
         .file-name-container { display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80%; }
         
-        /* 파일 개별 지정 색상 점 라벨 */
-        .file-status-dot { width: 11px; height: 11px; border-radius: 50%; background: #ccc; border: 1px solid rgba(0,0,0,0.06); display: inline-block; flex-shrink: 0; cursor: pointer; transition: transform 0.15s; }
+        /* 컬러 배지 링 라벨 디자인 */
+        .file-status-dot { width: 13px; height: 13px; border-radius: 50%; background: #ccc; border: 2px solid #333333; display: inline-block; flex-shrink: 0; cursor: pointer; transition: transform 0.15s; }
         .file-status-dot:hover { transform: scale(1.3); }
 
-        .tree-more-btn { background: none; border: none; color: #a1978a; cursor: pointer; padding: 4px; font-size: 12px; border-radius: 4px; }
+        .tree-more-btn { background: none; border: none; color: #554a40; cursor: pointer; padding: 4px 8px; font-size: 14px; border-radius: 6px; font-weight: bold; }
         .tree-more-btn:hover { background: #dfd9ce; color: #111; }
         
-        .sidebar-trigger-btn { position: fixed; top: 15px; left: 15px; z-index: 2500; width: 45px; height: 45px; border-radius: 50%; background: white; border: none; box-shadow: 0 3px 10px rgba(0,0,0,0.06); font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; border: 1px solid #e8e3da; }
-        .sidebar-trigger-btn:hover { transform: scale(1.05); background: #fcfbfa; }
+        /* 둥근 형태의 트리거 스펙 */
+        .sidebar-trigger-btn { position: fixed; top: 15px; left: 15px; z-index: 2500; width: 48px; height: 48px; border-radius: 50%; background: white; border: 2px solid #333; box-shadow: 0 4px 0px #333; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.15s; }
+        .sidebar-trigger-btn:hover { transform: scale(1.05); background: #faf6f0; }
+        .sidebar-trigger-btn:active { transform: translateY(3px); box-shadow: none; }
 
-        .file-context-menu { display: none; position: fixed; background: white; color: black; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 10px; padding: 5px 0; z-index: 6000; width: 140px; font-size: 13px; border: 1px solid #e2e8f0; }
-        .context-item { padding: 8px 12px; cursor: pointer; transition: 0.1s; }
-        .context-item:hover { background: #f4f1eb; color: #8c7b6e; font-weight: bold; }
-        .context-divider { height: 1px; background: #edf2f7; margin: 4px 0; }
+        .file-context-menu { display: none; position: fixed; background: white; color: black; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 12px; padding: 6px 0; z-index: 6000; width: 140px; font-size: 13px; border: 2px solid #333; }
+        .context-item { padding: 8px 14px; cursor: pointer; transition: 0.1s; font-weight: 600; }
+        .context-item:hover { background: #faf6f0; color: var(--primary); font-weight: bold; }
+        .context-divider { height: 2px; background: #333; margin: 4px 0; }
 
         @media print {
             body * { visibility: hidden; }
@@ -219,7 +233,7 @@
 
     <div id="file-sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-title">📂 파일</div>
+            <div class="sidebar-title">📂 파일 목록</div>
             <button class="sidebar-close" onclick="closeSidebar()">×</button>
         </div>
         <div class="sidebar-actions">
@@ -244,9 +258,9 @@
     </div>
 
     <div id="home-screen">
-        <h1 style="font-weight: 800; color: #2d3436; font-size: 38px; margin-bottom: 10px;">Ink's Canvas</h1>
-        <p style="color:#888; margin-bottom:30px;">상세 페이지가 있는 마인드 맵</p>
-        <button onclick="createNewDoc()" style="padding: 15px 30px; border-radius: 35px; border: none; background: var(--primary); color: white; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(140, 123, 110, 0.3);">+ 마인드맵 생성</button>
+        <h1 style="font-weight: 900; color: #111; font-size: 42px; margin-bottom: 6px; letter-spacing: -0.5px;">Ink's Canvas</h1>
+        <p style="color:#666; margin-bottom:35px; font-weight:600;">상세 페이지가 있는 마인드 맵 ✏️</p>
+        <button onclick="createNewDoc()" style="padding: 16px 36px; border-radius: 20px; border: 2px solid #333; background: var(--primary); color: white; cursor: pointer; font-weight: bold; font-size: 16px; box-shadow: 0 5px 0px #333; transition: 0.15s;">+ 마인드맵 생성</button>
         <div class="doc-list" id="doc-list"></div>
     </div>
 
@@ -266,10 +280,10 @@
 
     <div id="detail-view">
         <div class="detail-header">
-            <div id="parent-title-display" style="font-weight:700; color:var(--primary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:60%;"></div>
+            <div id="parent-title-display" style="font-weight:800; color:var(--primary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:60%; font-size:16px;"></div>
             <div style="display:flex; gap:10px;">
-                <button onclick="deleteNode()" style="color:#ff7675; background:none; border:none; cursor:pointer; font-weight:bold;">삭제</button>
-                <button onclick="closeDetail()" style="padding: 8px 18px; border-radius: 8px; border: 1px solid #ddd; background: white; cursor: pointer; font-weight: 700;">완료</button>
+                <button onclick="deleteNode()" style="color:#ff7675; background:none; border:none; cursor:pointer; font-weight:bold; font-size:14px; text-decoration: underline;">삭제</button>
+                <button onclick="closeDetail()" style="padding: 8px 22px; border-radius: 12px; border: 2px solid #333; background: white; cursor: pointer; font-weight: 800; box-shadow: 0 3px 0px #333; font-size:14px;">완료</button>
             </div>
         </div>
         <div class="detail-body" id="detail-body-scroll">
@@ -309,18 +323,17 @@
                 <div class="color-menu" id="text-color-menu">
                     <div class="color-menu-title">글자 색상</div>
                     <div class="color-dot" style="background:#000000;" onclick="execColor('foreColor', '#000000')" title="검은색"></div>
-                    <div class="color-dot" style="background:#e74c3c;" onclick="execColor('foreColor', '#e74c3c')" title="빨간색"></div>
-                    <div class="color-dot" style="background:#3498db;" onclick="execColor('foreColor', '#3498db')" title="파란색"></div>
-                    <div class="color-dot" style="background:#2ecc71;" onclick="execColor('foreColor', '#2ecc71')" title="초록색"></div>
+                    <div class="color-dot" style="background:#ff5a36;" onclick="execColor('foreColor', '#ff5a36')" title="오렌지 레드"></div>
+                    <div class="color-dot" style="background:#007bc4;" onclick="execColor('foreColor', '#007bc4')" title="브루너 블루"></div>
+                    <div class="color-dot" style="background:#009640;" onclick="execColor('foreColor', '#009640')" title="브루너 그린"></div>
                     <div class="color-dot" style="background:#9b59b6;" onclick="execColor('foreColor', '#9b59b6')" title="보라색"></div>
                     <div class="color-dot" style="background:#e67e22;" onclick="execColor('foreColor', '#e67e22')" title="주황색"></div>
                     <div class="color-dot" style="background:#ced4da;" onclick="execColor('foreColor', '#ced4da')" title="회색"></div>
 
-
                     <div class="color-menu-title" style="margin-top:4px;">형광펜</div>
-                    <div class="color-dot" style="background:#ffffff; border:1.5px dashed #bbb;" onclick="execColor('hiliteColor', '#ffffff')" title="지우기"></div>
-                    <div class="color-dot" style="background:#ffca28;" onclick="execColor('hiliteColor', '#fefd48')" title="연노란 형광펜"></div>
-                    <div class="color-dot" style="background:#64b5f6;" onclick="execColor('hiliteColor', '#e7edf7')" title="연파란 형광펜"></div>
+                    <div class="color-dot" style="background:#ffffff; border:2px dashed #333;" onclick="execColor('hiliteColor', '#ffffff')" title="지우기"></div>
+                    <div class="color-dot" style="background:#ffde00;" onclick="execColor('hiliteColor', '#ffde00')" title="브루너 옐로우"></div>
+                    <div class="color-dot" style="background:#e7edf7;" onclick="execColor('hiliteColor', '#e7edf7')" title="연파란 형광펜"></div>
                     <div class="color-dot" style="background:#a3e4d7;" onclick="execColor('hiliteColor', '#a3e4d7')" title="연초록 형광펜"></div>
                     <div class="color-dot" style="background:#f1948a;" onclick="execColor('hiliteColor', '#f1948a')" title="연빨강 형광펜"></div>
                     <div class="color-dot" style="background:#bb8fce;" onclick="execColor('hiliteColor', '#bb8fce')" title="연보라 형광펜"></div>
@@ -342,7 +355,7 @@
                 <input type="number" id="modal-cols" value="3" min="1" max="20">
             </div>
             <div class="modal-btns">
-                <button onclick="closeTableModal()" style="background:#e2e8f0; color:#4a5568;">취소</button>
+                <button onclick="closeTableModal()" style="background:#e2e8f0; color:#333;">취소</button>
                 <button onclick="submitTableModal()" style="background:var(--primary); color:white;">표 삽입</button>
             </div>
         </div>
@@ -382,7 +395,7 @@
                 </label>
             </div>
             <div class="modal-btns">
-                <button onclick="closePdfModal()" style="background:#e2e8f0; color:#4a5568;">취소</button>
+                <button onclick="closePdfModal()" style="background:#e2e8f0; color:#333;">취소</button>
                 <button onclick="submitPdfModal()" style="background:var(--primary); color:white;">📄 PDF 출력</button>
             </div>
         </div>
@@ -1111,7 +1124,7 @@
             id: Date.now(), 
             title: title, 
             parentId: null, 
-            colorTag: '#ff7675', // 기본 초기 태그 색상 지정
+            colorTag: '#ff5a36', // 기본 초기 태그 색상 지정 (미피 레드)
             updatedAt: Date.now(),
             nodes: [{ id: 'root', title: title, summary: '', content: '', x: 5000, y: 5000, parentId: null, level: 0 }] 
         };
@@ -1125,9 +1138,9 @@
         const container = document.getElementById('doc-list');
         if(!container) return;
         container.innerHTML = docs.map(doc => `
-            <div class="doc-card" onclick="openDoc(${doc.id})" style="border-top: 5px solid ${doc.colorTag || '#ccc'}">
-                <h3 style="margin:0; font-size:18px; color:#111;">${doc.title}</h3>
-                <p style="font-size:12px; color:#999; margin-top:8px;">${doc.nodes.length} Thoughts</p>
+            <div class="doc-card" onclick="openDoc(${doc.id})" style="border-top: 8px solid ${doc.colorTag || '#ccc'}">
+                <h3 style="margin:0; font-size:18px; color:#111; font-weight: 800;">${doc.title}</h3>
+                <p style="font-size:12px; color:#666; margin-top:8px; font-weight: 600;">${doc.nodes.length} Thoughts</p>
                 <button class="doc-delete-btn" onclick="deleteDoc(event, ${doc.id})">삭제</button>
             </div>
         `).join('');
@@ -1135,7 +1148,6 @@
 
     function deleteDoc(e, id) { e.stopPropagation(); if(confirm("정말 이 마인드맵 파일을 완전히 삭제하시겠습니까?")) { docs = docs.filter(d => d.id !== id); save(); renderDocList(); renderSidebarTree(); } }
 
-    /* [개선 반영]: 사이드바 연동 강화 - 어디서든 파일 선택 시 본화면(마인드맵) 즉각 로드 전환 */
     function openDoc(id) {
         currentDoc = docs.find(d => d.id === id);
         if(!currentDoc) return;
@@ -1155,7 +1167,6 @@
             div.className = `node ${node.id === 'root' ? 'root' : ''}`;
             div.style.left = node.x + 'px'; div.style.top = node.y + 'px';
             
-            // 파일별 지정 색상이 루팅 노드 배경에 미러링되도록 적용 스펙 추가
             if(node.id === 'root' && currentDoc.colorTag) {
                 div.style.backgroundColor = currentDoc.colorTag;
             }
@@ -1219,13 +1230,11 @@
         generatePremiumPDF(selectedScale); 
     }
 
-    /* ==================== [핵심 레이아웃 버그 수정: 비율 축소 시 여백 단절 처리 동적 보정 엔진] ==================== */
     function generatePremiumPDF(scaleValue) {
         const printArea = document.getElementById('print-area');
         const rootNode = currentDoc.nodes.find(n => n.id === 'root');
         const now = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
         
-        // 역산 가상 가로 폭 스펙 설계 (축소된 비율만큼 박스 크기를 늘려서 브라우저가 공간을 꽉 채워 연산하도록 가이드)
         const inversePercentage = (100 / parseFloat(scaleValue)).toFixed(2);
 
         let html = `
@@ -1395,7 +1404,6 @@
         localStorage.setItem('thought_canvas_folders_v5', JSON.stringify(folders));
     }
 
-    /* ==================== [신규 구현 및 전면 개편: 파일/폴더 코어 탐색기 엔진 스크립트] ==================== */
     function openSidebar() {
         document.getElementById('file-sidebar').classList.add('open');
     }
@@ -1425,7 +1433,6 @@
 
         let html = '';
 
-        // 1. 가을 테마 폴더 목록 렌더링 및 드래그 오버 인터랙션 바인딩
         folders.forEach(folder => {
             const folderFiles = sortedDocs.filter(d => d.parentId === folder.id);
             html += `
@@ -1446,10 +1453,9 @@
             `;
         });
 
-        // 2. 소속 폴더가 없는 루트 독립형 파일 레이아웃 배정
         const rootFiles = sortedDocs.filter(d => !d.parentId);
         if(rootFiles.length > 0) {
-            html += `<div style="margin-top:12px; padding:4px 10px; font-size:11px; color:#8c8378; border-top:1px dashed var(--sidebar-border);">독립 파일 리스트</div>`;
+            html += `<div style="margin-top:12px; padding:4px 10px; font-size:11px; color:#554a40; border-top:2px dashed var(--sidebar-border); font-weight:bold;">독립 파일 리스트</div>`;
             html += rootFiles.map(file => getFileItemRowHtml(file)).join('');
         }
 
@@ -1460,10 +1466,9 @@
         target.innerHTML = html;
     }
 
-    /* [개선 반영]: 드래그앤드롭 스펙 탑재(draggable="true") 및 클릭 컬러 서클 라벨링 순환 시스템 탑재 */
     function getFileItemRowHtml(file) {
         const isActive = currentDoc && currentDoc.id === file.id ? 'active' : '';
-        const tagColor = file.colorTag || '#d3cbbd'; // 지정 색상 없을 시 기본 세련된 무트 크림 컬러 지정
+        const tagColor = file.colorTag || '#f5eedf'; 
         
         return `
             <div class="tree-file ${isActive}" 
@@ -1483,17 +1488,15 @@
         `;
     }
 
-    /* [개선 신규 구현]: 색상 메뉴 분리창 대신 라벨 서클을 클릭하면 고유 컬러가 컴팩트하게 순환 지정되는 기능 */
     function cycleFileTagColor(e, fileId) {
-        e.stopPropagation(); // 메인 문서 열림 버블링 차단
+        e.stopPropagation(); 
         const doc = docs.find(d => d.id == fileId);
         if(!doc) return;
 
-        // Autumn Mute 차분한 소프트 가을 톤앤매너 컬러 팔레트 배정
-        const colors = ['#ff7675', '#fdcb6e', '#2ecc71', '#3498db', '#9b59b6', '#bfa89e', '#8c7b6e'];
+        // 미피 딕 브루너 감성 전용 태그 순환 컬러셋 매핑
+        const colors = ['#ff5a36', '#ffde00', '#007bc4', '#009640', '#9b59b6', '#f5eedf', '#333333'];
         let currentIdx = colors.indexOf(doc.colorTag);
         
-        // 다음 인덱스 색상 배정 매핑
         let nextIdx = (currentIdx + 1) % colors.length;
         doc.colorTag = colors[nextIdx];
 
@@ -1501,17 +1504,15 @@
         renderDocList();
         renderSidebarTree();
         
-        // 현재 로드 완료되어 활성화된 상태의 마인드맵이면 실시간 동기화 트리거
         if(currentDoc && currentDoc.id == fileId) {
             renderMindmap();
         }
     }
 
-    /* ==================== [핵심 개선 신규 구현: 드래그 앤 드롭 파일 이동 엔진 인터랙션] ==================== */
     function handleFileDragStart(e, fileId, element) {
         draggedFileId = fileId;
         setTimeout(() => element.classList.add('dragging'), 0);
-        e.dataTransfer.setData('text/plain', fileId); // 크로스브라우징 호환 스펙
+        e.dataTransfer.setData('text/plain', fileId); 
     }
 
     function handleFileDragEnd(e, element) {
@@ -1520,7 +1521,7 @@
     }
 
     function handleFolderDragOver(e, folderElement) {
-        e.preventDefault(); // 드롭 이벤트 트리거 허용 필수 요건
+        e.preventDefault(); 
         folderElement.classList.add('drag-over-folder');
     }
 
@@ -1537,7 +1538,7 @@
         if (draggedFileId && targetFolderId) {
             const doc = docs.find(d => d.id == draggedFileId);
             if (doc) {
-                doc.parentId = targetFolderId; // 해당 폴더 하위로 종속 이동 변경
+                doc.parentId = targetFolderId; 
                 save();
                 renderSidebarTree();
                 if(currentDoc && currentDoc.id == doc.id) renderMindmap();
@@ -1545,7 +1546,6 @@
         }
     }
 
-    // 최상위 컨테이너 빈 여백 영역에 드롭 시 독립 파일로 배정 전환 처리 스펙
     function allowRootFolderDrop(e) {
         e.preventDefault();
     }
@@ -1555,7 +1555,7 @@
             e.preventDefault();
             const doc = docs.find(d => d.id == draggedFileId);
             if(doc) {
-                doc.parentId = null; // 상위 폴더 지정을 해제하여 최상위 독립 파일 계층으로 구조 변경
+                doc.parentId = null; 
                 save();
                 renderSidebarTree();
                 if(currentDoc && currentDoc.id == doc.id) renderMindmap();
