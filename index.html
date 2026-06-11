@@ -431,9 +431,9 @@
             </div>
 
             <div id="slash-menu">
-                <div class="slash-item" data-action="table" onclick="triggerSlashAction('table')">📅 표 삽입하기</div>
-                <div class="slash-item" data-action="blockquote" onclick="triggerSlashAction('blockquote')">💬 인용구 박스 넣기</div>
-                <div class="slash-item" data-action="highlight" onclick="triggerSlashAction('highlight')">💡 하이라이트 박스 넣기</div>
+                <div class="slash-item" data-action="table" onclick="triggerSlashAction('table')">📅 표 삽입</div>
+                <div class="slash-item" data-action="blockquote" onclick="triggerSlashAction('blockquote')">💬 인용</div>
+                <div class="slash-item" data-action="highlight" onclick="triggerSlashAction('highlight')">💡 강조</div>
                 <div class="slash-item" data-action="ul" onclick="triggerSlashAction('ul')">• 글머리 기호 목록</div>
                 <div class="slash-item" data-action="ol" onclick="triggerSlashAction('ol')">1. 번호 매기기 목록</div>
                 <div class="slash-item" data-action="hr" onclick="triggerSlashAction('hr')">➖ 구분선 넣기</div>
@@ -447,7 +447,7 @@
             <button onclick="execCmd('bold')">B</button>
             <button onclick="execCmd('italic')">I</button>
             <button onclick="execCmd('underline')">U</button>
-            <button onclick="insertDirectWidget('blockquote')" title="인용구 추가">""</button>
+            <button onclick="insertDirectWidget('blockquote')" title="인용구 추가">"</button>
             <button onclick="insertDirectWidget('highlight')" title="강조 박스 추가">💡</button>
             <div style="width:1px; height:12px; background:var(--stroke); margin:0 2px;"></div>
             <button id="text-color-btn" onclick="toggleColorMenu(event)" onmousedown="event.preventDefault();">🅰︎</button>
@@ -978,7 +978,7 @@
         } else {
             el = document.createElement('div');
             el.className = 'highlight-box';
-            el.innerHTML = "💡 여기에 중요 내용을 강조하여 입력하세요!";
+            el.innerHTML = "여기에 중요 내용을 강조하여 입력하세요!";
         }
         
         const nextDiv = document.createElement('div');
