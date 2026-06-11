@@ -8,7 +8,6 @@
     <style>
         /* ==================== [테마 스위처 변수 시스템] ==================== */
         :root {
-            /* 기본값: 호두까기 인형 테마 (Nutcracker Standard) */
             --primary: #d63031;        /* 호두까기 장난감 병정 브릭 레드 */
             --toy-blue: #0984e3;       /* 로열 네이비 블루 */
             --toy-yellow: #f1c40f;     /* 제복 금단추 골드 옐로우 */
@@ -17,7 +16,6 @@
             --panel: #ffffff;
             --stroke: #1e272e;         /* 완벽하게 선명한 팝아트풍 먹선 */
             
-            /* 사이드바 전용 변수 계열 */
             --sidebar-bg: #f5f0e6;
             --sidebar-text: #2d3436;
             --sidebar-border: #cfc4b2;
@@ -25,7 +23,6 @@
             --sidebar-accent: #f9f1e3;
         }
 
-        /* 가을 뮤트 테마 오버라이드 (Autumn Mute Cozy) */
         [data-theme="autumn-mute"] {
             --primary: #b87355;        /* 차분한 테라코타 브릭 */
             --toy-blue: #6b8e8f;       /* 안개 낀 듯한 민트 그레이 */
@@ -42,7 +39,6 @@
             --sidebar-accent: #f2e5db;
         }
 
-        /* [독창적인 눈의 여왕 테마 오버라이드 (Snow Queen Frost)] */
         [data-theme="snow-queen"] {
             --primary: #38bdf8;        /* 투명한 각진 얼음빛 스카이 블루 */
             --toy-blue: #0ea5e9;       /* 시린 겨울 바다 딥 블루 */
@@ -59,7 +55,6 @@
             --sidebar-accent: #475569;
         }
 
-        /* [신규] 포근한 파스텔 테마 (Pastel Dream) */
         [data-theme="pastel-dream"] {
             --primary: #ffb7b2;        /* 부드러운 파스텔 핑크 */
             --toy-blue: #a8ded9;       /* 은은한 파스텔 아쿠아 민트 */
@@ -76,7 +71,6 @@
             --sidebar-accent: #f7f0e8;
         }
 
-        /* [신규] 시원한 여름 바다 테마 (Summer Breeze) */
         [data-theme="summer-breeze"] {
             --primary: #00a8ff;        /* 청량하고 시원한 마린 블루 */
             --toy-blue: #00cbc6;       /* 투명한 산호초 에메랄드 */
@@ -93,17 +87,14 @@
             --sidebar-accent: #e3eff7;
         }
 
-        /* 전체 글로벌 타이포그래피 볼드 & 원형 폰트 통일 */
         body, html, input, textarea, button, select { 
             margin: 0; padding: 0; 
             font-family: 'Fredoka', -apple-system, sans-serif; 
             background: var(--bg); height: 100%; overflow: hidden; touch-action: none; color: var(--stroke); 
         }
         
-        /* [개선] 홈 화면 하단 스크롤이 파일이 많아져도 끝까지 완벽하게 밀리도록 넉넉한 35vh 바텀 패딩 지정 */
         #home-screen { padding: 50px 20px 35vh; display: flex; flex-direction: column; align-items: center; height: 100vh; overflow-y: auto; box-sizing: border-box; position: relative; z-index: 2000; background: var(--bg); }
         
-        /* 테마 선택 드롭다운 셀렉터 상단 바 래퍼 */
         .theme-selector-wrapper {
             position: absolute; top: 15px; right: 15px; display: flex; align-items: center; gap: 8px; z-index: 2600;
         }
@@ -114,7 +105,6 @@
 
         .doc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; width: 100%; max-width: 1000px; margin-top: 40px; }
         
-        /* 그림책 스타일의 완전 플랫하고 두꺼운 보더 디자인 구조 */
         .doc-card { background: var(--panel); padding: 35px 20px; border-radius: 24px; box-shadow: 5px 5px 0px var(--stroke); cursor: pointer; position: relative; border: 3.5px solid var(--stroke); transition: 0.15s ease-in-out; text-align: center; }
         .doc-card:hover { border-color: var(--primary); transform: translate(-2px, -2px); box-shadow: 7px 7px 0px var(--stroke); }
         .doc-delete-btn { position: absolute; bottom: 12px; right: 16px; font-size: 11px; color: #888; background: none; border: none; cursor: pointer; padding: 5px; text-decoration: underline; font-weight: bold; }
@@ -124,15 +114,13 @@
         #mindmap-container:active { cursor: grabbing; }
         #canvas-content { position: absolute; top: 0; left: 0; transform-origin: 0 0; will-change: transform; }
         
-        /* 눈의 여왕 전용 몽환적인 오로라 배경 필터 바인딩 */
         [data-theme="snow-queen"] #mindmap-container {
             background: radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.12) 0%, transparent 70%), linear-gradient(to bottom, #0f172a, #1e1b4b);
         }
 
-        /* 둥글고 장난감 블록 같은 단색 입체 노드 */
         .node { position: absolute; padding: 14px 20px; background: var(--panel); border-radius: 20px; box-shadow: 5px 5px 0px var(--stroke); cursor: pointer; min-width: 150px; border: 3.5px solid var(--stroke); z-index: 2; display: flex; align-items: center; gap: 10px; user-select: none; transition: left 0.3s ease, top 0.3s ease; color: var(--stroke); }
         .node.root { background: var(--primary); color: white; border: 3.5px solid var(--stroke); font-weight: bold; padding: 18px 28px; box-shadow: 6px 6px 0px var(--stroke); }
-        [data-theme="snow-queen"] .node.root { color: #0f172a; } /* 밝은 계열 주색상 대비용 폰트색 반전 반사 */
+        [data-theme="snow-queen"] .node.root { color: #0f172a; } 
         .node-info { flex: 1; pointer-events: auto; min-width: 80px; }
         .node .summary { font-size: 11px; color: #555; margin-top: 4px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         [data-theme="snow-queen"] .node .summary { color: #cbd5e1; }
@@ -142,13 +130,11 @@
         .add-btn:hover { background: var(--toy-yellow); }
 
         svg { position: absolute; top: 0; left: 0; width: 20000px; height: 20000px; pointer-events: none; }
-        /* 붓으로 직접 끊어 그린 듯 굵직하고 정직한 시그니처 점선 연결고리 */
         .connection { fill: none; stroke: var(--stroke); stroke-width: 4.5; stroke-linecap: round; stroke-dasharray: 4 11; }
 
         #detail-view { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: var(--panel); z-index: 3000; flex-direction: column; }
         .detail-header { padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3.5px solid var(--stroke); background: var(--bg); }
         
-        /* [개선] 스크롤 하단 가림 완벽 방지를 위한 넉넉한 뷰포트 하단 여백 바인딩 */
         .detail-body { flex: 1; overflow-y: auto; padding: 40px 10% 35vh; position: relative; scroll-behavior: smooth; background: var(--panel); box-sizing: border-box; }
         
         #detail-title, #detail-summary, #editor { outline: none; width: 100%; }
@@ -169,7 +155,6 @@
         #editor h4, .pdf-content h4 { font-size: 18px; margin: 14px 0 4px; font-weight: 700; color: var(--stroke); }
         #editor hr, .pdf-content hr { border: 0; border-top: 3px dashed var(--stroke); margin: 16px 0; display: block; height: 1px; }
 
-        /* [추가] 인용구 블록 및 눈에 띄는 하이라이트 콜아웃 박스 서식 */
         #editor blockquote, .pdf-content blockquote { margin: 15px 0; padding: 14px 20px; background: var(--bg); border-left: 6px solid var(--primary); border-top: 2.5px solid var(--stroke); border-right: 2.5px solid var(--stroke); border-bottom: 2.5px solid var(--stroke); border-radius: 0 16px 16px 0; font-size: 16.5px; line-height: 1.6; color: var(--stroke); font-style: italic; }
         .highlight-box { margin: 15px 0; padding: 16px 20px; background: var(--sidebar-accent); border: 3px solid var(--stroke); border-radius: 18px; box-shadow: 4px 4px 0px var(--stroke); font-size: 16px; line-height: 1.6; color: var(--stroke); position: relative; }
 
@@ -179,7 +164,6 @@
         #editor table.has-th-row tr:first-child td, #editor table.has-th-row tr:first-child th { background-color: var(--sidebar-accent) !important; font-weight: 700 !important; }
         #editor table.has-th-col tr td:first-child, #editor table.has-th-col tr th:first-child { background-color: var(--sidebar-accent) !important; font-weight: 700 !important; }
 
-        /* ==================== [핵심 개선: 3개 계열 무한 순환 구조] ==================== */
         #editor ul, .pdf-content ul { padding-left: 24px; margin: 6px 0; list-style-type: disc !important; }
         #editor ul ul, .pdf-content ul ul { list-style-type: circle !important; }
         #editor ul ul ul, .pdf-content ul ul ul { list-style-type: square !important; }
@@ -243,16 +227,6 @@
         #table-bubble-menu label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
         .table-del-btn { background: #ff7675; border: 2px solid var(--stroke); color: white; padding: 2px 8px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-        #print-area { display: none; background: white; color: #2d3748; line-height: 1.8; }
-        .pdf-cover { height: 100vh; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; padding: 80px; box-sizing: border-box; page-break-after: always; position: relative; background: #ffffff; }
-        .pdf-cover::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 15px; background: linear-gradient(90deg, var(--primary), var(--toy-yellow), var(--toy-blue)); }
-        .pdf-cover .canvas-logo { font-size: 14px; color: var(--primary); font-weight: 800; letter-spacing: 6px; text-transform: uppercase; border-bottom: 2px solid var(--primary); padding-bottom: 5px; }
-        .cover-mid { margin-top: auto; margin-bottom: auto; width: 100%; display: flex; flex-direction: column; gap: 25px; }
-        .pdf-cover h1 { font-size: 52px; font-weight: 800; margin: 0; color: #1a202c; line-height: 1.25; word-break: keep-all; letter-spacing: -1px; }
-        .pdf-cover .cover-decor { width: 120px; height: 6px; background: var(--primary); border-radius: 3px; }
-        .pdf-cover .date { font-size: 16px; color: #4a5568; font-weight: 600; letter-spacing: 0.5px; border-left: 3px solid var(--primary); padding-left: 12px; }
-        
-        /* ==================== [사이드바 하단 패딩 확보] ==================== */
         #file-sidebar { position: fixed; top: 0; left: -310px; width: 290px; height: 100vh; background: var(--sidebar-bg); color: var(--sidebar-text); z-index: 4000; transition: left 0.3s cubic-bezier(0.1, 0.9, 0.2, 1); box-shadow: 5px 0 0px var(--stroke); display: flex; flex-direction: column; border-right: 3.5px solid var(--stroke); }
         #file-sidebar.open { left: 0; }
         .sidebar-header { padding: 24px 18px 12px; background: transparent; display: flex; align-items: center; justify-content: space-between; }
@@ -269,7 +243,6 @@
         .sidebar-filter { padding: 12px 16px; background: transparent; border-bottom: 3px dashed var(--sidebar-border); display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--sidebar-text); font-weight: 600; }
         .sidebar-filter select { background: #ffffff; color: #1e272e; border: 2px solid var(--stroke); padding: 4px 8px; border-radius: 8px; font-size: 11px; outline: none; cursor: pointer; font-weight: bold; }
         
-        /* [개선]: 네비게이션 가림 없이 마지막 폴더 및 파일이 완벽히 드러나도록 하단 넉넉히 여백 패딩 스펙 확장 */
         .tree-container { flex: 1; overflow-y: auto; padding: 12px 12px 35vh 12px; display: flex; flex-direction: column; gap: 6px; box-sizing: border-box; }
         .tree-folder { margin-bottom: 4px; border-radius: 14px; transition: background 0.2s; border: 1.5px solid transparent; }
         .tree-folder.drag-over-folder { background: var(--sidebar-accent); border-color: var(--stroke); }
@@ -305,29 +278,61 @@
         .detail-action-group { display: flex; align-items: center; gap: 14px; }
 
         .premium-btn {
-            padding: 8px 22px; 
-            height: 38px;
-            box-sizing: border-box;
-            border-radius: 12px; 
-            border: 3px solid var(--stroke); 
-            background: var(--panel); 
-            cursor: pointer; 
-            font-weight: 800; 
-            box-shadow: 0 4px 0px var(--stroke); 
-            font-size: 14px; 
-            color: var(--stroke);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1.2;
-            white-space: nowrap;
+            padding: 8px 22px; height: 38px; box-sizing: border-box; border-radius: 12px; border: 3px solid var(--stroke); background: var(--panel); cursor: pointer; font-weight: 800; box-shadow: 0 4px 0px var(--stroke); font-size: 14px; color: var(--stroke); display: inline-flex; align-items: center; justify-content: center; line-flex: 1.2; white-space: nowrap;
         }
         .premium-btn:active { transform: translateY(3px); box-shadow: none; }
+
+        /* ==================== [핵심 개선: 최고급 프리미엄 인쇄 전문 레이아웃 시스템] ==================== */
+        #print-area { display: none; background: white; color: #1a202c; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        
+        .pdf-cover { height: 100vh; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; padding: 90px; box-sizing: border-box; page-break-after: always; position: relative; background: #ffffff; }
+        .pdf-cover::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 16px; background: linear-gradient(90deg, var(--primary), var(--toy-blue), var(--toy-yellow)); }
+        .pdf-cover .canvas-logo { font-size: 13px; color: var(--primary); font-weight: 900; letter-spacing: 5px; text-transform: uppercase; border-bottom: 3.5px solid var(--primary); padding-bottom: 6px; font-family: inherit; }
+        .cover-mid { margin-top: auto; margin-bottom: auto; width: 100%; display: flex; flex-direction: column; gap: 28px; }
+        .pdf-cover h1 { font-size: 48px; font-weight: 800; margin: 0; color: #0f172a; line-height: 1.3; word-break: keep-all; letter-spacing: -1.5px; }
+        .pdf-cover .cover-decor { width: 140px; height: 8px; background: var(--primary); border-radius: 4px; }
+        .pdf-cover .date { font-size: 16px; color: #475569; font-weight: 600; border-left: 4px solid var(--primary); padding-left: 14px; }
+        
+        .pdf-body { padding: 60px 80px; box-sizing: border-box; }
+        
+        /* 인쇄 시 하단 여백 과다 낭비 및 공백 페이지 끊김 현상 완벽 방지 설계 */
+        .pdf-section { 
+            margin-bottom: 45px; 
+            page-break-inside: avoid; /* 섹션 내부에서 쪼개져 공백 생기는 버그 방지 */
+            break-inside: avoid; 
+            border-bottom: 1.5px solid #e2e8f0; 
+            padding-bottom: 35px;
+        }
+        .pdf-section:last-child { border-bottom: none; }
+        .level-indent { padding-left: 24px; border-left: 3px solid #e2e8f0; margin-top: 20px; }
+
+        /* 계층적이고 아름다운 인쇄용 디자인 넘버링 배너 */
+        .pdf-meta-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+        .pdf-badge { background: var(--primary); color: white; font-weight: 800; font-size: 13px; padding: 4px 12px; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .pdf-node-title { font-size: 26px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.5px; }
+        
+        .pdf-summary-box { background: #f8fafc; border-left: 6px solid var(--toy-blue); padding: 16px 20px; margin-bottom: 22px; border-radius: 8px; font-size: 15px; font-weight: 600; color: #334155; line-height: 1.6; white-space: pre-wrap; }
+        
+        /* 마크다운 # 기호가 본문 타이틀과 겹치거나 뒤섞이지 않도록 정밀 마킹 및 인쇄 서식 오버라이드 */
+        .pdf-content { font-size: 15.5px; line-height: 1.85; color: #334155; word-break: break-all; }
+        .pdf-content h1 { font-size: 22px; margin: 28px 0 14px; font-weight: 800; color: #1e293b; border-bottom: 2px solid #f1f5f9; padding-bottom: 6px; }
+        .pdf-content h2 { font-size: 19px; margin: 24px 0 12px; font-weight: 700; color: #334155; }
+        .pdf-content h3 { font-size: 17px; margin: 20px 0 10px; font-weight: 700; color: #475569; }
+        .pdf-content h4 { font-size: 15.5px; margin: 16px 0 8px; font-weight: 700; color: #64748b; }
+        .pdf-content hr { border: 0; border-top: 2px dashed #cbd5e1; margin: 20px 0; }
+        .pdf-content blockquote { margin: 18px 0; padding: 14px 20px; background: #f8fafc; border-left: 5px solid var(--primary); border-radius: 0 8px 8px 0; font-size: 15px; color: #475569; font-style: italic; }
+        .pdf-content .highlight-box { margin: 18px 0; padding: 16px 20px; background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px; font-size: 15px; color: #166534; box-shadow: none; }
+        
+        .pdf-content table { border-collapse: collapse; width: 100%; margin: 18px 0; font-size: 14px !important; border: 1.5px solid #cbd5e1; border-radius: 6px; }
+        .pdf-content th, .pdf-content td { border: 1px solid #cbd5e1; padding: 10px 12px; color: #334155; }
+        .pdf-content table.has-th-row tr:first-child td, .pdf-content table.has-th-row tr:first-child th { background-color: #f1f5f9 !important; font-weight: 700 !important; color: #1e293b; }
+        .pdf-content table.has-th-col tr td:first-child, .pdf-content table.has-th-col tr th:first-child { background-color: #f1f5f9 !important; font-weight: 700 !important; color: #1e293b; }
 
         @media print {
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
-            #print-area { display: block !important; position: absolute; left: 0; top: 0; }
+            #print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100% !important; }
+            @page { margin: 0; } /* 브라우저 기본 헤더/푸터 강제 초기화 */
         }
     </style>
 </head>
@@ -441,20 +446,20 @@
                 <div class="color-menu" id="text-color-menu">
                     <div class="color-menu-title">글자 색상</div>
                     <div class="color-dot" style="background:#000000;" onclick="execColor(event, 'foreColor', '#000000')" title="검은색"></div>
-                    <div class="color-dot" style="background:#d63031;" onclick="execColor(event, 'foreColor', '#d63031')" title="시그니처 레드"></div>
-                    <div class="color-dot" style="background:#0984e3;" onclick="execColor(event, 'foreColor', '#0984e3')" title="메인 블루"></div>
-                    <div class="color-dot" style="background:#27ae60;" onclick="execColor(event, 'foreColor', '#27ae60')" title="메인 그린"></div>
+                    <div class="color-dot" style="background:#d63031;" onclick="execColor(event, 'foreColor', '#d63031')" title="레드"></div>
+                    <div class="color-dot" style="background:#0984e3;" onclick="execColor(event, 'foreColor', '#0984e3')" title="블루"></div>
+                    <div class="color-dot" style="background:#27ae60;" onclick="execColor(event, 'foreColor', '#27ae60')" title="그린"></div>
                     <div class="color-dot" style="background:#9b59b6;" onclick="execColor(event, 'foreColor', '#9b59b6')" title="보라색"></div>
                     <div class="color-dot" style="background:#e67e22;" onclick="execColor(event, 'foreColor', '#e67e22')" title="주황색"></div>
                     <div class="color-dot" style="background:#7f8c8d;" onclick="execColor(event, 'foreColor', '#7f8c8d')" title="회색"></div>
 
                     <div class="color-menu-title" style="margin-top:4px;">형광펜</div>
-                    <div class="color-dot" style="background:#ffffff; border:2px dashed var(--stroke);" onclick="execColor(event, 'hiliteColor', '#ffffff')" title="지우기"></div>
-                    <div class="color-dot" style="background:#f1c40f;" onclick="execColor(event, 'hiliteColor', '#f1c40f')" title="포인트 옐로우"></div>
-                    <div class="color-dot" style="background:#e7edf7;" onclick="execColor(event, 'hiliteColor', '#e7edf7')" title="연파란 형광펜"></div>
-                    <div class="color-dot" style="background:#a3e4d7;" onclick="execColor(event, 'hiliteColor', '#a3e4d7')" title="연초록 형광펜"></div>
-                    <div class="color-dot" style="background:#f1948a;" onclick="execColor(event, 'hiliteColor', '#f1948a')" title="연빨강 형광펜"></div>
-                    <div class="color-dot" style="background:#bb8fce;" onclick="execColor(event, 'hiliteColor', '#bb8fce')" title="연보라 형광펜"></div>
+                    <div class="color-dot" style="background:transparent; border:2px dashed var(--stroke);" onclick="execColor(event, 'hiliteColor', 'transparent')" title="지우기"></div>
+                    <div class="color-dot" style="background:#f1c40f;" onclick="execColor(event, 'hiliteColor', '#f1c40f')" title="노랑 형광펜"></div>
+                    <div class="color-dot" style="background:#74b9ff;" onclick="execColor(event, 'hiliteColor', '#74b9ff')" title="파랑 형광펜"></div>
+                    <div class="color-dot" style="background:#55efc4;" onclick="execColor(event, 'hiliteColor', '#55efc4')" title="초록 형광펜"></div>
+                    <div class="color-dot" style="background:#ff7675;" onclick="execColor(event, 'hiliteColor', '#ff7675')" title="빨강 형광펜"></div>
+                    <div class="color-dot" style="background:#a29bfe;" onclick="execColor(event, 'hiliteColor', '#a29bfe')" title="보라 형광펜"></div>
                 </div>
             </button>
         </div>
@@ -522,7 +527,18 @@
     <div id="print-area"></div>
 
 <script>
-    /* ==================== [테마 스위치 전용 신규 스크립트] ==================== */
+    // 테마별 색상 슬롯 정의 인덱스 매퍼 (1:1 유기적 동기화 구현)
+    const themeColorPaletteMap = {
+        'nutcracker':    ['#d63031', '#f1c40f', '#0984e3', '#27ae60', '#9b59b6', '#1e272e', '#ced4da'],
+        'autumn-mute':   ['#b87355', '#d4a373', '#6b8e8f', '#828c74', '#9b59b6', '#3d352e', '#ced4da'],
+        'snow-queen':    ['#38bdf8', '#0ea5e9', '#93c5fd', '#2dd4bf', '#9b59b6', '#e2e8f0', '#ced4da'],
+        'pastel-dream':  ['#ffb7b2', '#ffdac1', '#a8ded9', '#e2f0cb', '#9b59b6', '#4a4a4a', '#ced4da'],
+        'summer-breeze': ['#00a8ff', '#fbc531', '#00cbc6', '#4cd137', '#9b59b6', '#182c3e', '#ced4da']
+    };
+
+    let lastSelectedTheme = localStorage.getItem('canvas_saved_theme_v5') || 'nutcracker';
+
+    /* ==================== [핵심 개선 1: 테마 스위칭 시 파일 라벨 색상 유기적 동기화] ==================== */
     function changeGlobalTheme(themeName) {
         document.documentElement.removeAttribute('data-theme');
         if(themeName !== 'nutcracker') {
@@ -530,19 +546,22 @@
         }
         localStorage.setItem('canvas_saved_theme_v5', themeName);
         
+        const oldPalette = themeColorPaletteMap[lastSelectedTheme];
+        const newPalette = themeColorPaletteMap[themeName];
+
         docs.forEach(doc => {
-            if (themeName === 'autumn-mute' && (doc.colorTag === '#d63031' || doc.colorTag === '#38bdf8' || doc.colorTag === '#ffb7b2' || doc.colorTag === '#00a8ff')) {
-                doc.colorTag = '#b87355';
-            } else if (themeName === 'snow-queen' && (doc.colorTag === '#d63031' || doc.colorTag === '#b87355' || doc.colorTag === '#ffb7b2' || doc.colorTag === '#00a8ff')) {
-                doc.colorTag = '#38bdf8';
-            } else if (themeName === 'pastel-dream' && (doc.colorTag === '#d63031' || doc.colorTag === '#b87355' || doc.colorTag === '#38bdf8' || doc.colorTag === '#00a8ff')) {
-                doc.colorTag = '#ffb7b2';
-            } else if (themeName === 'summer-breeze' && (doc.colorTag === '#d63031' || doc.colorTag === '#b87355' || doc.colorTag === '#38bdf8' || doc.colorTag === '#ffb7b2')) {
-                doc.colorTag = '#00a8ff';
-            } else if (themeName === 'nutcracker' && (doc.colorTag === '#b87355' || doc.colorTag === '#38bdf8' || doc.colorTag === '#ffb7b2' || doc.colorTag === '#00a8ff')) {
-                doc.colorTag = '#d63031';
+            let colorIdx = oldPalette.indexOf(doc.colorTag);
+            if(colorIdx === -1) {
+                // 매핑 실패 시 대체 복구 백업 코드
+                if(doc.colorTag === oldPalette[0] || !doc.colorTag) colorIdx = 0;
+            }
+            if(colorIdx !== -1) {
+                doc.colorTag = newPalette[colorIdx];
             }
         });
+
+        lastSelectedTheme = themeName;
+        save();
 
         if(currentDoc) { renderMindmap(); }
         renderDocList();
@@ -552,6 +571,7 @@
     window.addEventListener('DOMContentLoaded', () => {
         const savedTheme = localStorage.getItem('canvas_saved_theme_v5') || 'nutcracker';
         document.getElementById('global-theme-switcher').value = savedTheme;
+        lastSelectedTheme = savedTheme;
         changeGlobalTheme(savedTheme);
     });
 
@@ -603,7 +623,7 @@
 
     document.addEventListener('click', (e) => {
         const colorMenu = document.getElementById('text-color-menu');
-        if (colorMenu) colorMenu.style.display = 'none';
+        if (colorMenu && !e.target.closest('#text-color-btn')) colorMenu.style.display = 'none';
         
         const contextPanel = document.getElementById('tree-context-panel');
         if (contextPanel) contextPanel.style.display = 'none';
@@ -612,9 +632,7 @@
             hideSlashMenu();
         }
         
-        if (e.target.closest('#table-bubble-menu')) {
-            return;
-        }
+        if (e.target.closest('#table-bubble-menu')) return;
 
         let node = e.target;
         let foundTable = false;
@@ -797,16 +815,50 @@
         saveCurrentNodeData();
     }
 
-    /* [개선 완료] 글자 색상 및 하이라이트 에디터 호환성 버그 패치 */
+    /* ==================== [핵심 개선 2: 컴포넌트 유실 원천 봉쇄형 글자색/형광펜 빌더] ==================== */
+    let lastSavedSelectionRange = null;
+
+    function saveEditorSelection() {
+        const sel = window.getSelection();
+        if (sel.rangeCount > 0) {
+            const range = sel.getRangeAt(0);
+            // 에디터 내부의 선택 영역인 경우에만 정밀 캐싱
+            if (editorField.contains(range.commonAncestorContainer)) {
+                lastSavedSelectionRange = range.cloneRange();
+            }
+        }
+    }
+
+    editorField.addEventListener('keyup', saveEditorSelection);
+    editorField.addEventListener('mouseup', saveEditorSelection);
+    editorField.addEventListener('touchend', saveEditorSelection);
+
     function execColor(e, cmd, color) {
         if (e && e.stopPropagation) e.stopPropagation();
         
-        // 포커스를 다시 복구하여 선택영역 유실 방지
         editorField.focus();
+        const sel = window.getSelection();
+
+        // 캐싱된 유효 범위 스냅샷 복구 가동
+        if (lastSavedSelectionRange) {
+            sel.removeAllRanges();
+            sel.addRange(lastSavedSelectionRange);
+        }
         
-        document.execCommand(cmd, false, color);
+        if (cmd === 'hiliteColor') {
+            // 투명색 초기화 요청에 대응하는 크로스 브라우징 처리
+            if (color === 'transparent' || color === '#ffffff') {
+                document.execCommand('removeFormat', false, null);
+            } else {
+                document.execCommand('hiliteColor', false, color);
+            }
+        } else {
+            document.execCommand(cmd, false, color);
+        }
+        
         document.getElementById('text-color-menu').style.display = 'none';
         saveCurrentNodeData();
+        saveEditorSelection(); // 변경 후 상태 갱신
     }
 
     function hideSlashMenu() {
@@ -816,7 +868,6 @@
         items.forEach(item => item.classList.remove('active'));
     }
 
-    /* [추가] 인용구 박스 및 하이라이트 박스 동적 빌더 */
     function triggerSlashAction(action) {
         if (!savedSlashRange) return;
 
@@ -1318,11 +1369,7 @@
         if (!title) return;
         
         const currentSelectedTheme = document.getElementById('global-theme-switcher').value;
-        let defColor = '#d63031';
-        if (currentSelectedTheme === 'autumn-mute') defColor = '#b87355';
-        else if (currentSelectedTheme === 'snow-queen') defColor = '#38bdf8';
-        else if (currentSelectedTheme === 'pastel-dream') defColor = '#ffb7b2';
-        else if (currentSelectedTheme === 'summer-breeze') defColor = '#00a8ff';
+        const defColor = themeColorPaletteMap[currentSelectedTheme][0];
         
         const newDoc = { 
             id: Date.now(), 
@@ -1430,6 +1477,7 @@
         generatePremiumPDF(selectedScale); 
     }
 
+    /* ==================== [핵심 개선 3: 잘림 방지 및 계층 헤더 분리 PDF 엔진] ==================== */
     function generatePremiumPDF(scaleValue) {
         const printArea = document.getElementById('print-area');
         const rootNode = currentDoc.nodes.find(n => n.id === 'root');
@@ -1450,11 +1498,11 @@
                 }
             </style>
             <div class="pdf-cover">
-                <div class="canvas-logo">Ink's Canvas Standard Report</div>
+                <div class="canvas-logo">Ink's Canvas Standard Executive Report</div>
                 <div class="cover-mid">
                     <h1>${rootNode.title || '무제 리포트 프로젝트'}</h1>
                     <div class="cover-decor"></div>
-                    <div class="date">${now}</div>
+                    <div class="date">발행일자: ${now}</div>
                 </div>
                 <div class="cover-bottom"></div>
             </div>
@@ -1471,8 +1519,8 @@
             const refs = tempDiv.querySelectorAll('.footnote-ref');
             if(refs.length === 0) return '';
             
-            let fHtml = `<div class="bottom-footnotes-area" style="display:block; margin-top:30px; border-top:1px dashed #aaa; padding-top:10px; font-size:13px; color:#555;">`;
-            fHtml += `<h5 style="margin:0 0 5px 0; font-size:14px; color:#333;">주석 (Footnotes)</h5>`;
+            let fHtml = `<div class="bottom-footnotes-area" style="display:block; margin-top:20px; border-top:1px dashed #cbd5e1; padding-top:10px; font-size:13px; color:#64748b;">`;
+            fHtml += `<h5 style="margin:0 0 5px 0; font-size:13px; color:#334155;">주석</h5>`;
             refs.forEach((ref, idx) => {
                 fHtml += `<div style="margin-bottom:3px;"><span style="font-weight:bold; color:var(--primary);">[${idx+1}]</span> ${ref.getAttribute('data-note') || ''}</div>`;
             });
@@ -1480,24 +1528,32 @@
             return fHtml;
         }
 
+        // 중심 개념 노드 레이아웃 바인딩
         html += `<div class="pdf-section">
-            <div class="pdf-h1">00. Overview</div>
-            <div style="font-size: 20px; font-weight: 700; color: var(--primary); margin-bottom: 15px;">
-                중심 주제: ${rootNode.title || '제목 없음'}
+            <div class="pdf-meta-header">
+                <span class="pdf-badge">ROOT</span>
+                <h2 class="pdf-node-title">총괄 개요 (Executive Summary)</h2>
             </div>
             ${rootSummaryClean !== "" ? `<div class="pdf-summary-box">${rootNode.summary}</div>` : ''}
-            ${rootContentClean !== "" ? `<div class="pdf-content">${rootNode.content}</div>` : `<p style="color: #888; font-style: italic;">(내용 없음)</p>`}
+            ${rootContentClean !== "" ? `<div class="pdf-content">${rootNode.content}</div>` : `<p style="color: #94a3b8; font-style: italic;">(작성된 세부 내용이 없습니다.)</p>`}
             ${buildPdfFootnotesHtml(rootNode.content)}
         </div>`;
 
+        // 하위 마인드맵 노드 계층별 리포트 생성기
         function processNodes(parentId, depth) {
             const children = currentDoc.nodes.filter(n => n.parentId === parentId);
             children.forEach((child, index) => {
-                let classTag = (depth === 1) ? "pdf-h2" : "pdf-h3";
-
                 html += `<div class="pdf-section ${depth > 1 ? 'level-indent' : ''}">`;
-                const listPrefix = depth === 1 ? `Section 0${index + 1}. ` : '';
-                html += `<div class="${classTag}">${listPrefix}${child.title || '제목 없음'}</div>`;
+                
+                // 마크다운 # 헤더와 혼동되지 않는 완전히 독립된 시스템 번호 배너 바인딩
+                const depthLabel = depth === 1 ? `주제 0${index + 1}` : `하위 연계관점`;
+                
+                html += `
+                    <div class="pdf-meta-header">
+                        <span class="pdf-badge" style="background-color: ${depth === 1 ? 'var(--primary)' : 'var(--toy-blue)'}">${depthLabel}</span>
+                        <h3 class="pdf-node-title">${child.title || '제목 미지정 관점'}</h3>
+                    </div>
+                `;
                 
                 const childSummaryClean = child.summary ? child.summary.trim() : "";
                 if(childSummaryClean !== "") html += `<div class="pdf-summary-box">${child.summary}</div>`;
@@ -1514,6 +1570,7 @@
         html += `</div>`;
         
         printArea.innerHTML = html;
+        // 렌더링 동기화 안정성을 위해 500ms 지연 후 인쇄 창 팝업 호출
         setTimeout(() => { window.print(); }, 500);
     }
 
@@ -1527,6 +1584,7 @@
         document.getElementById('detail-view').style.display = 'flex';
         
         refreshFootnoteNumbers();
+        lastSavedSelectionRange = null; // 초기화
     }
 
     function closeDetail() {
@@ -1680,24 +1738,13 @@
         `;
     }
 
-    /* [오류 수정 완료] e 전달인자 파싱 명시화 */
     function cycleFileTagColor(e, fileId) {
         if (e && e.stopPropagation) e.stopPropagation(); 
         const doc = docs.find(d => d.id == fileId);
         if(!doc) return;
 
         const currentSelectedTheme = document.getElementById('global-theme-switcher').value;
-        
-        let colors = ['#d63031', '#f1c40f', '#0984e3', '#27ae60', '#9b59b6', '#1e272e', '#ced4da'];
-        if (currentSelectedTheme === 'autumn-mute') {
-            colors = ['#b87355', '#d4a373', '#6b8e8f', '#828c74', '#9b59b6', '#3d352e', '#ced4da'];
-        } else if (currentSelectedTheme === 'snow-queen') {
-            colors = ['#38bdf8', '#0ea5e9', '#93c5fd', '#2dd4bf', '#9b59b6', '#e2e8f0', '#ced4da'];
-        } else if (currentSelectedTheme === 'pastel-dream') {
-            colors = ['#ffb7b2', '#ffdac1', '#a8ded9', '#e2f0cb', '#9b59b6', '#4a4a4a', '#ced4da'];
-        } else if (currentSelectedTheme === 'summer-breeze') {
-            colors = ['#00a8ff', '#fbc531', '#00cbc6', '#4cd137', '#9b59b6', '#182c3e', '#ced4da'];
-        }
+        const colors = themeColorPaletteMap[currentSelectedTheme];
             
         let currentIdx = colors.indexOf(doc.colorTag);
         let nextIdx = (currentIdx + 1) % colors.length;
