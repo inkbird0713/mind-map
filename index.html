@@ -282,10 +282,10 @@
         }
         .premium-btn:active { transform: translateY(3px); box-shadow: none; }
 
-        /* ==================== [핵심 개선: 최고급 프리미엄 인쇄 전문 레이아웃 시스템] ==================== */
+        /* ==================== [수정 및 개선: 최고급 프리미엄 인쇄 전문 레이아웃 시스템] ==================== */
         #print-area { display: none; background: white; color: #1a202c; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         
-        .pdf-cover { height: 100vh; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; padding: 90px; box-sizing: border-box; page-break-after: always; position: relative; background: #ffffff; }
+        .pdf-cover { height: 100vh; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; padding: 90px; box-sizing: border-box; page-break-after: always; break-after: always; position: relative; background: #ffffff; }
         .pdf-cover::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 16px; background: linear-gradient(90deg, var(--primary), var(--toy-blue), var(--toy-yellow)); }
         .pdf-cover .canvas-logo { font-size: 13px; color: var(--primary); font-weight: 900; letter-spacing: 5px; text-transform: uppercase; border-bottom: 3.5px solid var(--primary); padding-bottom: 6px; font-family: inherit; }
         .cover-mid { margin-top: auto; margin-bottom: auto; width: 100%; display: flex; flex-direction: column; gap: 28px; }
@@ -293,38 +293,36 @@
         .pdf-cover .cover-decor { width: 140px; height: 8px; background: var(--primary); border-radius: 4px; }
         .pdf-cover .date { font-size: 16px; color: #475569; font-weight: 600; border-left: 4px solid var(--primary); padding-left: 14px; }
         
-        .pdf-body { padding: 60px 80px; box-sizing: border-box; }
+        .pdf-body { padding: 40px 60px; box-sizing: border-box; }
         
-        /* 인쇄 시 하단 여백 과다 낭비 및 공백 페이지 끊김 현상 완벽 방지 설계 */
+        /* [교정 핵심] 불필요한 공백 폭발 버그 방지: inside 여백을 auto로 풀고 단조로운 마진 차단 */
         .pdf-section { 
-            margin-bottom: 45px; 
-            page-break-inside: avoid; /* 섹션 내부에서 쪼개져 공백 생기는 버그 방지 */
-            break-inside: avoid; 
+            margin-bottom: 25px; 
+            page-break-inside: auto; 
+            break-inside: auto; 
             border-bottom: 1.5px solid #e2e8f0; 
-            padding-bottom: 35px;
+            padding-bottom: 20px;
         }
         .pdf-section:last-child { border-bottom: none; }
-        .level-indent { padding-left: 24px; border-left: 3px solid #e2e8f0; margin-top: 20px; }
+        .level-indent { padding-left: 20px; border-left: 3px solid #e2e8f0; margin-top: 15px; }
 
-        /* 계층적이고 아름다운 인쇄용 디자인 넘버링 배너 */
-        .pdf-meta-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
-        .pdf-badge { background: var(--primary); color: white; font-weight: 800; font-size: 13px; padding: 4px 12px; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px; }
-        .pdf-node-title { font-size: 26px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.5px; }
+        .pdf-meta-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .pdf-badge { background: var(--primary); color: white; font-weight: 800; font-size: 12px; padding: 3px 10px; border-radius: 6px; text-transform: uppercase; letter-spacing: 1px; }
+        .pdf-node-title { font-size: 22px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.5px; }
         
-        .pdf-summary-box { background: #f8fafc; border-left: 6px solid var(--toy-blue); padding: 16px 20px; margin-bottom: 22px; border-radius: 8px; font-size: 15px; font-weight: 600; color: #334155; line-height: 1.6; white-space: pre-wrap; }
+        .pdf-summary-box { background: #f8fafc; border-left: 6px solid var(--toy-blue); padding: 12px 16px; margin-bottom: 16px; border-radius: 8px; font-size: 14px; font-weight: 600; color: #334155; line-height: 1.5; white-space: pre-wrap; }
         
-        /* 마크다운 # 기호가 본문 타이틀과 겹치거나 뒤섞이지 않도록 정밀 마킹 및 인쇄 서식 오버라이드 */
-        .pdf-content { font-size: 15.5px; line-height: 1.85; color: #334155; word-break: break-all; }
-        .pdf-content h1 { font-size: 22px; margin: 28px 0 14px; font-weight: 800; color: #1e293b; border-bottom: 2px solid #f1f5f9; padding-bottom: 6px; }
-        .pdf-content h2 { font-size: 19px; margin: 24px 0 12px; font-weight: 700; color: #334155; }
-        .pdf-content h3 { font-size: 17px; margin: 20px 0 10px; font-weight: 700; color: #475569; }
-        .pdf-content h4 { font-size: 15.5px; margin: 16px 0 8px; font-weight: 700; color: #64748b; }
-        .pdf-content hr { border: 0; border-top: 2px dashed #cbd5e1; margin: 20px 0; }
-        .pdf-content blockquote { margin: 18px 0; padding: 14px 20px; background: #f8fafc; border-left: 5px solid var(--primary); border-radius: 0 8px 8px 0; font-size: 15px; color: #475569; font-style: italic; }
-        .pdf-content .highlight-box { margin: 18px 0; padding: 16px 20px; background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px; font-size: 15px; color: #166534; box-shadow: none; }
+        .pdf-content { font-size: 15px; line-height: 1.75; color: #334155; word-break: break-all; }
+        .pdf-content h1 { font-size: 20px; margin: 20px 0 10px; font-weight: 800; color: #1e293b; border-bottom: 2px solid #f1f5f9; padding-bottom: 4px; }
+        .pdf-content h2 { font-size: 18px; margin: 18px 0 8px; font-weight: 700; color: #334155; }
+        .pdf-content h3 { font-size: 16px; margin: 16px 0 6px; font-weight: 700; color: #475569; }
+        .pdf-content h4 { font-size: 15px; margin: 14px 0 4px; font-weight: 700; color: #64748b; }
+        .pdf-content hr { border: 0; border-top: 2px dashed #cbd5e1; margin: 15px 0; }
+        .pdf-content blockquote { margin: 12px 0; padding: 10px 16px; background: #f8fafc; border-left: 5px solid var(--primary); border-radius: 0 8px 8px 0; font-size: 14.5px; color: #475569; font-style: italic; }
+        .pdf-content .highlight-box { margin: 12px 0; padding: 12px 16px; background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px; font-size: 14.5px; color: #166534; box-shadow: none; }
         
-        .pdf-content table { border-collapse: collapse; width: 100%; margin: 18px 0; font-size: 14px !important; border: 1.5px solid #cbd5e1; border-radius: 6px; }
-        .pdf-content th, .pdf-content td { border: 1px solid #cbd5e1; padding: 10px 12px; color: #334155; }
+        .pdf-content table { border-collapse: collapse; width: 100%; margin: 14px 0; font-size: 13.5px !important; border: 1.5px solid #cbd5e1; border-radius: 6px; }
+        .pdf-content th, .pdf-content td { border: 1px solid #cbd5e1; padding: 8px 10px; color: #334155; }
         .pdf-content table.has-th-row tr:first-child td, .pdf-content table.has-th-row tr:first-child th { background-color: #f1f5f9 !important; font-weight: 700 !important; color: #1e293b; }
         .pdf-content table.has-th-col tr td:first-child, .pdf-content table.has-th-col tr th:first-child { background-color: #f1f5f9 !important; font-weight: 700 !important; color: #1e293b; }
 
@@ -332,7 +330,7 @@
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
             #print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100% !important; }
-            @page { margin: 0; } /* 브라우저 기본 헤더/푸터 강제 초기화 */
+            @page { margin: 0; }
         }
     </style>
 </head>
@@ -442,8 +440,8 @@
             <button onclick="insertDirectWidget('blockquote')" title="인용구 추가">""</button>
             <button onclick="insertDirectWidget('highlight')" title="강조 박스 추가">💡</button>
             <div style="width:1px; height:12px; background:var(--stroke); margin:0 2px;"></div>
-            <button onclick="toggleColorMenu(event, 'text-color-menu')" id="text-color-btn">🅰︎
-                <div class="color-menu" id="text-color-menu">
+            <button id="text-color-btn" onclick="toggleColorMenu(event, 'text-color-menu')" onmousedown="event.preventDefault();">🅰︎
+                <div class="color-menu" id="text-color-menu" onmousedown="event.preventDefault();">
                     <div class="color-menu-title">글자 색상</div>
                     <div class="color-dot" style="background:#000000;" onclick="execColor(event, 'foreColor', '#000000')" title="검은색"></div>
                     <div class="color-dot" style="background:#d63031;" onclick="execColor(event, 'foreColor', '#d63031')" title="레드"></div>
@@ -514,7 +512,7 @@
                 </label>
                 <label class="radio-option">
                     <input type="radio" name="pdf-scale-choice" value="0.70">
-                    <span>더 촘춤하게 (70% 비율 - 대용량 리포트용)</span>
+                    <span>더 촘촘하게 (70% 비율 - 대용량 리포트용)</span>
                 </label>
             </div>
             <div class="modal-btns">
@@ -527,7 +525,6 @@
     <div id="print-area"></div>
 
 <script>
-    // 테마별 색상 슬롯 정의 인덱스 매퍼 (1:1 유기적 동기화 구현)
     const themeColorPaletteMap = {
         'nutcracker':    ['#d63031', '#f1c40f', '#0984e3', '#27ae60', '#9b59b6', '#1e272e', '#ced4da'],
         'autumn-mute':   ['#b87355', '#d4a373', '#6b8e8f', '#828c74', '#9b59b6', '#3d352e', '#ced4da'],
@@ -538,7 +535,6 @@
 
     let lastSelectedTheme = localStorage.getItem('canvas_saved_theme_v5') || 'nutcracker';
 
-    /* ==================== [핵심 개선 1: 테마 스위칭 시 파일 라벨 색상 유기적 동기화] ==================== */
     function changeGlobalTheme(themeName) {
         document.documentElement.removeAttribute('data-theme');
         if(themeName !== 'nutcracker') {
@@ -552,7 +548,6 @@
         docs.forEach(doc => {
             let colorIdx = oldPalette.indexOf(doc.colorTag);
             if(colorIdx === -1) {
-                // 매핑 실패 시 대체 복구 백업 코드
                 if(doc.colorTag === oldPalette[0] || !doc.colorTag) colorIdx = 0;
             }
             if(colorIdx !== -1) {
@@ -815,14 +810,13 @@
         saveCurrentNodeData();
     }
 
-    /* ==================== [핵심 개선 2: 컴포넌트 유실 원천 봉쇄형 글자색/형광펜 빌더] ==================== */
+    /* ==================== [수정 연동 완벽 캐싱 레인지 복구 모듈] ==================== */
     let lastSavedSelectionRange = null;
 
     function saveEditorSelection() {
         const sel = window.getSelection();
         if (sel.rangeCount > 0) {
             const range = sel.getRangeAt(0);
-            // 에디터 내부의 선택 영역인 경우에만 정밀 캐싱
             if (editorField.contains(range.commonAncestorContainer)) {
                 lastSavedSelectionRange = range.cloneRange();
             }
@@ -835,18 +829,17 @@
 
     function execColor(e, cmd, color) {
         if (e && e.stopPropagation) e.stopPropagation();
+        if (e && e.preventDefault) e.preventDefault();
         
         editorField.focus();
         const sel = window.getSelection();
 
-        // 캐싱된 유효 범위 스냅샷 복구 가동
         if (lastSavedSelectionRange) {
             sel.removeAllRanges();
             sel.addRange(lastSavedSelectionRange);
         }
         
         if (cmd === 'hiliteColor') {
-            // 투명색 초기화 요청에 대응하는 크로스 브라우징 처리
             if (color === 'transparent' || color === '#ffffff') {
                 document.execCommand('removeFormat', false, null);
             } else {
@@ -858,7 +851,7 @@
         
         document.getElementById('text-color-menu').style.display = 'none';
         saveCurrentNodeData();
-        saveEditorSelection(); // 변경 후 상태 갱신
+        saveEditorSelection(); 
     }
 
     function hideSlashMenu() {
@@ -1477,7 +1470,7 @@
         generatePremiumPDF(selectedScale); 
     }
 
-    /* ==================== [핵심 개선 3: 잘림 방지 및 계층 헤더 분리 PDF 엔진] ==================== */
+    /* ==================== [수정 및 연동: 잘림 방지 최적화 촘촘한 PDF 출력 엔진] ==================== */
     function generatePremiumPDF(scaleValue) {
         const printArea = document.getElementById('print-area');
         const rootNode = currentDoc.nodes.find(n => n.id === 'root');
@@ -1519,16 +1512,15 @@
             const refs = tempDiv.querySelectorAll('.footnote-ref');
             if(refs.length === 0) return '';
             
-            let fHtml = `<div class="bottom-footnotes-area" style="display:block; margin-top:20px; border-top:1px dashed #cbd5e1; padding-top:10px; font-size:13px; color:#64748b;">`;
-            fHtml += `<h5 style="margin:0 0 5px 0; font-size:13px; color:#334155;">주석</h5>`;
+            let fHtml = `<div class="bottom-footnotes-area" style="display:block; margin-top:15px; border-top:1px dashed #cbd5e1; padding-top:8px; font-size:13px; color:#64748b;">`;
+            fHtml += `<h5 style="margin:0 0 4px 0; font-size:13px; color:#334155;">주석</h5>`;
             refs.forEach((ref, idx) => {
-                fHtml += `<div style="margin-bottom:3px;"><span style="font-weight:bold; color:var(--primary);">[${idx+1}]</span> ${ref.getAttribute('data-note') || ''}</div>`;
+                fHtml += `<div style="margin-bottom:2px;"><span style="font-weight:bold; color:var(--primary);">[${idx+1}]</span> ${ref.getAttribute('data-note') || ''}</div>`;
             });
             fHtml += `</div>`;
             return fHtml;
         }
 
-        // 중심 개념 노드 레이아웃 바인딩
         html += `<div class="pdf-section">
             <div class="pdf-meta-header">
                 <span class="pdf-badge">ROOT</span>
@@ -1539,13 +1531,10 @@
             ${buildPdfFootnotesHtml(rootNode.content)}
         </div>`;
 
-        // 하위 마인드맵 노드 계층별 리포트 생성기
         function processNodes(parentId, depth) {
             const children = currentDoc.nodes.filter(n => n.parentId === parentId);
             children.forEach((child, index) => {
                 html += `<div class="pdf-section ${depth > 1 ? 'level-indent' : ''}">`;
-                
-                // 마크다운 # 헤더와 혼동되지 않는 완전히 독립된 시스템 번호 배너 바인딩
                 const depthLabel = depth === 1 ? `주제 0${index + 1}` : `하위 연계관점`;
                 
                 html += `
@@ -1570,7 +1559,6 @@
         html += `</div>`;
         
         printArea.innerHTML = html;
-        // 렌더링 동기화 안정성을 위해 500ms 지연 후 인쇄 창 팝업 호출
         setTimeout(() => { window.print(); }, 500);
     }
 
@@ -1584,7 +1572,7 @@
         document.getElementById('detail-view').style.display = 'flex';
         
         refreshFootnoteNumbers();
-        lastSavedSelectionRange = null; // 초기화
+        lastSavedSelectionRange = null;
     }
 
     function closeDetail() {
