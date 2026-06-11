@@ -176,7 +176,16 @@
 
         #editor li, .pdf-content li { margin-bottom: 4px; line-height: 1.8 !important; font-size: 18px !important; }
 
-        .footnote-ref { color: var(--toy-blue); font-size: 13px; font-weight: 700; vertical-align: super; cursor: pointer; margin-left: 2px; margin-right: 2px; user-select: none; display: inline-block; position: relative; WebkitTapHighlightColor: transparent; scroll-margin-top: 80px; }
+        /* ==================== [수정 반영: 주석 스타일 디자인 고도화] ==================== */
+        .footnote-ref { color: var(--toy-blue); font-size: 13px; font-weight: 700; vertical-align: super; cursor: pointer; margin-left: 2px; margin-right: 2px; user-select: none; display: inline-block; position: relative; WebkitTapHighlightColor: transparent; scroll-margin-top: 80px; transition: transform 0.15s ease; }
+        .footnote-ref:hover { transform: scale(1.15); color: var(--primary); }
+
+        /* 즉시 노출용 실시간 말풍선(Tooltip) 스타일 */
+        .footnote-tooltip {
+            position: fixed; background: var(--stroke); color: var(--bg); padding: 8px 14px; border-radius: 12px; font-size: 13px; font-weight: 500; z-index: 7000; box-shadow: 0 6px 16px rgba(0,0,0,0.2); max-width: 250px; line-height: 1.4; word-break: break-all; pointer-events: none; opacity: 0; transform: translateY(5px); transition: opacity 0.2s ease, transform 0.2s ease; display: none; border: 1.5px solid var(--stroke);
+        }
+        .footnote-tooltip.visible { display: block; opacity: 1; transform: translateY(0); }
+        .footnote-tooltip::after { content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); border-width: 6px 6px 0; border-style: solid; border-color: var(--stroke) transparent; display: block; width: 0; }
 
         @keyframes target-flash {
             0% { background-color: rgba(9, 132, 227, 0.3); transform: scale(1.1); border-radius: 4px; }
@@ -188,7 +197,6 @@
         .floating-bar button { background: transparent; color: var(--stroke); border: none; height: 28px; padding: 0 10px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center; position: relative; transition: 0.1s; }
         .floating-bar button:hover { background: var(--sidebar-hover); }
         
-        /* 팝업 컬러 메뉴 절대좌표 고정 방식으로 수정 */
         .color-menu { display: none; position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--panel); border: 3px solid var(--stroke); box-shadow: 5px 5px 0px var(--stroke); border-radius: 16px; padding: 12px; gap: 8px; grid-template-columns: repeat(4, 1fr); z-index: 5500; width: 160px; box-sizing: border-box; }
         .color-menu-title { grid-column: span 4; font-size: 11px; font-weight: bold; color: var(--stroke); opacity: 0.7; margin-bottom: 2px; text-align: center; }
         .color-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--stroke); cursor: pointer; transition: 0.15s; box-sizing: border-box; }
@@ -296,7 +304,6 @@
         
         .pdf-body { padding: 40px 60px; box-sizing: border-box; }
         
-        /* [교정 핵심] 강제 높이 제한 해제 및 마진 최적화로 불필요한 하단 거대 여백 완전 박멸 */
         .pdf-section { 
             margin-bottom: 45px; 
             page-break-inside: auto; 
@@ -309,7 +316,6 @@
 
         .pdf-meta-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
         
-        /* 요청 반영: 배지/라벨을 완전히 삭제하고, 대형 단독 폰트 헤드라인 기법 적용 */
         .pdf-node-title-main { font-size: 34px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -1px; line-height: 1.2; }
         .pdf-node-title-sub { font-size: 26px; font-weight: 800; color: #1e293b; margin: 0; letter-spacing: -0.5px; line-height: 1.3; }
         
@@ -333,7 +339,6 @@
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
             #print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100% !important; }
-            /* 축소 비율 처리 시 불필요 내부 오프셋 강제 초기화 */
             .pdf-cover { height: 100vh !important; min-height: 100vh !important; page-break-after: always !important; break-after: always !important; }
             @page { margin: 0; }
         }
@@ -343,11 +348,11 @@
 
     <div class="theme-selector-wrapper">
         <select class="theme-select" id="global-theme-switcher" onchange="changeGlobalTheme(this.value)">
-            <option value="nutcracker">호두까기 인형</option>
-            <option value="autumn-mute">가을</option>
-            <option value="snow-queen">눈의 여왕</option>
-            <option value="pastel-dream">파스텔</option>
-            <option value="summer-breeze">바다</option>
+            <option value="nutcracker">💂 호두까기 인형 테마</option>
+            <option value="autumn-mute">🍂 가을 뮤트 테마</option>
+            <option value="snow-queen">❄️ 눈의 여왕 테마</option>
+            <option value="pastel-dream">🌸 포근 파스텔 테마</option>
+            <option value="summer-breeze">🌊 시원 여름 바다 테마</option>
         </select>
     </div>
 
@@ -426,12 +431,12 @@
             </div>
 
             <div id="slash-menu">
-                <div class="slash-item" data-action="table" onclick="triggerSlashAction('table')">📅 표</div>
-                <div class="slash-item" data-action="blockquote" onclick="triggerSlashAction('blockquote')">💬 인용구</div>
-                <div class="slash-item" data-action="highlight" onclick="triggerSlashAction('highlight')">💡 하이라이트</div>
+                <div class="slash-item" data-action="table" onclick="triggerSlashAction('table')">📅 표 삽입하기</div>
+                <div class="slash-item" data-action="blockquote" onclick="triggerSlashAction('blockquote')">💬 인용구 박스 넣기</div>
+                <div class="slash-item" data-action="highlight" onclick="triggerSlashAction('highlight')">💡 하이라이트 박스 넣기</div>
                 <div class="slash-item" data-action="ul" onclick="triggerSlashAction('ul')">• 글머리 기호 목록</div>
-                <div class="slash-item" data-action="ol" onclick="triggerSlashAction('ol')">1. 숫자 목록</div>
-                <div class="slash-item" data-action="hr" onclick="triggerSlashAction('hr')">➖ 구분선</div>
+                <div class="slash-item" data-action="ol" onclick="triggerSlashAction('ol')">1. 번호 매기기 목록</div>
+                <div class="slash-item" data-action="hr" onclick="triggerSlashAction('hr')">➖ 구분선 넣기</div>
             </div>
         </div>
         
@@ -448,6 +453,8 @@
             <button id="text-color-btn" onclick="toggleColorMenu(event)" onmousedown="event.preventDefault();">🅰︎</button>
         </div>
     </div>
+
+    <div class="footnote-tooltip" id="global-footnote-tooltip"></div>
 
     <div class="color-menu" id="text-color-menu" onmousedown="event.preventDefault();">
         <div class="color-menu-title">글자 색상</div>
@@ -615,7 +622,6 @@
         saveCurrentNodeData();
     });
 
-    /* 글자색 메뉴 토글 위치 고정 및 표시 방식 전면 보정 */
     function toggleColorMenu(e) {
         if (e && e.stopPropagation) e.stopPropagation();
         const menu = document.getElementById('text-color-menu');
@@ -740,6 +746,7 @@
         }
     }
 
+    /* ==================== [수정 연동: 주석 이벤트(마우스오버 툴팁 / 더블클릭 스크롤) 전면 바인딩] ==================== */
     function refreshFootnoteNumbers() {
         const refs = editorField.querySelectorAll('.footnote-ref');
         const areaContainer = document.getElementById('bottom-footnotes-area');
@@ -761,7 +768,14 @@
             const fnId = `fn-ref-${index}`;
             const targetId = `fn-item-${index}`;
             ref.id = fnId;
-            ref.setAttribute('onclick', `scrollToFootnoteItem(event, '${targetId}')`);
+
+            // 1. 단순 클릭 및 마우스 오버 시 미니 말풍선(Tooltip) 생성 연동
+            ref.setAttribute('onmouseenter', `showFootnoteTooltip(event, this)`);
+            ref.setAttribute('onmouseleave', `hideFootnoteTooltip()`);
+            ref.setAttribute('onclick', `showFootnoteTooltip(event, this)`); // 모바일 터치 대응용
+
+            // 2. 더블 클릭 시 하단 주석 리스트 문단으로 완벽 스크롤링 이관
+            ref.setAttribute('ondblclick', `scrollToFootnoteItem(event, '${targetId}')`);
 
             const noteContent = ref.getAttribute('data-note') || '내용 없음';
             
@@ -773,6 +787,35 @@
         });
         listContainer.innerHTML = listHtml;
     }
+
+    /* 실시간 말풍선 노출 엔진 */
+    function showFootnoteTooltip(e, refEl) {
+        if (e && e.stopPropagation) e.stopPropagation();
+        const tooltip = document.getElementById('global-footnote-tooltip');
+        const noteText = refEl.getAttribute('data-note') || '내용이 없습니다.';
+        
+        tooltip.innerText = noteText;
+        tooltip.classList.add('visible');
+
+        const rect = refEl.getBoundingClientRect();
+        
+        // 툴팁 위치 계산 (주석 바로 정중앙 위쪽에 안착)
+        const topPos = rect.top - tooltip.offsetHeight - 8;
+        const leftPos = rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2);
+
+        tooltip.style.top = Math.max(10, topPos) + 'px';
+        tooltip.style.left = Math.max(10, leftPos) + 'px';
+    }
+
+    function hideFootnoteTooltip() {
+        document.getElementById('global-footnote-tooltip').classList.remove('visible');
+    }
+
+    // 에디터 스크롤하거나 바깥 누르면 말풍선 닫기
+    document.getElementById('detail-body-scroll').addEventListener('scroll', hideFootnoteTooltip);
+    document.addEventListener('mousedown', (e) => {
+        if(!e.target.closest('.footnote-ref')) hideFootnoteTooltip();
+    });
 
     function scrollToFootnoteRef(refId) {
         const target = document.getElementById(refId);
@@ -786,6 +829,7 @@
 
     function scrollToFootnoteItem(e, itemId) {
         if (e && e.stopPropagation) e.stopPropagation(); 
+        hideFootnoteTooltip(); // 더블클릭 시 툴팁은 가려줍니다.
         const target = document.getElementById(itemId);
         if(target) {
             target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -797,6 +841,7 @@
 
     function safelyRemoveFootnote(refElement) {
         if (!refElement) return;
+        hideFootnoteTooltip();
         const prevNode = refElement.previousSibling;
         const nextNode = refElement.nextSibling;
 
@@ -954,7 +999,7 @@
         if (ref) {
             touchTimer = setTimeout(() => {
                 openFootnoteModal(ref);
-            }, 500);
+            }, 800); // 롱터치 컨텍스트용 시간 살짝 조정
         }
     }, {passive: true});
 
@@ -966,13 +1011,6 @@
         const ref = e.target.closest('.footnote-ref');
         if (ref) {
             e.preventDefault();
-            openFootnoteModal(ref);
-        }
-    });
-
-    editorField.addEventListener('dblclick', function(e) {
-        const ref = e.target.closest('.footnote-ref');
-        if (ref) {
             openFootnoteModal(ref);
         }
     });
@@ -1486,7 +1524,6 @@
         generatePremiumPDF(selectedScale); 
     }
 
-    /* ==================== [완벽 연동: 여백 완전 박멸 및 노드 대형 단독 타이틀 인쇄 엔진] ==================== */
     function generatePremiumPDF(scaleValue) {
         const printArea = document.getElementById('print-area');
         const rootNode = currentDoc.nodes.find(n => n.id === 'root');
@@ -1494,7 +1531,6 @@
         
         const inversePercentage = (100 / parseFloat(scaleValue)).toFixed(2);
         
-        // 다운로드 파일명 자동 대입을 위해 시스템 타이틀 임시 변환 단차 확보
         const originalDocTitle = document.title;
         const targetFilename = rootNode.title ? rootNode.title.trim() : 'Ink_Canvas_Report';
         document.title = targetFilename;
@@ -1542,7 +1578,6 @@
             return fHtml;
         }
 
-        // 라벨/배지 완전 삭제: 대형 노드 타이틀 단독 배치 기법 반영
         html += `<div class="pdf-section">
             <div class="pdf-meta-header">
                 <h1 class="pdf-node-title-main">${rootNode.title || '총괄 요약 정보'}</h1>
@@ -1581,7 +1616,6 @@
         
         setTimeout(() => { 
             window.print(); 
-            // 출력 프로세스가 마쳐지거나 창이 닫힌 이후 오리지널 페이지 타이틀 복구 복원 인터벌 전개
             setTimeout(() => { document.title = originalDocTitle; }, 1000);
         }, 500);
     }
@@ -1600,6 +1634,7 @@
     }
 
     function closeDetail() {
+        hideFootnoteTooltip();
         saveCurrentNodeData(); 
         selectedNodeId = null;
         document.getElementById('detail-view').style.display = 'none'; 
@@ -1608,6 +1643,7 @@
 
     function deleteNode() {
         if (selectedNodeId === 'root') return alert("중심 노드는 삭제할 수 없습니다.");
+        hideFootnoteTooltip();
         currentDoc.nodes = currentDoc.nodes.filter(n => n.id !== selectedNodeId);
         save(); 
         selectedNodeId = null;
