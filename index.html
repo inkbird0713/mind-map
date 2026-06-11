@@ -100,7 +100,8 @@
             background: var(--bg); height: 100%; overflow: hidden; touch-action: none; color: var(--stroke); 
         }
         
-        #home-screen { padding: 50px 20px; display: flex; flex-direction: column; align-items: center; height: 100vh; overflow-y: auto; box-sizing: border-box; position: relative; z-index: 2000; background: var(--bg); }
+        /* [개선] 홈 화면 하단 스크롤이 파일이 많아져도 끝까지 완벽하게 밀리도록 넉넉한 35vh 바텀 패딩 지정 */
+        #home-screen { padding: 50px 20px 35vh; display: flex; flex-direction: column; align-items: center; height: 100vh; overflow-y: auto; box-sizing: border-box; position: relative; z-index: 2000; background: var(--bg); }
         
         /* 테마 선택 드롭다운 셀렉터 상단 바 래퍼 */
         .theme-selector-wrapper {
@@ -796,9 +797,13 @@
         saveCurrentNodeData();
     }
 
-    /* [개선] 폰트 컬러 어플라이어 브로우저 호환성 패치 */
+    /* [개선 완료] 글자 색상 및 하이라이트 에디터 호환성 버그 패치 */
     function execColor(e, cmd, color) {
         if (e && e.stopPropagation) e.stopPropagation();
+        
+        // 포커스를 다시 복구하여 선택영역 유실 방지
+        editorField.focus();
+        
         document.execCommand(cmd, false, color);
         document.getElementById('text-color-menu').style.display = 'none';
         saveCurrentNodeData();
@@ -1675,7 +1680,8 @@
         `;
     }
 
-    function cycleFileTagColor(fileId) {
+    /* [오류 수정 완료] e 전달인자 파싱 명시화 */
+    function cycleFileTagColor(e, fileId) {
         if (e && e.stopPropagation) e.stopPropagation(); 
         const doc = docs.find(d => d.id == fileId);
         if(!doc) return;
